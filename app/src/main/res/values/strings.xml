@@ -1,3 +1,46 @@
 <resources>
     <string name="app_name">SlagalicaVPL</string>
+
+    <!-- Login / Register -->
+    <string name="label_login">PRIJAVA</string>
+    <string name="hint_email_or_username">EMAIL ILI KORISNIČKO IME</string>
+    <string name="hint_email">EMAIL</string>
+    <string name="hint_username">KORISNIČKO IME</string>
+    <string name="hint_password">LOZINKA</string>
+    <string name="hint_password_confirm">PONOVI LOZINKU</string>
+    <string name="btn_login">PRIJAVI SE</string>
+    <string name="btn_register">REGISTRUJ SE</string>
+    <string name="btn_forgot_password">ZABORAVILI STE LOZINKU?</string>
+    <string name="label_register">KREIRAJ NALOG</string>
+    <string name="label_region">REGION</string>
+    <string name="info_email_confirm">Nakon registracije bićete obavešteni emailom.</string>
+
+    <!-- Regions -->
+    <string-array name="regions">
+        <item>Vojvodina</item>
+        <item>Beograd</item>
+        <item>Šumadija i Zapadna Srbija</item>
+        <item>Južna i Istočna Srbija</item>
+        <item>Kosovo i Metohija</item>
+    </string-array>
+
+    <!-- Game common -->
+    <string name="btn_surrender">PREDAJ</string>
+    <string name="btn_confirm">POTVRDI</string>
+    <string name="btn_delete">OBRIŠI</string>
+    <string name="btn_reset">RESET</string>
+    <string name="label_tokens">ŽETONI</string>
+    <string name="label_stars">ZVEZDE</string>
+
+    <!-- Korak po korak -->
+    <string name="game_korak_name">KORAK PO KORAK</string>
+    <string name="game_korak_instruction">PRONAĐI POJAM</string>
+    <string name="hint_answer">UNESI ODGOVOR…</string>
+    <string name="label_your_answer">TVOJ ODGOVOR</string>
+
+    <!-- Moj broj -->
+    <string name="game_moj_broj_name">MOJ BROJ</string>
+    <string name="game_moj_broj_instruction">DOĐI DO BROJA</string>
+    <string name="label_your_calc">TVOJ RAČUN</string>
+    <string name="btn_stop">STOP</string>
 </resources>
