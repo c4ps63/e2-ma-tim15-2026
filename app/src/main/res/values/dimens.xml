@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="retro_border">2dp</dimen>
+    <dimen name="retro_padding_screen">12dp</dimen>
+    <dimen name="retro_padding_card">12dp</dimen>
+    <dimen name="retro_gap">8dp</dimen>
+    <dimen name="retro_btn_height">48dp</dimen>
+    <dimen name="retro_input_height">48dp</dimen>
+    <dimen name="retro_hud_height">44dp</dimen>
+    <dimen name="retro_game_header_height">56dp</dimen>
+    <dimen name="retro_step_height">46dp</dimen>
+    <dimen name="retro_tile_size">44dp</dimen>
+    <dimen name="retro_operator_size">40dp</dimen>
+</resources>

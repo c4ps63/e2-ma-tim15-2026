@@ -2,4 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Retro palette (from design/Slagalica Retro prototype) -->
+    <color name="retro_bg">#F5F2E8</color>
+    <color name="retro_ink">#1A1A1A</color>
+    <color name="retro_acc">#D94F2C</color>
+    <color name="retro_dim">#8A8070</color>
+    <color name="retro_gr">#2D6A3F</color>
+    <color name="retro_pu">#5C3A8C</color>
+    <color name="retro_pk">#A0394E</color>
+    <color name="retro_acc_dim">#2FD94F2C</color>
 </resources>

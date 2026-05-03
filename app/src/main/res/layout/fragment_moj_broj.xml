@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/retro_bg"
+    tools:context=".activities.fragments.MojBrojFragment">
+
+    <!-- Game HUD -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_chip"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="○" android:fontFamily="monospace" android:textSize="11sp"
+                android:textColor="@color/retro_acc" android:layout_marginEnd="4dp"/>
+
+            <TextView android:id="@+id/tvTokens" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="14"
+                android:fontFamily="monospace" android:textSize="11sp"
+                android:textStyle="bold" android:textColor="@color/retro_acc"/>
+        </LinearLayout>
+
+        <View android:layout_width="6dp" android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_chip"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="★" android:fontFamily="monospace" android:textSize="11sp"
+                android:textColor="@color/retro_ink" android:layout_marginEnd="4dp"/>
+
+            <TextView android:id="@+id/tvStars" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="287"
+                android:fontFamily="monospace" android:textSize="11sp"
+                android:textStyle="bold" android:textColor="@color/retro_ink"/>
+        </LinearLayout>
+
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_score_box"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <TextView android:id="@+id/tvScoreMe" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="42"
+                android:fontFamily="monospace" android:textSize="15sp"
+                android:textStyle="bold" android:textColor="@color/retro_acc"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text=" VS " android:fontFamily="monospace" android:textSize="9sp"
+                android:textColor="@color/retro_dim"/>
+
+            <TextView android:id="@+id/tvScoreOpp" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="35"
+                android:fontFamily="monospace" android:textSize="15sp"
+                android:textStyle="bold" android:textColor="@color/retro_ink"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Game header row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView android:id="@+id/tvRound"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="IGRA 2/2" style="@style/RetroLabel"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/game_moj_broj_name"
+                android:fontFamily="monospace" android:textSize="15sp"
+                android:textStyle="bold" android:textColor="@color/retro_ink"
+                android:letterSpacing="0.05"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSurrender"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            style="@style/RetroButtonSmall"
+            android:background="@drawable/bg_retro_btn_face_accent"
+            android:text="@string/btn_surrender"
+            android:textColor="@color/retro_bg"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:drawableStart="@drawable/ic_retro_flag"
+            android:drawablePadding="6dp"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Game content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Instruction -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_moj_broj_instruction"
+                style="@style/RetroLabel"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- Target number box (centered) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="12dp">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/retro_ink"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_retro_target"
+                        android:paddingStart="28dp"
+                        android:paddingEnd="28dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginBottom="5dp">
+
+                        <TextView
+                            android:id="@+id/tvTarget"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="743"
+                            android:fontFamily="monospace"
+                            android:textSize="46sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/retro_ink"
+                            android:letterSpacing="-0.02"/>
+                    </LinearLayout>
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Timer -->
+            <ProgressBar
+                android:id="@+id/progressTimer"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:progressDrawable="@drawable/bg_retro_progress"
+                android:progress="70"
+                android:max="100"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Number tiles (6 tiles in a row) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="DOSTUPNI BROJEVI"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="10dp">
+
+                <!-- Tile 1: used -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/retro_tile_size"
+                    android:layout_weight="1"
+                    android:text="25"
+                    android:fontFamily="monospace"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_dim"
+                    android:background="@drawable/bg_retro_tile_used"
+                    android:gravity="center"
+                    android:layout_marginEnd="4dp"/>
+
+                <!-- Tile 2: used -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/retro_tile_size"
+                    android:layout_weight="1"
+                    android:text="8"
+                    android:fontFamily="monospace"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_dim"
+                    android:background="@drawable/bg_retro_tile_used"
+                    android:gravity="center"
+                    android:layout_marginEnd="4dp"/>
+
+                <!-- Tile 3: active -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/retro_tile_size"
+                    android:layout_weight="1"
+                    android:text="7"
+                    android:fontFamily="monospace"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active"
+                    android:gravity="center"
+                    android:layout_marginEnd="4dp"/>
+
+                <!-- Tile 4: active -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/retro_tile_size"
+                    android:layout_weight="1"
+                    android:text="3"
+                    android:fontFamily="monospace"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active"
+                    android:gravity="center"
+                    android:layout_marginEnd="4dp"/>
+
+                <!-- Tile 5: active -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/retro_tile_size"
+                    android:layout_weight="1"
+                    android:text="100"
+                    android:fontFamily="monospace"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active"
+                    android:gravity="center"
+                    android:layout_marginEnd="4dp"/>
+
+                <!-- Tile 6: active -->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/retro_tile_size"
+                    android:layout_weight="1"
+                    android:text="50"
+                    android:fontFamily="monospace"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <!-- Operator tiles -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="12dp">
+
+                <TextView android:layout_width="@dimen/retro_operator_size"
+                    android:layout_height="@dimen/retro_operator_size"
+                    android:text="+" android:fontFamily="monospace" android:textSize="18sp"
+                    android:textStyle="bold" android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active" android:gravity="center"
+                    android:layout_marginEnd="5dp"/>
+
+                <TextView android:layout_width="@dimen/retro_operator_size"
+                    android:layout_height="@dimen/retro_operator_size"
+                    android:text="−" android:fontFamily="monospace" android:textSize="18sp"
+                    android:textStyle="bold" android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active" android:gravity="center"
+                    android:layout_marginEnd="5dp"/>
+
+                <TextView android:layout_width="@dimen/retro_operator_size"
+                    android:layout_height="@dimen/retro_operator_size"
+                    android:text="×" android:fontFamily="monospace" android:textSize="18sp"
+                    android:textStyle="bold" android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active" android:gravity="center"
+                    android:layout_marginEnd="5dp"/>
+
+                <TextView android:layout_width="@dimen/retro_operator_size"
+                    android:layout_height="@dimen/retro_operator_size"
+                    android:text="÷" android:fontFamily="monospace" android:textSize="18sp"
+                    android:textStyle="bold" android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active" android:gravity="center"
+                    android:layout_marginEnd="5dp"/>
+
+                <TextView android:layout_width="@dimen/retro_operator_size"
+                    android:layout_height="@dimen/retro_operator_size"
+                    android:text="(" android:fontFamily="monospace" android:textSize="18sp"
+                    android:textStyle="bold" android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active" android:gravity="center"
+                    android:layout_marginEnd="5dp"/>
+
+                <TextView android:layout_width="@dimen/retro_operator_size"
+                    android:layout_height="@dimen/retro_operator_size"
+                    android:text=")" android:fontFamily="monospace" android:textSize="18sp"
+                    android:textStyle="bold" android:textColor="@color/retro_bg"
+                    android:background="@drawable/bg_retro_tile_active" android:gravity="center"/>
+            </LinearLayout>
+
+            <!-- Expression card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_retro_card"
+                android:padding="10dp"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_your_calc"
+                    style="@style/RetroLabel"
+                    android:layout_marginBottom="6dp"/>
+
+                <TextView
+                    android:id="@+id/tvExpression"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="25 × 8 + ..."
+                    android:fontFamily="monospace"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_ink"
+                    android:minHeight="40dp"
+                    android:gravity="center_vertical"/>
+            </LinearLayout>
+
+            <!-- Action buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnReset"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/retro_btn_height"
+                    android:layout_weight="1"
+                    style="@style/RetroButton"
+                    android:text="@string/btn_reset"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:layout_marginEnd="8dp"/>
+
+                <FrameLayout
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="2">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:background="@color/retro_acc"/>
+
+                    <Button
+                        android:id="@+id/btnConfirm"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginBottom="4dp"
+                        style="@style/RetroButtonDark"
+                        android:text="POTVRDI · 743"
+                        android:drawableStart="@drawable/ic_retro_check"
+                        android:drawablePadding="8dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"/>
+                </FrameLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

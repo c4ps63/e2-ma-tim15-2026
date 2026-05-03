@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/retro_bg"
+    tools:context=".activities.RegisterActivity">
+
+    <!-- Header bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/retro_ink"
+        android:paddingStart="4dp"
+        android:paddingEnd="16dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_retro_back"
+            android:background="@android:color/transparent"
+            android:contentDescription="Nazad"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="REGISTRACIJA"
+            android:fontFamily="monospace"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/retro_bg"
+            android:letterSpacing="0.1"/>
+    </LinearLayout>
+
+    <!-- Scrollable form -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KREIRAJ NALOG"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EMAIL"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="5dp"/>
+
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/retro_input_height"
+                style="@style/RetroInput"
+                android:hint="ime@primer.com"
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:layout_marginBottom="14dp"/>
+
+            <!-- Username -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KORISNIČKO IME"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="5dp"/>
+
+            <EditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/retro_input_height"
+                style="@style/RetroInput"
+                android:hint="npr. slagalicaProfi"
+                android:inputType="textPersonName"
+                android:singleLine="true"
+                android:layout_marginBottom="14dp"/>
+
+            <!-- Region -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="REGION"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="5dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerRegion"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/retro_input_height"
+                android:background="@drawable/bg_retro_input"
+                android:fontFamily="monospace"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:entries="@array/regions"
+                android:layout_marginBottom="14dp"/>
+
+            <!-- Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LOZINKA"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="5dp"/>
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/retro_input_height"
+                style="@style/RetroInput"
+                android:hint="min. 8 karaktera"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:layout_marginBottom="14dp"/>
+
+            <!-- Confirm Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PONOVI LOZINKU"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="5dp"/>
+
+            <EditText
+                android:id="@+id/etPasswordConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/retro_input_height"
+                style="@style/RetroInput"
+                android:hint="••••••••"
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Info note -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/info_email_confirm"
+                android:fontFamily="monospace"
+                android:textSize="10sp"
+                android:textColor="@color/retro_dim"
+                android:layout_marginBottom="28dp"/>
+
+            <!-- Register button -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginBottom="32dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/retro_acc"/>
+
+                <Button
+                    android:id="@+id/btnRegister"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginBottom="4dp"
+                    style="@style/RetroButtonDark"
+                    android:text="@string/btn_register"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"/>
+            </FrameLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,9 +1,68 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.SlagalicaVPL" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:statusBarColor">@color/retro_ink</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:windowBackground">@color/retro_bg</item>
+        <item name="colorPrimary">@color/retro_acc</item>
+        <item name="colorOnPrimary">@color/retro_bg</item>
+        <item name="colorSurface">@color/retro_bg</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
     </style>
 
     <style name="Theme.SlagalicaVPL" parent="Base.Theme.SlagalicaVPL" />
+
+    <!-- Retro button styles -->
+    <style name="RetroButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@null</item>
+        <item name="android:background">@drawable/bg_retro_btn_face_light</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textColor">@color/retro_ink</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:elevation">0dp</item>
+        <item name="cornerRadius">0dp</item>
+    </style>
+
+    <style name="RetroButtonDark" parent="RetroButton">
+        <item name="android:background">@drawable/bg_retro_btn_face_dark</item>
+        <item name="android:textColor">@color/retro_bg</item>
+    </style>
+
+    <style name="RetroButtonAccent" parent="RetroButton">
+        <item name="android:background">@drawable/bg_retro_btn_face_accent</item>
+        <item name="android:textColor">@color/retro_bg</item>
+    </style>
+
+    <style name="RetroButtonSmall" parent="RetroButton">
+        <item name="android:textSize">10sp</item>
+        <item name="android:paddingTop">6dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+    </style>
+
+    <!-- Input fields -->
+    <style name="RetroInput">
+        <item name="android:background">@drawable/bg_retro_input</item>
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/retro_ink</item>
+        <item name="android:textColorHint">@color/retro_dim</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!-- Label text (small caps, dim) -->
+    <style name="RetroLabel">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textSize">9sp</item>
+        <item name="android:textColor">@color/retro_dim</item>
+        <item name="android:letterSpacing">0.15</item>
+    </style>
 </resources>
