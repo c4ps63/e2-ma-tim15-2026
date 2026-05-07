@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/retro_bg"
+    tools:context=".activities.fragments.KoZnaZnaFragment">
+
+    <!-- Game HUD (tokens · stars · score) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_chip"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="○" android:fontFamily="monospace" android:textSize="11sp"
+                android:textColor="@color/retro_acc" android:layout_marginEnd="4dp"/>
+
+            <TextView android:id="@+id/tvTokens" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="14"
+                android:fontFamily="monospace" android:textSize="11sp"
+                android:textStyle="bold" android:textColor="@color/retro_acc"/>
+        </LinearLayout>
+
+        <View android:layout_width="6dp" android:layout_height="1dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_chip"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="★" android:fontFamily="monospace" android:textSize="11sp"
+                android:textColor="@color/retro_ink" android:layout_marginEnd="4dp"/>
+
+            <TextView android:id="@+id/tvStars" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="287"
+                android:fontFamily="monospace" android:textSize="11sp"
+                android:textStyle="bold" android:textColor="@color/retro_ink"/>
+        </LinearLayout>
+
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_score_box"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <TextView android:id="@+id/tvScoreMe" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="20"
+                android:fontFamily="monospace" android:textSize="15sp"
+                android:textStyle="bold" android:textColor="@color/retro_acc"/>
+
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text=" VS " android:fontFamily="monospace" android:textSize="9sp"
+                android:textColor="@color/retro_dim"/>
+
+            <TextView android:id="@+id/tvScoreOpp" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:text="15"
+                android:fontFamily="monospace" android:textSize="15sp"
+                android:textStyle="bold" android:textColor="@color/retro_ink"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Game header row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvRound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IGRA 1/6"
+                style="@style/RetroLabel"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/game_ko_zna_zna_name"
+                android:fontFamily="monospace"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/retro_ink"
+                android:letterSpacing="0.05"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSurrender"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            style="@style/RetroButtonSmall"
+            android:background="@drawable/bg_retro_btn_face_accent"
+            android:text="@string/btn_surrender"
+            android:textColor="@color/retro_bg"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:drawableStart="@drawable/ic_retro_flag"
+            android:drawablePadding="6dp"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Scrollable game content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Info label -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/game_ko_zna_zna_instruction"
+                style="@style/RetroLabel"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- Timer row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="14dp">
+
+                <ProgressBar
+                    android:id="@+id/progressTimer"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="10dp"
+                    android:layout_weight="1"
+                    android:progressDrawable="@drawable/bg_retro_progress"
+                    android:progress="60"
+                    android:max="100"/>
+
+                <TextView
+                    android:id="@+id/tvTimer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0:03"
+                    android:fontFamily="monospace"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_ink"
+                    android:layout_marginStart="10dp"
+                    android:minWidth="40dp"/>
+            </LinearLayout>
+
+            <!-- Question card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_retro_card"
+                android:padding="14dp"
+                android:layout_marginBottom="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PITANJE 3 / 5"
+                    style="@style/RetroLabel"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:id="@+id/tvQuestion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Koji grad je prestonica Španije?"
+                    android:fontFamily="monospace"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/retro_ink"
+                    android:lineSpacingMultiplier="1.2"
+                    android:minHeight="60dp"
+                    android:gravity="center_vertical"/>
+            </LinearLayout>
+
+            <!-- Answer buttons: A and B -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+
+                <Button
+                    android:id="@+id/btnAnswerA"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    style="@style/RetroButtonAccent"
+                    android:text="A:  MADRID"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:layout_marginEnd="6dp"
+                    android:textColor="@color/retro_bg"
+                    android:gravity="center_vertical|start"
+                    android:paddingStart="14dp"/>
+
+                <Button
+                    android:id="@+id/btnAnswerB"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    style="@style/RetroButton"
+                    android:text="B:  LISABON"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingStart="14dp"/>
+            </LinearLayout>
+
+            <!-- Answer buttons: C and D -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnAnswerC"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    style="@style/RetroButton"
+                    android:text="C:  BARSELONA"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:layout_marginEnd="6dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingStart="14dp"/>
+
+                <Button
+                    android:id="@+id/btnAnswerD"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_weight="1"
+                    style="@style/RetroButton"
+                    android:text="D:  VALENSIJA"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:gravity="center_vertical|start"
+                    android:paddingStart="14dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
