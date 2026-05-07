@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/retro_bg"
+    tools:context=".activities.ProfileActivity">
+
+    <!-- Header bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/retro_ink"
+        android:paddingStart="4dp"
+        android:paddingEnd="12dp">
+
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_retro_back"
+            android:background="@android:color/transparent"
+            android:contentDescription="Nazad"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/label_profile"
+            android:fontFamily="monospace"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/retro_bg"
+            android:letterSpacing="0.1"/>
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            style="@style/RetroButtonSmall"
+            android:background="@drawable/bg_retro_btn_face_accent"
+            android:text="@string/btn_logout"
+            android:textColor="@color/retro_bg"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Scrollable content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Avatar + Identity card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_retro_card"
+                android:padding="12dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <!-- Avatar placeholder -->
+                <LinearLayout
+                    android:layout_width="84dp"
+                    android:layout_height="84dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_retro_card"
+                    android:layout_marginEnd="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="◉"
+                        android:fontFamily="monospace"
+                        android:textSize="40sp"
+                        android:textColor="@color/retro_dim"/>
+                </LinearLayout>
+
+                <!-- Identity info -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="KORISNIČKO IME"
+                        style="@style/RetroLabel"
+                        android:layout_marginBottom="3dp"/>
+
+                    <TextView
+                        android:id="@+id/tvUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="retro_igrač"
+                        android:fontFamily="monospace"
+                        android:textSize="17sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"
+                        android:layout_marginBottom="5dp"/>
+
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="igrac@email.com"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textColor="@color/retro_dim"
+                        android:layout_marginBottom="10dp"/>
+
+                    <Button
+                        android:id="@+id/btnEditAvatar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        style="@style/RetroButtonSmall"
+                        android:text="@string/btn_edit_avatar"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Chips row: tokens · stars · league -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="10dp">
+
+                <!-- Token chip -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_retro_chip"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="○"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textColor="@color/retro_acc"
+                        android:layout_marginEnd="5dp"/>
+
+                    <TextView
+                        android:id="@+id/tvTokens"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="14"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_acc"/>
+                </LinearLayout>
+
+                <!-- Stars chip -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_retro_chip"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="★"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textColor="@color/retro_ink"
+                        android:layout_marginEnd="5dp"/>
+
+                    <TextView
+                        android:id="@+id/tvStars"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="287"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <!-- League chip -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_retro_chip_accent"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="◈"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textColor="@color/retro_bg"
+                        android:layout_marginEnd="5dp"/>
+
+                    <TextView
+                        android:id="@+id/tvLeague"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="JUNIOR"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_bg"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Region + League info card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_retro_card"
+                android:padding="12dp"
+                android:layout_marginBottom="10dp">
+
+                <!-- Region row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="REGION"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvRegion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Beograd"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_ink" android:layout_marginBottom="10dp"/>
+
+                <!-- League row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_league"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvLeagueDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="◈  Liga 1 · Junior"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- QR code card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_retro_card"
+                android:padding="12dp"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_qr_code"
+                    style="@style/RetroLabel"
+                    android:layout_marginBottom="10dp"/>
+
+                <!-- QR placeholder box -->
+                <LinearLayout
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_retro_card"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="▦"
+                        android:fontFamily="monospace"
+                        android:textSize="52sp"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_qr_hint"
+                    android:fontFamily="monospace"
+                    android:textSize="10sp"
+                    android:textColor="@color/retro_dim"/>
+            </LinearLayout>
+
+            <!-- Statistics section label -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_stats"
+                style="@style/RetroLabel"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Stats card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_retro_card"
+                android:padding="12dp"
+                android:layout_marginBottom="10dp">
+
+                <!-- Total games -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_total_games"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvTotalGames"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="47"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <!-- Wins / Losses -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_wins_losses"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvWinsLosses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="28 / 19"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="@color/retro_ink" android:layout_marginBottom="12dp"/>
+
+                <!-- Ko zna zna stat -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="KO ZNA ZNA"
+                    style="@style/RetroLabel"
+                    android:layout_marginBottom="5dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="TAČNIH ODGOVORA"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvStatKoZnaZnaTacnih"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="26"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_gr"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="PROMAŠENIH ODGOVORA"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvStatKoZnaZnaPromasenih"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="8"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_acc"/>
+                </LinearLayout>
+
+                <!-- Spojnice stat -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="SPOJNICE"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvStatSpojnice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="78% POVEZANIH"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_gr"/>
+                </LinearLayout>
+
+                <!-- Asocijacije stat -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="ASOCIJACIJE"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvStatAsocijacije"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="12 / 18 REŠENIH"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <!-- Skočko stat -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="SKOČKO"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvStatSkocko"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="NA 3.2 POKUŠAJU"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <!-- Korak po korak stat -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="KORAK PO KORAK"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvStatKorak"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="42% U PRVIH 3"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <!-- Moj broj stat -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="MOJ BROJ"
+                        style="@style/RetroLabel"/>
+
+                    <TextView
+                        android:id="@+id/tvStatMojBroj"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="71% TAČNIH"
+                        android:fontFamily="monospace"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_gr"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
