@@ -159,6 +159,22 @@
                 android:background="@color/retro_dim"/>
         </LinearLayout>
 
+        <!-- Profile demo link -->
+        <TextView
+            android:id="@+id/tvProfileDemo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/link_profile_demo"
+            android:fontFamily="monospace"
+            android:textSize="10sp"
+            android:textColor="@color/retro_dim"
+            android:letterSpacing="0.1"
+            android:gravity="center"
+            android:paddingTop="20dp"
+            android:paddingBottom="4dp"
+            android:clickable="true"
+            android:focusable="true"/>
+
         <!-- Register button (light) -->
         <FrameLayout
             android:layout_width="match_parent"

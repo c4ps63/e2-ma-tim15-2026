@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import com.example.slagalicavpl.activities.ProfileActivity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,5 +39,8 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword.setOnClickListener(v -> {
             // TODO KT2: show reset password dialog
         });
+
+        TextView tvProfileDemo = findViewById(R.id.tvProfileDemo);
+        tvProfileDemo.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
     }
 }

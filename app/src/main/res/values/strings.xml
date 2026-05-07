@@ -43,4 +43,24 @@
     <string name="game_moj_broj_instruction">DOĐI DO BROJA</string>
     <string name="label_your_calc">TVOJ RAČUN</string>
     <string name="btn_stop">STOP</string>
+
+    <!-- Ko zna zna -->
+    <string name="game_ko_zna_zna_name">KO ZNA ZNA</string>
+    <string name="game_ko_zna_zna_instruction">PITANJE 1/5 · 10 BODOVA</string>
+
+    <!-- Spojnice -->
+    <string name="game_spojnice_name">SPOJNICE</string>
+    <string name="game_spojnice_instruction">POVEZI POJMOVE · RUNDA 1/2</string>
+
+    <!-- Profile -->
+    <string name="label_profile">PROFIL</string>
+    <string name="btn_logout">ODJAVI SE</string>
+    <string name="btn_edit_avatar">IZMENI AVATAR</string>
+    <string name="label_stats">STATISTIKA</string>
+    <string name="label_qr_code">QR KOD</string>
+    <string name="label_qr_hint">Skeniraj za dodavanje prijatelja</string>
+    <string name="label_total_games">UKUPNO PARTIJA</string>
+    <string name="label_wins_losses">POBEDE / PORAZI</string>
+    <string name="label_league">LIGA</string>
+    <string name="link_profile_demo">PROFIL (DEMO)</string>
 </resources>
