@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalicavpl.R;
+import com.example.slagalicavpl.activities.fragments.KoZnaZnaFragment;
+import com.example.slagalicavpl.activities.fragments.SpojniceFragment;
 import com.example.slagalicavpl.activities.fragments.KorakPoKorakFragment;
 import com.example.slagalicavpl.activities.fragments.MojBrojFragment;
 
@@ -21,12 +23,27 @@ public class GameActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragmentContainer, new KorakPoKorakFragment())
+                    .replace(R.id.fragmentContainer, new KoZnaZnaFragment())
                     .commit();
         }
     }
 
-    /** Called by KorakPoKorakFragment when round is over — shows next game. */
+    public void showSpojnice() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new SpojniceFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void showKorakPoKorak() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new KorakPoKorakFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
     public void showMojBroj() {
         getSupportFragmentManager()
                 .beginTransaction()
