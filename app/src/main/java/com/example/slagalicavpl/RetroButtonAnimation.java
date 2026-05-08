@@ -16,10 +16,12 @@ public class RetroButtonAnimation {
             return;
         }
         GradientDrawable bg = (GradientDrawable) button.getBackground().mutate();
-        int ink = ContextCompat.getColor(button.getContext(), R.color.retro_ink);
         int acc = ContextCompat.getColor(button.getContext(), R.color.retro_acc);
+        int original = bg.getColor() != null
+                ? bg.getColor().getDefaultColor()
+                : ContextCompat.getColor(button.getContext(), R.color.retro_ink);
 
-        ValueAnimator anim = ValueAnimator.ofArgb(ink, acc, ink);
+        ValueAnimator anim = ValueAnimator.ofArgb(original, acc, original);
         anim.setDuration(350);
         anim.addUpdateListener(a -> bg.setColor((int) a.getAnimatedValue()));
         anim.addListener(new AnimatorListenerAdapter() {
