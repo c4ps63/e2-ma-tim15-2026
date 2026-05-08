@@ -8,9 +8,18 @@
         <item name="colorSurface">@color/retro_bg</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
+        <!-- Globalni stil za sve TextViewe: bold monospace -->
+        <item name="android:textViewStyle">@style/RetroBaseText</item>
     </style>
 
     <style name="Theme.SlagalicaVPL" parent="Base.Theme.SlagalicaVPL" />
+
+    <!-- Globalni TextView: bold + monospace — važi za sve TextViewe koji nemaju eksplicitne atribute -->
+    <style name="RetroBaseText">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+    </style>
 
     <!-- Retro button styles -->
     <style name="RetroButton" parent="Widget.Material3.Button">
@@ -20,7 +29,8 @@
         <item name="android:insetBottom">0dp</item>
         <item name="android:fontFamily">monospace</item>
         <item name="android:textColor">@color/retro_ink</item>
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.08</item>
         <item name="android:elevation">0dp</item>
         <item name="cornerRadius">0dp</item>
@@ -37,7 +47,8 @@
     </style>
 
     <style name="RetroButtonSmall" parent="RetroButton">
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:paddingTop">6dp</item>
         <item name="android:paddingBottom">6dp</item>
         <item name="android:paddingStart">10dp</item>
@@ -48,7 +59,8 @@
     <style name="RetroInput">
         <item name="android:background">@drawable/bg_retro_input</item>
         <item name="android:fontFamily">monospace</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/retro_ink</item>
         <item name="android:textColorHint">@color/retro_dim</item>
         <item name="android:paddingStart">12dp</item>
@@ -61,7 +73,8 @@
     <!-- Label text (small caps, dim) -->
     <style name="RetroLabel">
         <item name="android:fontFamily">monospace</item>
-        <item name="android:textSize">9sp</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/retro_dim</item>
         <item name="android:letterSpacing">0.15</item>
     </style>

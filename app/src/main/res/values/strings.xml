@@ -52,6 +52,26 @@
     <string name="game_spojnice_name">SPOJNICE</string>
     <string name="game_spojnice_instruction">POVEZI POJMOVE · RUNDA 1/2</string>
 
+    <!-- Asocijacije -->
+    <string name="game_asocijacije_name">ASOCIJACIJE</string>
+    <string name="game_asocijacije_instruction">POGODI KOLONU ILI KONAČNO REŠENJE</string>
+    <string name="btn_submit">POŠALJI</string>
+    <string name="label_final_answer">KONAČNO REŠENJE</string>
+
+    <!-- Skočko -->
+    <string name="game_skocko_name">SKOČKO</string>
+    <string name="game_skocko_instruction">POGODI KOMBINACIJU</string>
+    <string name="btn_confirm_attempt">POTVRDI POKUŠAJ</string>
+    <string name="label_choose_symbol">BIRAJ SIMBOL</string>
+    <string name="label_opponent">PROTIVNIK</string>
+    <string name="label_solution">REŠENJE</string>
+
+    <!-- Notifikacije -->
+    <string name="label_notifications">OBAVEŠTENJA</string>
+    <string name="btn_mark_all_read">OZNAČI SVE KAO PROČITANE</string>
+    <string name="filter_all">SVE</string>
+    <string name="filter_unread">NEPROČITANE</string>
+
     <!-- Profile -->
     <string name="label_profile">PROFIL</string>
     <string name="btn_logout">ODJAVI SE</string>

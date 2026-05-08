@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/retro_bg"
+    tools:context=".activities.fragments.AsocijacijeFragment">
+
+    <!-- Game HUD -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="28dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_chip" android:paddingStart="8dp" android:paddingEnd="8dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="○" android:fontFamily="monospace" android:textSize="11sp"
+                android:textColor="@color/retro_acc" android:layout_marginEnd="4dp"/>
+            <TextView android:id="@+id/tvTokens" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="14" android:fontFamily="monospace" android:textSize="11sp"
+                android:textStyle="bold" android:textColor="@color/retro_acc"/>
+        </LinearLayout>
+
+        <View android:layout_width="6dp" android:layout_height="1dp"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="28dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_chip" android:paddingStart="8dp" android:paddingEnd="8dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="★" android:fontFamily="monospace" android:textSize="11sp"
+                android:textColor="@color/retro_ink" android:layout_marginEnd="4dp"/>
+            <TextView android:id="@+id/tvStars" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="287" android:fontFamily="monospace" android:textSize="11sp"
+                android:textStyle="bold" android:textColor="@color/retro_ink"/>
+        </LinearLayout>
+
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="28dp"
+            android:orientation="horizontal" android:gravity="center_vertical"
+            android:background="@drawable/bg_retro_score_box" android:paddingStart="12dp" android:paddingEnd="12dp">
+            <TextView android:id="@+id/tvScoreMe" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="42" android:fontFamily="monospace" android:textSize="15sp"
+                android:textStyle="bold" android:textColor="@color/retro_acc"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text=" VS " android:fontFamily="monospace" android:textSize="9sp" android:textColor="@color/retro_dim"/>
+            <TextView android:id="@+id/tvScoreOpp" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="35" android:fontFamily="monospace" android:textSize="15sp"
+                android:textStyle="bold" android:textColor="@color/retro_ink"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Game header row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:orientation="vertical">
+            <TextView android:id="@+id/tvRound" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="IGRA 3/6" style="@style/RetroLabel"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="@string/game_asocijacije_name" android:fontFamily="monospace"
+                android:textSize="15sp" android:textStyle="bold" android:textColor="@color/retro_ink"
+                android:letterSpacing="0.05"/>
+        </LinearLayout>
+
+        <Button android:id="@+id/btnSurrender" android:layout_width="wrap_content" android:layout_height="36dp"
+            style="@style/RetroButtonSmall" android:background="@drawable/bg_retro_btn_face_accent"
+            android:text="@string/btn_surrender" android:textColor="@color/retro_bg"
+            android:insetTop="0dp" android:insetBottom="0dp"
+            android:drawableStart="@drawable/ic_retro_flag" android:drawablePadding="6dp"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Scrollable game content -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <!-- Timer -->
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1:24"
+                android:fontFamily="monospace"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/retro_ink"
+                android:gravity="center"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_retro_card"
+                    android:layout_marginEnd="3dp">
+
+                    <TextView android:id="@+id/tvCellA1" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="MLEKO" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellA2" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="BELA" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellA3" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="?" android:fontFamily="monospace" android:textSize="15sp"
+                        android:textStyle="bold" android:textColor="@color/retro_acc"
+                        android:background="@drawable/bg_retro_step_hidden" android:gravity="center"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellA4" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="?" android:fontFamily="monospace" android:textSize="15sp"
+                        android:textStyle="bold" android:textColor="@color/retro_acc"
+                        android:background="@drawable/bg_retro_step_hidden" android:gravity="center"/>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_ink"/>
+                    <TextView
+                        android:id="@+id/tvColHeaderA"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:text="A"
+                        android:fontFamily="monospace"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_bg"
+                        android:background="@drawable/bg_retro_btn_face_dark"
+                        android:gravity="center"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_retro_card"
+                    android:layout_marginStart="3dp">
+
+                    <TextView android:id="@+id/tvCellB1" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="PLAVO" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellB2" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="OBLAK" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellB3" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="SUNCE" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellB4" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="PTICA" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_ink"/>
+                    <TextView
+                        android:id="@+id/tvColHeaderB"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:text="NEBO"
+                        android:fontFamily="monospace"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_bg"
+                        android:background="@drawable/bg_retro_col_solved"
+                        android:gravity="center"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:background="@drawable/bg_retro_card"
+                android:padding="10dp"
+                android:layout_marginBottom="4dp">
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp">
+                    <View
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="2dp"
+                        android:background="@color/retro_ink"/>
+                    <TextView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:text="★"
+                        android:fontFamily="monospace"
+                        android:textSize="18sp"
+                        android:textColor="@color/retro_bg"
+                        android:background="@drawable/bg_retro_btn_face_accent"
+                        android:gravity="center"/>
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvFinalAnswer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BOJE"
+                        android:fontFamily="monospace"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnSubmit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    style="@style/RetroButtonSmall"
+                    android:background="@drawable/bg_retro_btn_face_accent"
+                    android:text="@string/btn_submit"
+                    android:textColor="@color/retro_bg"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_retro_card"
+                    android:layout_marginEnd="3dp">
+
+                    <TextView
+                        android:id="@+id/tvColHeaderC"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:text="C"
+                        android:fontFamily="monospace"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_bg"
+                        android:background="@drawable/bg_retro_btn_face_dark"
+                        android:gravity="center"/>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_ink"/>
+                    <TextView android:id="@+id/tvCellC1" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="?" android:fontFamily="monospace" android:textSize="15sp"
+                        android:textStyle="bold" android:textColor="@color/retro_acc"
+                        android:background="@drawable/bg_retro_step_hidden" android:gravity="center"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellC2" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="?" android:fontFamily="monospace" android:textSize="15sp"
+                        android:textStyle="bold" android:textColor="@color/retro_acc"
+                        android:background="@drawable/bg_retro_step_hidden" android:gravity="center"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellC3" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="TRAVA" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellC4" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="ŽABA" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_retro_card"
+                    android:layout_marginStart="3dp">
+
+                    <TextView
+                        android:id="@+id/tvColHeaderD"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:text="D"
+                        android:fontFamily="monospace"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_bg"
+                        android:background="@drawable/bg_retro_btn_face_dark"
+                        android:gravity="center"/>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_ink"/>
+                    <TextView android:id="@+id/tvCellD1" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="?" android:fontFamily="monospace" android:textSize="15sp"
+                        android:textStyle="bold" android:textColor="@color/retro_acc"
+                        android:background="@drawable/bg_retro_step_hidden" android:gravity="center"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellD2" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="KRV" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellD3" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="?" android:fontFamily="monospace" android:textSize="15sp"
+                        android:textStyle="bold" android:textColor="@color/retro_acc"
+                        android:background="@drawable/bg_retro_step_hidden" android:gravity="center"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/retro_dim"/>
+                    <TextView android:id="@+id/tvCellD4" android:layout_width="match_parent" android:layout_height="42dp"
+                        android:text="VATRA" android:fontFamily="monospace" android:textSize="13sp"
+                        android:textStyle="bold" android:textColor="@color/retro_ink"
+                        android:background="@drawable/bg_retro_step_revealed" android:gravity="center"
+                        android:paddingStart="4dp" android:paddingEnd="4dp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

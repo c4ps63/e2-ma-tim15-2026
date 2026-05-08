@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/retro_bg"
+    tools:context=".activities.NotificationsActivity">
+
+    <!-- Header bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            style="@style/RetroButtonSmall"
+            android:background="@drawable/bg_retro_btn_face_light"
+            android:drawableStart="@drawable/ic_retro_back"
+            android:text=""
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginEnd="10dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/label_notifications"
+            android:fontFamily="monospace"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/retro_ink"
+            android:letterSpacing="0.05"/>
+
+        <!-- Unread badge -->
+        <TextView
+            android:id="@+id/tvUnreadBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:text="3"
+            android:fontFamily="monospace"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="@color/retro_bg"
+            android:background="@drawable/bg_retro_chip_accent"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Filter chips row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:background="@color/retro_bg">
+
+        <Button
+            android:id="@+id/btnFilterAll"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            style="@style/RetroButtonSmall"
+            android:background="@drawable/bg_retro_btn_face_dark"
+            android:text="@string/filter_all"
+            android:textColor="@color/retro_bg"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnFilterUnread"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            style="@style/RetroButtonSmall"
+            android:background="@drawable/bg_retro_btn_face_light"
+            android:text="@string/filter_unread"
+            android:textColor="@color/retro_ink"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+
+    <!-- Scrollable notifications list -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/retro_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Mark all read button -->
+            <Button
+                android:id="@+id/btnMarkAllRead"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/retro_btn_height"
+                style="@style/RetroButton"
+                android:text="@string/btn_mark_all_read"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/retro_dim" android:alpha="0.4"/>
+
+            <!-- Notification 1: CHAT — unread (accent left bar) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="48dp"
+                    android:background="@color/retro_acc"
+                    android:layout_marginEnd="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="22dp"
+                            android:text="ČET"
+                            android:fontFamily="monospace"
+                            android:textSize="8sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/retro_bg"
+                            android:background="@drawable/bg_retro_chip_accent"
+                            android:gravity="center"
+                            android:paddingStart="7dp"
+                            android:paddingEnd="7dp"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="pre 2 min"
+                            style="@style/RetroLabel"
+                            android:gravity="end"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="MARKO: Hoćeš revanš?"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"
+                        android:layout_marginBottom="2dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nova poruka od Marko Petrović"
+                        android:fontFamily="monospace"
+                        android:textSize="10sp"
+                        android:textColor="@color/retro_dim"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/retro_dim" android:alpha="0.4"/>
+
+            <!-- Notification 2: RANKING — unread (accent left bar) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="48dp"
+                    android:background="@color/retro_acc"
+                    android:layout_marginEnd="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="22dp"
+                            android:text="RANG"
+                            android:fontFamily="monospace"
+                            android:textSize="8sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/retro_bg"
+                            android:background="@drawable/bg_retro_step_active"
+                            android:gravity="center"
+                            android:paddingStart="7dp"
+                            android:paddingEnd="7dp"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="pre 1h"
+                            style="@style/RetroLabel"
+                            android:gravity="end"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ušao si u TOP 10!"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"
+                        android:layout_marginBottom="2dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Trenutno si na 8. mestu nedeljne rang liste"
+                        android:fontFamily="monospace"
+                        android:textSize="10sp"
+                        android:textColor="@color/retro_dim"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/retro_dim" android:alpha="0.4"/>
+
+            <!-- Notification 3: REWARD — unread (accent left bar) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="48dp"
+                    android:background="@color/retro_acc"
+                    android:layout_marginEnd="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="22dp"
+                            android:text="NAGRADA"
+                            android:fontFamily="monospace"
+                            android:textSize="8sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/retro_bg"
+                            android:background="@drawable/bg_retro_chip_accent"
+                            android:gravity="center"
+                            android:paddingStart="7dp"
+                            android:paddingEnd="7dp"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="pre 3h"
+                            style="@style/RetroLabel"
+                            android:gravity="end"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Primio si +5 žetona!"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_ink"
+                        android:layout_marginBottom="2dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Nedeljna nagrada za 1. mesto u regionu"
+                        android:fontFamily="monospace"
+                        android:textSize="10sp"
+                        android:textColor="@color/retro_dim"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/retro_dim" android:alpha="0.4"/>
+
+            <!-- Notification 4: OSTALO — read (dim left bar) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="48dp"
+                    android:background="@color/retro_dim"
+                    android:alpha="0.4"
+                    android:layout_marginEnd="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="4dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="22dp"
+                            android:text="OSTALO"
+                            android:fontFamily="monospace"
+                            android:textSize="8sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/retro_dim"
+                            android:background="@drawable/bg_retro_chip"
+                            android:gravity="center"
+                            android:paddingStart="7dp"
+                            android:paddingEnd="7dp"
+                            android:layout_marginEnd="8dp"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="juče"
+                            style="@style/RetroLabel"
+                            android:gravity="end"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Dobrodošao u Ligu 3!"
+                        android:fontFamily="monospace"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/retro_dim"
+                        android:layout_marginBottom="2dp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Napredovao si u narednu ligu. Zarađuješ +3 žetona dnevno"
+                        android:fontFamily="monospace"
+                        android:textSize="10sp"
+                        android:textColor="@color/retro_dim"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp"
+                android:background="@color/retro_dim" android:alpha="0.4"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>
