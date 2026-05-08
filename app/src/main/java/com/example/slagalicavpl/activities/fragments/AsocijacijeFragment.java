@@ -14,29 +14,25 @@ import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.RetroButtonAnimation;
 import com.example.slagalicavpl.activities.GameActivity;
 
-public class KoZnaZnaFragment extends Fragment {
+public class AsocijacijeFragment extends Fragment {
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_ko_zna_zna, container, false);
+        return inflater.inflate(R.layout.fragment_asocijacije, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        View.OnClickListener answerClick = v -> RetroButtonAnimation.flash((Button) v, () -> {
-            // TODO KT2: validate answer, calculate points
+        Button btnSubmit = view.findViewById(R.id.btnSubmit);
+        btnSubmit.setOnClickListener(v -> RetroButtonAnimation.flash(btnSubmit, () -> {
+            // TODO KT2: validate final answer, calculate points
             if (getActivity() instanceof GameActivity) {
-                ((GameActivity) getActivity()).showSpojnice();
+                ((GameActivity) getActivity()).showSkocko();
             }
-        });
-
-        view.findViewById(R.id.btnAnswerA).setOnClickListener(answerClick);
-        view.findViewById(R.id.btnAnswerB).setOnClickListener(answerClick);
-        view.findViewById(R.id.btnAnswerC).setOnClickListener(answerClick);
-        view.findViewById(R.id.btnAnswerD).setOnClickListener(answerClick);
+        }));
 
         view.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
             // TODO KT2: confirm dialog

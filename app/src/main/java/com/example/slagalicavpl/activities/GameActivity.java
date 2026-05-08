@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.activities.fragments.KoZnaZnaFragment;
 import com.example.slagalicavpl.activities.fragments.SpojniceFragment;
+import com.example.slagalicavpl.activities.fragments.AsocijacijeFragment;
+import com.example.slagalicavpl.activities.fragments.SkockoFragment;
 import com.example.slagalicavpl.activities.fragments.KorakPoKorakFragment;
 import com.example.slagalicavpl.activities.fragments.MojBrojFragment;
 
@@ -32,6 +34,22 @@ public class GameActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, new SpojniceFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void showAsocijacije() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new AsocijacijeFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    public void showSkocko() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragmentContainer, new SkockoFragment())
                 .addToBackStack(null)
                 .commit();
     }

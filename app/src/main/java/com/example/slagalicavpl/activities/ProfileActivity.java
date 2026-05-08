@@ -1,5 +1,6 @@
 package com.example.slagalicavpl.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +11,11 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
+
+        findViewById(R.id.btnLogout).setOnClickListener(v ->
+                startActivity(new Intent(this, NotificationsActivity.class)));
     }
 }
