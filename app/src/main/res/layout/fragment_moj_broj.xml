@@ -190,7 +190,7 @@
                 </FrameLayout>
             </LinearLayout>
 
-            <!-- Round scores: my score left, opponent right -->
+            <!-- Round scores -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -264,7 +264,7 @@
                 android:max="100"
                 android:layout_marginBottom="12dp"/>
 
-            <!-- Number tiles (6 tiles in a row) -->
+            <!-- Number tiles -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
