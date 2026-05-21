@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Korak po Korak background: N. America canyon orange/brown -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="#ff8b1a"
+        android:centerColor="#b13a1a"
+        android:endColor="#3a1a0a"/>
+</shape>

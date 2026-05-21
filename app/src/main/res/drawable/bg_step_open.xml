@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Korak step card: OPEN (revealed) — yellow-orange gradient, dark brown shadow -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#3a1a0a"/>
+            <corners android:radius="12dp"/>
+        </shape>
+    </item>
+    <item android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <gradient android:angle="270" android:startColor="#FFD23F" android:endColor="#ff8b1a"/>
+            <stroke android:width="3dp" android:color="#3a1a0a"/>
+            <corners android:radius="12dp"/>
+        </shape>
+    </item>
+</layer-list>

@@ -39,6 +39,7 @@
     <string name="label_your_answer">TVOJ ODGOVOR</string>
 
     <!-- Moj broj -->
+    <string name="result_pending">\?\?\?</string>
     <string name="game_moj_broj_name">MOJ BROJ</string>
     <string name="game_moj_broj_instruction">DOĐI DO BROJA</string>
     <string name="label_your_calc">TVOJ RAČUN</string>
@@ -83,4 +84,16 @@
     <string name="label_wins_losses">POBEDE / PORAZI</string>
     <string name="label_league">LIGA</string>
     <string name="link_profile_demo">PROFIL (DEMO)</string>
+
+    <!-- ── Cartoon / Vrtlogalica strings ── -->
+    <string name="title_login">PRIJAVI SE</string>
+    <string name="title_register">NOVI PUTNIK</string>
+    <string name="cta_login">PRIJAVI SE</string>
+    <string name="cta_guest">IGRAJ KAO GOST</string>
+    <string name="cta_register">KRENI U SVET</string>
+    <string name="lbl_username">Korisničko ime ili e-mail</string>
+    <string name="lbl_password">Lozinka</string>
+    <string name="lbl_email">E-mail adresa</string>
+    <string name="lbl_uname">Korisničko ime</string>
+    <string name="lbl_password_confirm">Potvrdi lozinku</string>
 </resources>

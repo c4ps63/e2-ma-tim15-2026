@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple planet decoration for login screen -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
+    <gradient
+        android:type="radial"
+        android:gradientRadius="60"
+        android:centerX="0.35"
+        android:centerY="0.35"
+        android:startColor="#AADDFF"
+        android:endColor="@color/sky_dark"/>
+    <stroke android:width="3dp" android:color="@color/ink"/>
+</shape>

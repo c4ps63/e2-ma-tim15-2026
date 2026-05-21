@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Expression / answer display card: cream paper, dark brown shadow -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#3a1410"/>
+            <corners android:radius="14dp"/>
+        </shape>
+    </item>
+    <item android:bottom="5dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFF8E7"/>
+            <stroke android:width="3dp" android:color="#3a1410"/>
+            <corners android:radius="14dp"/>
+        </shape>
+    </item>
+</layer-list>

@@ -78,4 +78,39 @@
         <item name="android:textColor">@color/retro_dim</item>
         <item name="android:letterSpacing">0.15</item>
     </style>
+
+    <!-- ══ Cartoon / Vrtlogalica styles ══ -->
+
+    <!-- Display heading: bold, ink-colored, slight drop shadow -->
+    <style name="TextDisplay" parent="">
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="android:letterSpacing">0.04</item>
+        <item name="android:shadowColor">#40000000</item>
+        <item name="android:shadowDx">0</item>
+        <item name="android:shadowDy">3</item>
+        <item name="android:shadowRadius">0.1</item>
+    </style>
+
+    <!-- Light variant for use on gradient backgrounds -->
+    <style name="TextDisplay.Light">
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <!-- Cartoon 3-D plastic button -->
+    <style name="CartoonButton" parent="Widget.AppCompat.Button">
+        <item name="android:fontFamily">sans-serif-black</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">@dimen/text_btn</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+        <item name="android:stateListAnimator">@null</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:elevation">0dp</item>
+        <item name="backgroundTint">@null</item>
+    </style>
 </resources>
