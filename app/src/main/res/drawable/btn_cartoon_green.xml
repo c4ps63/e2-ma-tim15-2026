@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cartoon "plastic" button — green variant -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/ink"/>
+            <corners android:radius="@dimen/btn_radius"/>
+        </shape>
+    </item>
+    <item android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <gradient android:angle="270" android:startColor="#4ED98A" android:endColor="#0FA055"/>
+            <stroke android:width="@dimen/stroke_thick" android:color="@color/ink"/>
+            <corners android:radius="@dimen/btn_radius"/>
+        </shape>
+    </item>
+</layer-list>

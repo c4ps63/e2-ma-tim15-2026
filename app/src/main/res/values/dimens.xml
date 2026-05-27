@@ -11,4 +11,16 @@
     <dimen name="retro_step_height">46dp</dimen>
     <dimen name="retro_tile_size">44dp</dimen>
     <dimen name="retro_operator_size">40dp</dimen>
+
+    <!-- ── Cartoon / Vrtlogalica dimensions ── -->
+    <dimen name="status_bar_safe">48dp</dimen>
+    <dimen name="hud_padding_top">56dp</dimen>
+    <dimen name="card_radius">18dp</dimen>
+    <dimen name="btn_radius">14dp</dimen>
+    <dimen name="stroke_thick">3dp</dimen>
+    <dimen name="shadow_offset">5dp</dimen>
+    <dimen name="text_title">26sp</dimen>
+    <dimen name="text_btn">18sp</dimen>
+    <dimen name="text_btn_lg">22sp</dimen>
+    <dimen name="text_score">28sp</dimen>
 </resources>

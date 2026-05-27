@@ -12,4 +12,38 @@
     <color name="retro_pu">#5C3A8C</color>
     <color name="retro_pk">#A0394E</color>
     <color name="retro_acc_dim">#2FD94F2C</color>
+
+    <!-- ── Cartoon / Vrtlogalica palette ── -->
+    <color name="ink">#102341</color>
+    <color name="ink_dark">#06112A</color>
+    <color name="paper">#FFF8E7</color>
+    <color name="sky_light">#7CC6FF</color>
+    <color name="sky_dark">#1F4FA8</color>
+
+    <!-- Continent palettes -->
+    <color name="eu_1">#FFD23F</color>
+    <color name="eu_2">#FF8C2A</color>
+    <color name="eu_3">#A8312A</color>
+    <color name="as_1">#FF5E63</color>
+    <color name="as_2">#FFB84A</color>
+    <color name="as_3">#7A1F3D</color>
+    <color name="af_1">#FF8B1A</color>
+    <color name="af_2">#E83B1A</color>
+    <color name="af_3">#5A2A0D</color>
+    <color name="sa_1">#21C87A</color>
+    <color name="sa_2">#0EA66A</color>
+    <color name="sa_3">#0A3D2A</color>
+    <color name="na_1">#FF6A3D</color>
+    <color name="na_2">#B13A1A</color>
+    <color name="na_3">#3A1A0A</color>
+    <color name="au_1">#E84E3B</color>
+    <color name="au_2">#A43020</color>
+    <color name="au_3">#3A1410</color>
+    <color name="an_1">#7BE6FF</color>
+    <color name="an_2">#BFEEFF</color>
+    <color name="an_3">#0A2547</color>
+
+    <!-- Player accents -->
+    <color name="player_blue">#7CC6FF</color>
+    <color name="player_red">#FF6A3D</color>
 </resources>

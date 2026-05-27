@@ -1,556 +1,310 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  KORAK PO KORAK · S. AMERIKA · cartoon dizajn v6
+  Staircase: svi koraci ISTE dužine, svaki pomeren desno za 6dp.
+    Start = (N-1)*6dp,  End = (7-N)*6dp   → širina = container - 36dp (konstantna)
+  Dekorativni oval u pozadini ScrollView oblasti.
+  Java IDs: etAnswer, btnConfirm, btnDelete, btnSurrender
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/retro_bg"
-    tools:context=".activities.fragments.KorakPoKorakFragment">
+    android:background="@drawable/bg_game_n_america">
 
-    <!-- Game HUD (tokens · stars · score) -->
+    <!-- ── HUD — tamna pozadina na_3 ── -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:background="@color/retro_bg">
-
-        <!-- Token chip -->
-        <LinearLayout
-            android:id="@+id/chipTokens"
-            android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_retro_chip"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="○"
-                android:fontFamily="monospace"
-                android:textSize="11sp"
-                android:textColor="@color/retro_acc"
-                android:layout_marginEnd="4dp"/>
-
-            <TextView
-                android:id="@+id/tvTokens"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="14"
-                android:fontFamily="monospace"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="@color/retro_acc"/>
-        </LinearLayout>
-
-        <View android:layout_width="6dp" android:layout_height="1dp"/>
-
-        <!-- Stars chip -->
-        <LinearLayout
-            android:id="@+id/chipStars"
-            android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_retro_chip"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="★"
-                android:fontFamily="monospace"
-                android:textSize="11sp"
-                android:textColor="@color/retro_ink"
-                android:layout_marginEnd="4dp"/>
-
-            <TextView
-                android:id="@+id/tvStars"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="287"
-                android:fontFamily="monospace"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:textColor="@color/retro_ink"/>
-        </LinearLayout>
-
-        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
-
-        <!-- Score box -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_retro_score_box"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <TextView
-                android:id="@+id/tvScoreMe"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="42"
-                android:fontFamily="monospace"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/retro_acc"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=" VS "
-                android:fontFamily="monospace"
-                android:textSize="9sp"
-                android:textColor="@color/retro_dim"/>
-
-            <TextView
-                android:id="@+id/tvScoreOpp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="35"
-                android:fontFamily="monospace"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/retro_ink"/>
-        </LinearLayout>
+        android:layout_height="wrap_content"
+        android:background="@color/na_3"
+        android:orientation="vertical">
+        <include layout="@layout/include_hud"/>
     </LinearLayout>
 
-    <!-- Bottom border of HUD -->
-    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#60FFFFFF"/>
 
-    <!-- Game header row -->
+    <!-- ── Header: debela narandžasta slova, braon kontura ── -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:background="@color/retro_bg">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="8dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/eu_1"
+            android:textSize="18sp"
+            android:letterSpacing="0.05"
+            android:shadowColor="@color/na_3"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="9"
+            android:text="PRONAĐI POJAM"/>
 
-            <TextView
-                android:id="@+id/tvRound"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="IGRA 1/2"
-                style="@style/RetroLabel"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/game_korak_name"
-                android:fontFamily="monospace"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/retro_ink"
-                android:letterSpacing="0.05"/>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btnSurrender"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            style="@style/RetroButtonSmall"
-            android:background="@drawable/bg_retro_btn_face_accent"
-            android:text="@string/btn_surrender"
-            android:textColor="@color/retro_bg"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:drawableStart="@drawable/ic_retro_flag"
-            android:drawablePadding="6dp"/>
+        <TextView
+            android:id="@+id/tvRound"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:fontFamily="sans-serif-black"
+            android:textColor="#FFD89A"
+            android:textSize="12sp"
+            android:letterSpacing="0.04"
+            android:shadowColor="@color/na_3"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="7"
+            android:text="KORAK 4/7  ·  MAX 14 BODOVA"/>
     </LinearLayout>
 
-    <!-- Bottom border of game header -->
-    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
-
-    <!-- Scrollable game content -->
-    <androidx.core.widget.NestedScrollView
+    <!-- ── Scrollable zona: dekorativni oval + koraci ── -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/retro_bg">
+        android:overScrollMode="never"
+        android:fillViewport="false">
 
-        <LinearLayout
+        <!-- FrameLayout za slojevitost: oval iza, koraci ispred -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:layout_height="wrap_content">
 
-            <!-- Game info label -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="PRONAĐI POJAM · KORAK 4/7 · 14 BODA"
-                style="@style/RetroLabel"
-                android:gravity="center"
-                android:layout_marginBottom="10dp"/>
-
-            <!-- Timer row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-
-                <ProgressBar
-                    android:id="@+id/progressTimer"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="10dp"
-                    android:layout_weight="1"
-                    android:progressDrawable="@drawable/bg_retro_progress"
-                    android:progress="60"
-                    android:max="100"/>
-
-                <TextView
-                    android:id="@+id/tvTimer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0:06"
-                    android:fontFamily="monospace"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"
-                    android:layout_marginStart="10dp"
-                    android:minWidth="40dp"/>
-            </LinearLayout>
-
-            <!-- Step 1 - revealed -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_step_height"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_retro_step_revealed"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KORAK 1"
-                    android:fontFamily="monospace"
-                    android:textSize="9sp"
-                    android:textColor="@color/retro_dim"
-                    android:minWidth="56dp"/>
-
-                <View android:layout_width="2dp" android:layout_height="26dp"
-                    android:background="@color/retro_ink" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="LETI U SVEMIRU"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="20★"
-                    android:fontFamily="monospace"
-                    android:textSize="11sp"
-                    android:textColor="@color/retro_dim"/>
-            </LinearLayout>
-
-            <!-- Step 2 - revealed -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_step_height"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_retro_step_revealed"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KORAK 2"
-                    android:fontFamily="monospace"
-                    android:textSize="9sp"
-                    android:textColor="@color/retro_dim"
-                    android:minWidth="56dp"/>
-
-                <View android:layout_width="2dp" android:layout_height="26dp"
-                    android:background="@color/retro_ink" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="ORBITA"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="18★"
-                    android:fontFamily="monospace"
-                    android:textSize="11sp"
-                    android:textColor="@color/retro_dim"/>
-            </LinearLayout>
-
-            <!-- Step 3 - revealed -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_step_height"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_retro_step_revealed"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KORAK 3"
-                    android:fontFamily="monospace"
-                    android:textSize="9sp"
-                    android:textColor="@color/retro_dim"
-                    android:minWidth="56dp"/>
-
-                <View android:layout_width="2dp" android:layout_height="26dp"
-                    android:background="@color/retro_ink" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="PLIMA I OSEKA"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="16★"
-                    android:fontFamily="monospace"
-                    android:textSize="11sp"
-                    android:textColor="@color/retro_dim"/>
-            </LinearLayout>
-
-            <!-- Step 4 - ACTIVE -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_step_height"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_retro_step_active"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KORAK 4"
-                    android:fontFamily="monospace"
-                    android:textSize="9sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_bg"
-                    android:minWidth="56dp"/>
-
-                <View android:layout_width="2dp" android:layout_height="26dp"
-                    android:background="@color/retro_acc" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="PRIRODNI SATELIT ZEMLJE"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_bg"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="14★"
-                    android:fontFamily="monospace"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_acc"/>
-            </LinearLayout>
-
-            <!-- Steps 5, 6, 7 - hidden -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_step_height"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_retro_step_hidden"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginBottom="5dp">
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="KORAK 5" android:fontFamily="monospace" android:textSize="9sp"
-                    android:textColor="@color/retro_dim" android:minWidth="56dp"/>
-
-                <View android:layout_width="2dp" android:layout_height="26dp"
-                    android:background="@color/retro_dim" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
-
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="— — — — — —"
-                    android:fontFamily="monospace" android:textSize="12sp" android:textColor="@color/retro_dim"/>
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="12★" android:fontFamily="monospace" android:textSize="11sp"
-                    android:textColor="@color/retro_dim"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_step_height"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_retro_step_hidden"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginBottom="5dp">
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="KORAK 6" android:fontFamily="monospace" android:textSize="9sp"
-                    android:textColor="@color/retro_dim" android:minWidth="56dp"/>
-
-                <View android:layout_width="2dp" android:layout_height="26dp"
-                    android:background="@color/retro_dim" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
-
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="— — — — — —"
-                    android:fontFamily="monospace" android:textSize="12sp" android:textColor="@color/retro_dim"/>
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="10★" android:fontFamily="monospace" android:textSize="11sp"
-                    android:textColor="@color/retro_dim"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_step_height"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/bg_retro_step_hidden"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginBottom="14dp">
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="KORAK 7" android:fontFamily="monospace" android:textSize="9sp"
-                    android:textColor="@color/retro_dim" android:minWidth="56dp"/>
-
-                <View android:layout_width="2dp" android:layout_height="26dp"
-                    android:background="@color/retro_dim" android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
-
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content"
-                    android:layout_weight="1" android:text="— — — — — —"
-                    android:fontFamily="monospace" android:textSize="12sp" android:textColor="@color/retro_dim"/>
-
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:text="8★" android:fontFamily="monospace" android:textSize="11sp"
-                    android:textColor="@color/retro_dim"/>
-            </LinearLayout>
-
-            <!-- Answer input card -->
+            <!-- Koraci — ista širina (container−36dp), pomereni desno za 6dp po koraku -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_retro_card"
-                android:padding="10dp"
-                android:layout_marginBottom="10dp">
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="4dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_your_answer"
-                    style="@style/RetroLabel"
-                    android:layout_marginBottom="8dp"/>
+                <!-- ══ KORAK 1 ══ -->
+                <LinearLayout android:id="@+id/stepRow1"
+                    android:layout_width="match_parent" android:layout_height="58dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:background="@drawable/bg_step_locked"
+                    android:paddingStart="10dp" android:paddingEnd="12dp"
+                    android:layout_marginStart="0dp" android:layout_marginEnd="36dp"
+                    android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="28dp" android:layout_height="28dp"
+                        android:background="@drawable/bg_step_number_circle" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:fontFamily="sans-serif-black"
+                            android:textColor="#FFFFFF" android:textSize="13sp" android:text="1"/>
+                    </FrameLayout>
+                    <TextView android:id="@+id/tvClue1"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:fontFamily="sans-serif-black"
+                        android:textColor="#80000000" android:textSize="13sp" android:text="—  ZAKLJUČAN  —"/>
+                    <TextView android:id="@+id/tvPoints1"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black" android:textColor="#80000000"
+                        android:textSize="12sp" android:text="20★"/>
+                </LinearLayout>
 
-                <EditText
-                    android:id="@+id/etAnswer"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/retro_input_height"
-                    style="@style/RetroInput"
-                    android:hint="@string/hint_answer"
-                    android:inputType="textCapCharacters"
-                    android:singleLine="true"/>
+                <!-- ══ KORAK 2 ══ -->
+                <LinearLayout android:id="@+id/stepRow2"
+                    android:layout_width="match_parent" android:layout_height="58dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:background="@drawable/bg_step_locked"
+                    android:paddingStart="10dp" android:paddingEnd="12dp"
+                    android:layout_marginStart="6dp" android:layout_marginEnd="30dp"
+                    android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="28dp" android:layout_height="28dp"
+                        android:background="@drawable/bg_step_number_circle" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:fontFamily="sans-serif-black"
+                            android:textColor="#FFFFFF" android:textSize="13sp" android:text="2"/>
+                    </FrameLayout>
+                    <TextView android:id="@+id/tvClue2"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:fontFamily="sans-serif-black"
+                        android:textColor="#80000000" android:textSize="13sp" android:text="—  ZAKLJUČAN  —"/>
+                    <TextView android:id="@+id/tvPoints2"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black" android:textColor="#80000000"
+                        android:textSize="12sp" android:text="18★"/>
+                </LinearLayout>
+
+                <!-- ══ KORAK 3 ══ -->
+                <LinearLayout android:id="@+id/stepRow3"
+                    android:layout_width="match_parent" android:layout_height="58dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:background="@drawable/bg_step_locked"
+                    android:paddingStart="10dp" android:paddingEnd="12dp"
+                    android:layout_marginStart="12dp" android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="28dp" android:layout_height="28dp"
+                        android:background="@drawable/bg_step_number_circle" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:fontFamily="sans-serif-black"
+                            android:textColor="#FFFFFF" android:textSize="13sp" android:text="3"/>
+                    </FrameLayout>
+                    <TextView android:id="@+id/tvClue3"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:fontFamily="sans-serif-black"
+                        android:textColor="#80000000" android:textSize="13sp" android:text="—  ZAKLJUČAN  —"/>
+                    <TextView android:id="@+id/tvPoints3"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black" android:textColor="#80000000"
+                        android:textSize="12sp" android:text="16★"/>
+                </LinearLayout>
+
+                <!-- ══ KORAK 4 ══ -->
+                <LinearLayout android:id="@+id/stepRow4"
+                    android:layout_width="match_parent" android:layout_height="58dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:background="@drawable/bg_step_locked"
+                    android:paddingStart="10dp" android:paddingEnd="12dp"
+                    android:layout_marginStart="18dp" android:layout_marginEnd="18dp"
+                    android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="28dp" android:layout_height="28dp"
+                        android:background="@drawable/bg_step_number_circle" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:fontFamily="sans-serif-black"
+                            android:textColor="#FFFFFF" android:textSize="13sp" android:text="4"/>
+                    </FrameLayout>
+                    <TextView android:id="@+id/tvClue4"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:fontFamily="sans-serif-black"
+                        android:textColor="#80000000" android:textSize="13sp" android:text="—  ZAKLJUČAN  —"/>
+                    <TextView android:id="@+id/tvPoints4"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black" android:textColor="#80000000"
+                        android:textSize="12sp" android:text="14★"/>
+                </LinearLayout>
+
+                <!-- ══ KORAK 5 ══ -->
+                <LinearLayout android:id="@+id/stepRow5"
+                    android:layout_width="match_parent" android:layout_height="58dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:background="@drawable/bg_step_locked"
+                    android:paddingStart="10dp" android:paddingEnd="12dp"
+                    android:layout_marginStart="24dp" android:layout_marginEnd="12dp"
+                    android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="28dp" android:layout_height="28dp"
+                        android:background="@drawable/bg_step_number_circle" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:fontFamily="sans-serif-black"
+                            android:textColor="#FFFFFF" android:textSize="13sp" android:text="5"/>
+                    </FrameLayout>
+                    <TextView android:id="@+id/tvClue5"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:fontFamily="sans-serif-black"
+                        android:textColor="#80000000" android:textSize="13sp" android:text="—  ZAKLJUČAN  —"/>
+                    <TextView android:id="@+id/tvPoints5"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black" android:textColor="#80000000"
+                        android:textSize="12sp" android:text="12★"/>
+                </LinearLayout>
+
+                <!-- ══ KORAK 6 ══ -->
+                <LinearLayout android:id="@+id/stepRow6"
+                    android:layout_width="match_parent" android:layout_height="58dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:background="@drawable/bg_step_locked"
+                    android:paddingStart="10dp" android:paddingEnd="12dp"
+                    android:layout_marginStart="30dp" android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="28dp" android:layout_height="28dp"
+                        android:background="@drawable/bg_step_number_circle" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:fontFamily="sans-serif-black"
+                            android:textColor="#FFFFFF" android:textSize="13sp" android:text="6"/>
+                    </FrameLayout>
+                    <TextView android:id="@+id/tvClue6"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:fontFamily="sans-serif-black"
+                        android:textColor="#80000000" android:textSize="13sp" android:text="—  ZAKLJUČAN  —"/>
+                    <TextView android:id="@+id/tvPoints6"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black" android:textColor="#80000000"
+                        android:textSize="12sp" android:text="10★"/>
+                </LinearLayout>
+
+                <!-- ══ KORAK 7 ══ -->
+                <LinearLayout android:id="@+id/stepRow7"
+                    android:layout_width="match_parent" android:layout_height="58dp"
+                    android:orientation="horizontal" android:gravity="center_vertical"
+                    android:background="@drawable/bg_step_locked"
+                    android:paddingStart="10dp" android:paddingEnd="12dp"
+                    android:layout_marginStart="36dp" android:layout_marginEnd="0dp"
+                    android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="28dp" android:layout_height="28dp"
+                        android:background="@drawable/bg_step_number_circle" android:layout_marginEnd="10dp">
+                        <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                            android:gravity="center" android:fontFamily="sans-serif-black"
+                            android:textColor="#FFFFFF" android:textSize="13sp" android:text="7"/>
+                    </FrameLayout>
+                    <TextView android:id="@+id/tvClue7"
+                        android:layout_width="0dp" android:layout_height="wrap_content"
+                        android:layout_weight="1" android:fontFamily="sans-serif-black"
+                        android:textColor="#80000000" android:textSize="13sp" android:text="—  ZAKLJUČAN  —"/>
+                    <TextView android:id="@+id/tvPoints7"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-black" android:textColor="#80000000"
+                        android:textSize="12sp" android:text="8★"/>
+                </LinearLayout>
+
             </LinearLayout>
+        </FrameLayout>
+    </ScrollView>
 
-            <!-- Action buttons -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+    <!-- ── FIKSIRANI DNO: unos + dugme (bez tamne status trake) ── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="16dp">
 
-                <Button
-                    android:id="@+id/btnDelete"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/retro_btn_height"
-                    android:layout_weight="1"
-                    style="@style/RetroButton"
-                    android:text="@string/btn_delete"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:layout_marginEnd="8dp"/>
+        <!-- Polje za unos odgovora — krem kartica sa zaobljenim uglovima -->
+        <EditText
+            android:id="@+id/etAnswer"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:background="@drawable/bg_expression_display"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="5dp"
+            android:gravity="center_vertical"
+            android:fontFamily="sans-serif-black"
+            android:textSize="17sp"
+            android:textColor="@color/ink"
+            android:hint="@string/hint_answer"
+            android:inputType="textCapCharacters"
+            android:singleLine="true"
+            android:layout_marginBottom="10dp"/>
 
-                <FrameLayout
-                    android:layout_width="0dp"
-                    android:layout_height="52dp"
-                    android:layout_weight="2">
+        <!-- Pošalji odgovor — zeleno dugme -->
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            style="@style/CartoonButton"
+            android:textSize="18sp"
+            android:text="POŠALJI ODGOVOR"
+            android:background="@drawable/btn_cartoon_green"/>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="4dp"
-                        android:background="@color/retro_acc"/>
-
-                    <Button
-                        android:id="@+id/btnConfirm"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginBottom="4dp"
-                        style="@style/RetroButtonDark"
-                        android:text="@string/btn_confirm"
-                        android:drawableStart="@drawable/ic_retro_check"
-                        android:drawablePadding="8dp"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"/>
-                </FrameLayout>
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        <!-- OBRIŠI i PREDAJ — skriveni, ID-ovi ostaju za Java -->
+        <Button android:id="@+id/btnDelete"
+            android:layout_width="0dp" android:layout_height="0dp"
+            android:visibility="gone"/>
+        <Button android:id="@+id/btnSurrender"
+            android:layout_width="0dp" android:layout_height="0dp"
+            android:visibility="gone"/>
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,203 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  LOGIN · novi cartoon dizajn
+  Sačuvani ID-ovi za LoginActivity.java:
+    etEmailOrUsername, etPassword, btnLogin, btnGoRegister, tvForgotPassword, tvProfileDemo
+-->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/retro_bg"
     android:fillViewport="true"
+    android:background="@drawable/bg_sky_gradient"
     tools:context=".activities.LoginActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:paddingTop="@dimen/status_bar_safe"
+        android:paddingBottom="32dp"
         android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingBottom="40dp"
-        android:gravity="center_horizontal">
+        android:paddingEnd="24dp">
 
-        <!-- Logo area -->
+        <!-- Planet decoration -->
+        <View
+            android:id="@+id/ivPlanet"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/ic_planet"
+            android:layout_marginTop="32dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- App title -->
+        <TextView
+            android:id="@+id/tvAppTitle"
+            style="@style/TextDisplay.Light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/title_login"
+            android:textSize="34sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/ivPlanet"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/tvSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textColor="#DDEAFF"
+            android:textSize="14sp"
+            android:text="Dobro došao, putniče."
+            android:layout_marginTop="4dp"
+            app:layout_constraintTop_toBottomOf="@id/tvAppTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Login card (paper style) -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/loginCard"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center"
-            android:paddingTop="64dp"
-            android:paddingBottom="40dp">
+            android:background="@drawable/card_paper"
+            android:padding="20dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/tvSubtitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
+            <!-- Username / e-mail label + field -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SLAGALICA"
-                android:fontFamily="monospace"
-                android:textSize="40sp"
-                android:textStyle="bold"
-                android:textColor="@color/retro_ink"
-                android:letterSpacing="0.05"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="6dp"
-                android:background="@color/retro_ink"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="VPL · MOBILNE APLIKACIJE"
-                android:fontFamily="monospace"
-                android:textSize="11sp"
-                android:textColor="@color/retro_dim"
-                android:letterSpacing="0.15"/>
-        </LinearLayout>
-
-        <!-- Login form card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_retro_card"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PRIJAVA"
-                style="@style/RetroLabel"
-                android:layout_marginBottom="14dp"/>
+                android:fontFamily="sans-serif-black"
+                android:text="@string/lbl_username"
+                android:textColor="@color/ink"
+                android:textSize="13sp"/>
 
             <EditText
                 android:id="@+id/etEmailOrUsername"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_input_height"
-                style="@style/RetroInput"
-                android:hint="@string/hint_email_or_username"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:padding="14dp"
+                android:background="@drawable/field_input"
+                android:fontFamily="sans-serif"
+                android:textSize="16sp"
+                android:textColor="@color/ink"
+                android:hint="putnik@svet.app"
                 android:inputType="textEmailAddress"
-                android:singleLine="true"
-                android:layout_marginBottom="10dp"/>
+                android:singleLine="true"/>
+
+            <!-- Password label + field -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:fontFamily="sans-serif-black"
+                android:text="@string/lbl_password"
+                android:textColor="@color/ink"
+                android:textSize="13sp"/>
 
             <EditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_input_height"
-                style="@style/RetroInput"
-                android:hint="@string/hint_password"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:padding="14dp"
+                android:background="@drawable/field_input"
                 android:inputType="textPassword"
-                android:singleLine="true"
-                android:layout_marginBottom="6dp"/>
+                android:fontFamily="sans-serif"
+                android:textSize="16sp"
+                android:textColor="@color/ink"/>
 
+            <!-- Forgot password link -->
             <TextView
                 android:id="@+id/tvForgotPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/btn_forgot_password"
-                android:fontFamily="monospace"
-                android:textSize="10sp"
-                android:textColor="@color/retro_acc"
-                android:letterSpacing="0.05"
+                android:layout_marginTop="8dp"
+                android:fontFamily="sans-serif"
+                android:textSize="12sp"
+                android:textColor="@color/sky_dark"
                 android:gravity="end"
-                android:layout_marginBottom="20dp"
+                android:text="@string/btn_forgot_password"
                 android:clickable="true"
                 android:focusable="true"/>
 
-            <!-- Primary login button (dark with shadow wrapper) -->
-            <FrameLayout
+            <!-- Login button (yellow) -->
+            <Button
+                android:id="@+id/btnLogin"
+                style="@style/CartoonButton"
                 android:layout_width="match_parent"
-                android:layout_height="52dp">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@color/retro_acc"/>
-
-                <Button
-                    android:id="@+id/btnLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="4dp"
-                    style="@style/RetroButtonDark"
-                    android:text="@string/btn_login"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"/>
-            </FrameLayout>
-        </LinearLayout>
-
-        <!-- Divider -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="16dp">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="@color/retro_dim"/>
-
-            <TextView
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ILI"
-                android:fontFamily="monospace"
-                android:textSize="10sp"
-                android:textColor="@color/retro_dim"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:letterSpacing="0.1"/>
+                android:layout_marginTop="20dp"
+                android:text="@string/cta_login"
+                android:textSize="@dimen/text_btn_lg"
+                android:background="@drawable/btn_cartoon_yellow"
+                android:textColor="@color/ink"/>
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="@color/retro_dim"/>
-        </LinearLayout>
-
-        <!-- Profile demo link -->
-        <TextView
-            android:id="@+id/tvProfileDemo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/link_profile_demo"
-            android:fontFamily="monospace"
-            android:textSize="10sp"
-            android:textColor="@color/retro_dim"
-            android:letterSpacing="0.1"
-            android:gravity="center"
-            android:paddingTop="20dp"
-            android:paddingBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"/>
-
-        <!-- Register button (light) -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="52dp">
-
-            <View
+            <!-- Guest button (blue) -->
+            <Button
+                android:id="@+id/btnGuest"
+                style="@style/CartoonButton"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/retro_ink"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/cta_guest"
+                android:background="@drawable/btn_cartoon_blue"/>
 
+            <!-- Register link — mora biti <Button> jer LoginActivity.java deklariše btnGoRegister kao Button -->
             <Button
                 android:id="@+id/btnGoRegister"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="4dp"
-                style="@style/RetroButton"
-                android:text="@string/btn_register"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
+                android:textColor="@color/sky_dark"
+                android:textSize="14sp"
+                android:text="Nemaš nalog? Registruj se →"
+                android:background="@android:color/transparent"
+                android:stateListAnimator="@null"
                 android:insetTop="0dp"
-                android:insetBottom="0dp"/>
-        </FrameLayout>
+                android:insetBottom="0dp"
+                android:elevation="0dp"/>
 
-    </LinearLayout>
+        </LinearLayout>
+
+        <!-- Profile demo navigation link (small, below card) -->
+        <TextView
+            android:id="@+id/tvProfileDemo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="sans-serif"
+            android:textSize="11sp"
+            android:textColor="#AADDFF"
+            android:text="@string/link_profile_demo"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintTop_toBottomOf="@id/loginCard"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
