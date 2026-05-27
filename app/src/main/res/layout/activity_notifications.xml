@@ -1,150 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- NOTIFIKACIJE · cartoon dizajn -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/retro_bg"
-    tools:context=".activities.NotificationsActivity">
+    android:background="@drawable/bg_sky_gradient">
 
-    <!-- Header bar -->
+    <!-- Header — tamni bg_hud gradijent -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_hud"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:background="@color/retro_bg">
+        android:paddingTop="48dp"
+        android:paddingBottom="14dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
 
         <Button
             android:id="@+id/btnBack"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            style="@style/RetroButtonSmall"
-            android:background="@drawable/bg_retro_btn_face_light"
-            android:drawableStart="@drawable/ic_retro_back"
-            android:text=""
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:layout_marginEnd="10dp"/>
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            style="@style/CartoonButton"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:gravity="center"
+            android:minHeight="0dp"
+            android:text="←"
+            android:fontFamily="monospace"
+            android:textSize="20sp"
+            android:textColor="@color/ink"
+            android:background="@drawable/card_paper"
+            android:layout_marginEnd="12dp"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/label_notifications"
-            android:fontFamily="monospace"
-            android:textSize="15sp"
-            android:textStyle="bold"
-            android:textColor="@color/retro_ink"
-            android:letterSpacing="0.05"/>
+            android:fontFamily="sans-serif-black"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:letterSpacing="0.04"
+            android:text="@string/label_notifications"/>
 
-        <!-- Unread badge -->
+        <!-- Bedž nepročitanih -->
         <TextView
             android:id="@+id/tvUnreadBadge"
             android:layout_width="wrap_content"
-            android:layout_height="28dp"
+            android:layout_height="32dp"
             android:text="3"
-            android:fontFamily="monospace"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:textColor="@color/retro_bg"
-            android:background="@drawable/bg_retro_chip_accent"
+            android:fontFamily="sans-serif-black"
+            android:textSize="14sp"
+            android:textColor="@color/ink"
+            android:background="@drawable/btn_cartoon_yellow"
             android:gravity="center"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"/>
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"/>
     </LinearLayout>
 
-    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#60FFFFFF"/>
 
-    <!-- Filter chips row -->
+    <!-- Filter chips: SVE / NEPROČITANE -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:background="@color/retro_bg">
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <Button
             android:id="@+id/btnFilterAll"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            style="@style/RetroButtonSmall"
-            android:background="@drawable/bg_retro_btn_face_dark"
+            android:layout_height="36dp"
+            style="@style/CartoonButton"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:textSize="13sp"
+            android:textColor="@color/ink"
             android:text="@string/filter_all"
-            android:textColor="@color/retro_bg"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:layout_marginEnd="8dp"/>
+            android:background="@drawable/btn_cartoon_yellow"
+            android:layout_marginEnd="10dp"/>
 
         <Button
             android:id="@+id/btnFilterUnread"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            style="@style/RetroButtonSmall"
-            android:background="@drawable/bg_retro_btn_face_light"
+            android:layout_height="36dp"
+            style="@style/CartoonButton"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:textSize="13sp"
+            android:textColor="@color/ink"
             android:text="@string/filter_unread"
-            android:textColor="@color/retro_ink"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"/>
+            android:background="@drawable/card_paper"/>
     </LinearLayout>
 
-    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
-
-    <!-- Scrollable notifications list -->
+    <!-- Lista notifikacija -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/retro_bg">
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="20dp">
 
-            <!-- Mark all read button -->
+            <!-- Dugme "Označi sve kao pročitane" -->
             <Button
                 android:id="@+id/btnMarkAllRead"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/retro_btn_height"
-                style="@style/RetroButton"
+                android:layout_height="48dp"
+                style="@style/CartoonButton"
+                android:paddingTop="4dp"
+                android:paddingBottom="10dp"
+                android:textSize="13sp"
+                android:textColor="#FFFFFF"
                 android:text="@string/btn_mark_all_read"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="8dp"/>
+                android:background="@drawable/btn_cartoon_blue"
+                android:layout_marginBottom="12dp"/>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp"
-                android:background="@color/retro_dim" android:alpha="0.4"/>
-
-            <!-- Notification 1: CHAT — unread (accent left bar) -->
+            <!-- Notifikacija 1: CHAT — nepročitana -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp">
+                android:background="@drawable/card_paper"
+                android:paddingBottom="6dp"
+                android:layout_marginBottom="10dp">
 
+                <!-- Obojena leva traka -->
                 <View
-                    android:layout_width="4dp"
-                    android:layout_height="48dp"
-                    android:background="@color/retro_acc"
-                    android:layout_marginEnd="12dp"/>
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/sky_light"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -155,16 +171,17 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="22dp"
+                            android:layout_height="26dp"
                             android:text="ČET"
-                            android:fontFamily="monospace"
-                            android:textSize="8sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/retro_bg"
-                            android:background="@drawable/bg_retro_chip_accent"
+                            android:fontFamily="sans-serif-black"
+                            android:textSize="9sp"
+                            android:textColor="#FFFFFF"
+                            android:background="@drawable/btn_cartoon_blue"
                             android:gravity="center"
-                            android:paddingStart="7dp"
-                            android:paddingEnd="7dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="4dp"
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
@@ -172,7 +189,10 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="pre 2 min"
-                            style="@style/RetroLabel"
+                            android:fontFamily="sans-serif"
+                            android:textSize="10sp"
+                            android:textColor="@color/ink"
+                            android:alpha="0.5"
                             android:gravity="end"/>
                     </LinearLayout>
 
@@ -180,47 +200,46 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="MARKO: Hoćeš revanš?"
-                        android:fontFamily="monospace"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/retro_ink"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="13sp"
+                        android:textColor="@color/ink"
                         android:layout_marginBottom="2dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Nova poruka od Marko Petrović"
-                        android:fontFamily="monospace"
-                        android:textSize="10sp"
-                        android:textColor="@color/retro_dim"/>
+                        android:fontFamily="sans-serif"
+                        android:textSize="11sp"
+                        android:textColor="@color/ink"
+                        android:alpha="0.6"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp"
-                android:background="@color/retro_dim" android:alpha="0.4"/>
-
-            <!-- Notification 2: RANKING — unread (accent left bar) -->
+            <!-- Notifikacija 2: RANG — nepročitana -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp">
+                android:background="@drawable/card_paper"
+                android:paddingBottom="6dp"
+                android:layout_marginBottom="10dp">
 
                 <View
-                    android:layout_width="4dp"
-                    android:layout_height="48dp"
-                    android:background="@color/retro_acc"
-                    android:layout_marginEnd="12dp"/>
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/eu_1"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -231,16 +250,17 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="22dp"
+                            android:layout_height="26dp"
                             android:text="RANG"
-                            android:fontFamily="monospace"
-                            android:textSize="8sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/retro_bg"
-                            android:background="@drawable/bg_retro_step_active"
+                            android:fontFamily="sans-serif-black"
+                            android:textSize="9sp"
+                            android:textColor="@color/ink"
+                            android:background="@drawable/btn_cartoon_yellow"
                             android:gravity="center"
-                            android:paddingStart="7dp"
-                            android:paddingEnd="7dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="4dp"
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
@@ -248,7 +268,10 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="pre 1h"
-                            style="@style/RetroLabel"
+                            android:fontFamily="sans-serif"
+                            android:textSize="10sp"
+                            android:textColor="@color/ink"
+                            android:alpha="0.5"
                             android:gravity="end"/>
                     </LinearLayout>
 
@@ -256,47 +279,46 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Ušao si u TOP 10!"
-                        android:fontFamily="monospace"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/retro_ink"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="13sp"
+                        android:textColor="@color/ink"
                         android:layout_marginBottom="2dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Trenutno si na 8. mestu nedeljne rang liste"
-                        android:fontFamily="monospace"
-                        android:textSize="10sp"
-                        android:textColor="@color/retro_dim"/>
+                        android:fontFamily="sans-serif"
+                        android:textSize="11sp"
+                        android:textColor="@color/ink"
+                        android:alpha="0.6"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp"
-                android:background="@color/retro_dim" android:alpha="0.4"/>
-
-            <!-- Notification 3: REWARD — unread (accent left bar) -->
+            <!-- Notifikacija 3: NAGRADA — nepročitana -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp">
+                android:background="@drawable/card_paper"
+                android:paddingBottom="6dp"
+                android:layout_marginBottom="10dp">
 
                 <View
-                    android:layout_width="4dp"
-                    android:layout_height="48dp"
-                    android:background="@color/retro_acc"
-                    android:layout_marginEnd="12dp"/>
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/sa_1"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -307,16 +329,17 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="22dp"
+                            android:layout_height="26dp"
                             android:text="NAGRADA"
-                            android:fontFamily="monospace"
-                            android:textSize="8sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/retro_bg"
-                            android:background="@drawable/bg_retro_chip_accent"
+                            android:fontFamily="sans-serif-black"
+                            android:textSize="9sp"
+                            android:textColor="#FFFFFF"
+                            android:background="@drawable/btn_cartoon_green"
                             android:gravity="center"
-                            android:paddingStart="7dp"
-                            android:paddingEnd="7dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="4dp"
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
@@ -324,7 +347,10 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="pre 3h"
-                            style="@style/RetroLabel"
+                            android:fontFamily="sans-serif"
+                            android:textSize="10sp"
+                            android:textColor="@color/ink"
+                            android:alpha="0.5"
                             android:gravity="end"/>
                     </LinearLayout>
 
@@ -332,48 +358,47 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Primio si +5 žetona!"
-                        android:fontFamily="monospace"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/retro_ink"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="13sp"
+                        android:textColor="@color/ink"
                         android:layout_marginBottom="2dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Nedeljna nagrada za 1. mesto u regionu"
-                        android:fontFamily="monospace"
-                        android:textSize="10sp"
-                        android:textColor="@color/retro_dim"/>
+                        android:fontFamily="sans-serif"
+                        android:textSize="11sp"
+                        android:textColor="@color/ink"
+                        android:alpha="0.6"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="1dp"
-                android:background="@color/retro_dim" android:alpha="0.4"/>
-
-            <!-- Notification 4: OSTALO — read (dim left bar) -->
+            <!-- Notifikacija 4: OSTALO — pročitana (smanjena alpha) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp">
+                android:background="@drawable/card_paper"
+                android:paddingBottom="6dp"
+                android:alpha="0.55"
+                android:layout_marginBottom="10dp">
 
                 <View
-                    android:layout_width="4dp"
-                    android:layout_height="48dp"
-                    android:background="@color/retro_dim"
-                    android:alpha="0.4"
-                    android:layout_marginEnd="12dp"/>
+                    android:layout_width="5dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/sky_dark"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -384,16 +409,17 @@
 
                         <TextView
                             android:layout_width="wrap_content"
-                            android:layout_height="22dp"
+                            android:layout_height="26dp"
                             android:text="OSTALO"
-                            android:fontFamily="monospace"
-                            android:textSize="8sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/retro_dim"
-                            android:background="@drawable/bg_retro_chip"
+                            android:fontFamily="sans-serif-black"
+                            android:textSize="9sp"
+                            android:textColor="@color/ink"
+                            android:background="@drawable/card_paper"
                             android:gravity="center"
-                            android:paddingStart="7dp"
-                            android:paddingEnd="7dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="4dp"
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
@@ -401,7 +427,10 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="juče"
-                            style="@style/RetroLabel"
+                            android:fontFamily="sans-serif"
+                            android:textSize="10sp"
+                            android:textColor="@color/ink"
+                            android:alpha="0.5"
                             android:gravity="end"/>
                     </LinearLayout>
 
@@ -409,24 +438,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Dobrodošao u Ligu 3!"
-                        android:fontFamily="monospace"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/retro_dim"
+                        android:fontFamily="sans-serif-black"
+                        android:textSize="13sp"
+                        android:textColor="@color/ink"
                         android:layout_marginBottom="2dp"/>
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Napredovao si u narednu ligu. Zarađuješ +3 žetona dnevno"
-                        android:fontFamily="monospace"
-                        android:textSize="10sp"
-                        android:textColor="@color/retro_dim"/>
+                        android:fontFamily="sans-serif"
+                        android:textSize="11sp"
+                        android:textColor="@color/ink"
+                        android:alpha="0.6"/>
                 </LinearLayout>
             </LinearLayout>
-
-            <View android:layout_width="match_parent" android:layout_height="1dp"
-                android:background="@color/retro_dim" android:alpha="0.4"/>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
