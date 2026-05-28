@@ -1,557 +1,366 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- SKOČKO · J. AMERIKA · cartoon dizajn — identičan activity_skocko.xml + screens-games.jsx -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- SKOČKO · J. AMERIKA — v4
+     Picker = TextView (bez Material tinta)
+     PROTIVNIK + REŠENJE = unutar board grida (isti red-format, sa okvirom)
+     REŠENJE ćelije = bg_skocko_cell_filled (ista pozadina kao pogađanje)
+     Ceo ekran: FLAG_FULLSCREEN u GameActivity, paddingTop=8dp u HUD -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@drawable/bg_game_skocko">
 
-    <!-- HUD direktno na zelenom gradijent pozadini (kao u activity_skocko.xml) -->
-    <include layout="@layout/include_hud"/>
+    <!-- JungleBg — piramida + džungla (opacity 0.45) -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_jungle"
+        android:scaleType="fitXY"
+        android:alpha="0.45"
+        android:contentDescription="@null"/>
 
-    <!-- Baner: J. AMERIKA + PREDAJ -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/sa_2"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="14dp" android:paddingEnd="10dp"
-        android:paddingTop="6dp" android:paddingBottom="6dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvRound"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:fontFamily="sans-serif-black"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:letterSpacing="0.04"
-            android:text="🦜 J. AMERIKA · SKOČKO"/>
-
-        <Button
-            android:id="@+id/btnSurrender"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            style="@style/CartoonButton"
-            android:paddingTop="2dp"
-            android:paddingBottom="6dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:textSize="11sp"
-            android:text="@string/btn_surrender"
-            android:background="@drawable/btn_cartoon_red"/>
-    </LinearLayout>
-
-    <!-- Tabla igre — scrollable -->
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-
+        <!-- HUD oblast — tamnija zelena -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:padding="16dp">
+            android:background="#062A1C"
+            android:orientation="vertical">
+            <include layout="@layout/include_hud"/>
+        </LinearLayout>
 
-            <!-- Naslov (kao u activity_skocko.xml) -->
+        <!-- Baner: J. AMERIKA · SKOČKO (an_3 — tamno plava) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#07132E"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="8dp">
+
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvRound"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-black"
-                android:textColor="#FFFFFF"
-                android:textSize="18sp"
                 android:letterSpacing="0.06"
-                android:layout_marginBottom="12dp"
-                android:text="POGODI ŠIFRU"/>
+                android:text="🦜 J. AMERIKA · SKOČKO"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+        </LinearLayout>
 
-            <!-- Tajna šifra (red sa skrivenim simbolima) -->
+        <!-- ══════════════════════════════════════════════════════════
+             GRID: Board (svi redovi) + Picker desno
+             Board sadrži: 6 redova za pogađanje + PROTIVNIK + REŠENJE
+             ══════════════════════════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <!-- Board — vertikalni stub sa svim redovima -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/card_paper"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="6dp"
-                android:paddingBottom="12dp"
-                android:layout_marginBottom="14dp">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="TAJNA:"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="@color/sa_3"
-                    android:textSize="11sp"
-                    android:letterSpacing="0.08"
-                    android:layout_marginEnd="8dp"/>
-
-                <FrameLayout android:layout_width="36dp" android:layout_height="38dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="?" android:fontFamily="sans-serif-black"
-                        android:textSize="20sp" android:textColor="@color/eu_1"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="38dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="?" android:fontFamily="sans-serif-black"
-                        android:textSize="20sp" android:textColor="@color/eu_1"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="38dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="?" android:fontFamily="sans-serif-black"
-                        android:textSize="20sp" android:textColor="@color/eu_1"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="38dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="?" android:fontFamily="sans-serif-black"
-                        android:textSize="20sp" android:textColor="@color/eu_1"/>
-                </FrameLayout>
-            </LinearLayout>
-
-            <!-- Red 1 — popunjen -->
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginTop="3dp">
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG1C1" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="🦉" android:textSize="26sp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG1C2" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♣" android:textSize="26sp"
-                        android:textColor="@color/sa_3"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG1C3" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♥" android:textSize="26sp"
-                        android:textColor="#D93A2F"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG1C4" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="★" android:textSize="26sp"
-                        android:textColor="@color/eu_1"/>
-                </FrameLayout>
-                <!-- Pegs: 1 hit(zeleno) + 1 blizu(žuto) + 2 promašaj(tamno) -->
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:layout_marginStart="6dp">
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="#21C87A" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="#FFD23F" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
+                <!-- ── Red 1 (popunjen: 🦉♣♥★ · hit+near+miss+miss) ── -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="50dp" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG1C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🦉" android:textSize="22sp" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG1C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="♣" android:textSize="22sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG1C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="♥" android:textSize="22sp" android:textColor="#D93A2F" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG1C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="★" android:textSize="22sp" android:textColor="@color/eu_1" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="36dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="4dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_hit"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_near"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- Red 2 — popunjen -->
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginTop="3dp">
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG2C1" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♠" android:textSize="26sp"
-                        android:textColor="@color/ink"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG2C2" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♥" android:textSize="26sp"
-                        android:textColor="#D93A2F"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG2C3" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♦" android:textSize="26sp"
-                        android:textColor="#D93A2F"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvG2C4" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="🦉" android:textSize="26sp"/>
-                </FrameLayout>
-                <!-- Pegs: 2 hit + 1 blizu + 1 promašaj -->
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:layout_marginStart="6dp">
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="#21C87A" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="#21C87A" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="#FFD23F" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
+                <!-- ── Red 2 (popunjen: ♠♥♦🦉 · hit+hit+near+miss) ── -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="50dp" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG2C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="♠" android:textSize="22sp" android:textColor="@color/ink" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG2C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="♥" android:textSize="22sp" android:textColor="#D93A2F" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG2C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="♦" android:textSize="22sp" android:textColor="#D93A2F" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvG2C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🦉" android:textSize="22sp" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <LinearLayout android:layout_width="36dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="4dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_hit"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_hit"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_near"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- Red 3 — prazan (aktivan) -->
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginTop="3dp">
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG3C1" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:textSize="26sp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG3C2" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:textSize="26sp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG3C3" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:textSize="26sp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG3C4" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:textSize="26sp"/>
-                </FrameLayout>
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:layout_marginStart="6dp">
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="14dp" android:layout_height="14dp"
-                            android:text="●" android:gravity="center" android:textSize="11sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
+                <!-- ── Red 3 (prazan) ── -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="50dp" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG3C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG3C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG3C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG3C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <LinearLayout android:layout_width="36dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="4dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- Red 4 — prazan -->
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginTop="3dp">
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG4C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG4C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG4C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG4C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:layout_marginStart="6dp">
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
+                <!-- ── Red 4 (prazan) ── -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="50dp" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG4C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG4C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG4C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG4C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <LinearLayout android:layout_width="36dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="4dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- Red 5 — prazan -->
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginTop="3dp">
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG5C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG5C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG5C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG5C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:layout_marginStart="6dp">
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
+                <!-- ── Red 5 (prazan) ── -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="50dp" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="4dp">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG5C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG5C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG5C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG5C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <LinearLayout android:layout_width="36dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="4dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
 
-            <!-- Red 6 — prazan -->
-            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:orientation="horizontal" android:gravity="center_vertical"
-                android:layout_marginTop="3dp">
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG6C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG6C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG6C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="56dp" android:layout_height="56dp"
-                    android:layout_margin="3dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvG6C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/>
-                </FrameLayout>
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:layout_marginStart="6dp">
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
-                        <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp"/>
+                <!-- ── Red 6 (prazan) ── -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="50dp" android:orientation="horizontal" android:gravity="center_vertical">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG6C1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG6C2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG6C3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_empty"><TextView android:id="@+id/tvG6C4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center"/></FrameLayout>
+                    <LinearLayout android:layout_width="36dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="4dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="14dp" android:layout_height="14dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
+
+                <!-- ═══ SEPARATOR ═══ -->
+                <View android:layout_width="match_parent" android:layout_height="8dp"/>
+
+                <!-- ── PROTIVNIK red — isti grid, okvir bg_skocko_protivnik ── -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_skocko_protivnik"
+                    android:paddingStart="4dp" android:paddingEnd="4dp"
+                    android:paddingTop="3dp" android:paddingBottom="6dp"
+                    android:layout_marginBottom="6dp">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvOppC1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="🦉" android:textSize="20sp" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvOppC2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="♣" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvOppC3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="♥" android:textSize="20sp" android:textColor="#D93A2F" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvOppC4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="★" android:textSize="20sp" android:textColor="@color/eu_1" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <!-- Peg area (poravnanje sa redovima pogađanja) -->
+                    <LinearLayout android:layout_width="36dp" android:layout_height="match_parent" android:orientation="vertical" android:gravity="center" android:layout_marginStart="4dp">
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_hit"/>
+                            <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:gravity="center">
+                            <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                            <View android:layout_width="12dp" android:layout_height="12dp" android:layout_margin="1dp" android:background="@drawable/bg_peg_miss"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- ── REŠENJE red — isti grid, okvir bg_skocko_resenje, iste ćelije ── -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/bg_skocko_resenje"
+                    android:paddingStart="4dp" android:paddingEnd="4dp"
+                    android:paddingTop="3dp" android:paddingBottom="6dp">
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvSolC1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvSolC2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvSolC3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
+                        <TextView android:id="@+id/tvSolC4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+                    </FrameLayout>
+                    <!-- Spacer za poravnanje sa peg kolonom -->
+                    <View android:layout_width="36dp" android:layout_height="1dp" android:layout_marginStart="4dp"/>
+                </LinearLayout>
+
             </LinearLayout>
 
-            <!-- Protivnik — kompaktan red ispod tabele (kao u JSX) -->
+            <!-- ════════════════════════════════════
+                 PICKER SIMBOLA — desna traka (64dp)
+                 TextView umesto Button (nema Material tinta)
+                 6×50dp, semi-transparent okvir
+                 ════════════════════════════════════ -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/btn_cartoon_green"
-                android:paddingStart="10dp" android:paddingEnd="10dp"
-                android:paddingTop="6dp" android:paddingBottom="10dp"
-                android:layout_marginTop="10dp">
+                android:orientation="vertical"
+                android:background="@drawable/bg_skocko_picker_bg"
+                android:padding="6dp"
+                android:layout_marginStart="10dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PROTIVNIK:"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="@color/eu_1"
-                    android:textSize="11sp"
-                    android:layout_marginEnd="8dp"/>
+                <TextView android:id="@+id/btnSym1"
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/bg_skocko_cell_filled"
+                    android:text="🦉" android:textSize="22sp"
+                    android:gravity="center" android:paddingBottom="3dp"
+                    android:clickable="true" android:focusable="true"/>
 
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvOppC1" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="🦉" android:textSize="20sp" android:paddingBottom="4dp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvOppC2" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♣" android:textSize="20sp"
-                        android:textColor="@color/sa_3" android:paddingBottom="4dp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvOppC3" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♥" android:textSize="20sp"
-                        android:textColor="#D93A2F" android:paddingBottom="4dp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/card_paper">
-                    <TextView android:id="@+id/tvOppC4" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="★" android:textSize="20sp"
-                        android:textColor="@color/eu_1" android:paddingBottom="4dp"/>
-                </FrameLayout>
+                <TextView android:id="@+id/btnSym2"
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/bg_skocko_cell_filled"
+                    android:text="♣" android:textSize="22sp" android:textColor="@color/sa_3"
+                    android:gravity="center" android:paddingBottom="3dp"
+                    android:clickable="true" android:focusable="true"/>
 
-                <!-- Pegs protivnika -->
-                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:orientation="vertical" android:layout_marginStart="6dp">
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="12dp" android:layout_height="12dp"
-                            android:text="●" android:gravity="center" android:textSize="9sp"
-                            android:textColor="#21C87A" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="12dp" android:layout_height="12dp"
-                            android:text="●" android:gravity="center" android:textSize="9sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-                        <TextView android:layout_width="12dp" android:layout_height="12dp"
-                            android:text="●" android:gravity="center" android:textSize="9sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
-                        <TextView android:layout_width="12dp" android:layout_height="12dp"
-                            android:text="●" android:gravity="center" android:textSize="9sp"
-                            android:textColor="@color/sa_3" android:layout_margin="1dp"/>
-                    </LinearLayout>
-                </LinearLayout>
-            </LinearLayout>
+                <TextView android:id="@+id/btnSym3"
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/bg_skocko_cell_filled"
+                    android:text="♠" android:textSize="22sp" android:textColor="@color/ink"
+                    android:gravity="center" android:paddingBottom="3dp"
+                    android:clickable="true" android:focusable="true"/>
 
-            <!-- Rešenje — žuti red na kraju runde -->
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/btn_cartoon_yellow"
-                android:paddingStart="10dp" android:paddingEnd="10dp"
-                android:paddingTop="6dp" android:paddingBottom="10dp"
-                android:layout_marginTop="6dp">
+                <TextView android:id="@+id/btnSym4"
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/bg_skocko_cell_filled"
+                    android:text="♥" android:textSize="22sp" android:textColor="#D93A2F"
+                    android:gravity="center" android:paddingBottom="3dp"
+                    android:clickable="true" android:focusable="true"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="REŠENJE:"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="@color/ink"
-                    android:textSize="11sp"
-                    android:layout_marginEnd="8dp"/>
+                <TextView android:id="@+id/btnSym5"
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@drawable/bg_skocko_cell_filled"
+                    android:text="♦" android:textSize="22sp" android:textColor="#D93A2F"
+                    android:gravity="center" android:paddingBottom="3dp"
+                    android:clickable="true" android:focusable="true"/>
 
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvSolC1" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♠" android:textSize="20sp"
-                        android:textColor="@color/eu_1"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvSolC2" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♦" android:textSize="20sp"
-                        android:textColor="@color/eu_1"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvSolC3" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="🦉" android:textSize="20sp"/>
-                </FrameLayout>
-                <FrameLayout android:layout_width="36dp" android:layout_height="36dp"
-                    android:layout_margin="2dp" android:background="@drawable/bg_cell_closed">
-                    <TextView android:id="@+id/tvSolC4" android:layout_width="match_parent" android:layout_height="match_parent"
-                        android:gravity="center" android:text="♥" android:textSize="20sp"
-                        android:textColor="@color/eu_1"/>
-                </FrameLayout>
+                <TextView android:id="@+id/btnSym6"
+                    android:layout_width="match_parent" android:layout_height="50dp"
+                    android:background="@drawable/bg_skocko_cell_filled"
+                    android:text="★" android:textSize="22sp" android:textColor="@color/eu_1"
+                    android:gravity="center" android:paddingBottom="3dp"
+                    android:clickable="true" android:focusable="true"/>
+
             </LinearLayout>
 
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
-    <!-- Paleta simbola — uvek vidljiva na dnu (kao u activity_skocko.xml) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="6dp">
+        <!-- DNO: POTVRDI (žuto, weight=1) + ✕ (crveno) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="14dp" android:paddingEnd="14dp"
+            android:paddingTop="6dp" android:paddingBottom="14dp">
 
-        <Button android:id="@+id/btnSym1"
-            android:layout_width="56dp" android:layout_height="56dp"
-            android:layout_margin="4dp" style="@style/CartoonButton"
-            android:paddingTop="0dp" android:paddingBottom="6dp"
-            android:paddingLeft="0dp" android:paddingRight="0dp"
-            android:gravity="center" android:minHeight="0dp"
-            android:text="🦉" android:textSize="26sp"
-            android:background="@drawable/btn_cartoon_blue"/>
+            <Button
+                android:id="@+id/btnConfirmAttempt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:textSize="20sp"
+                android:letterSpacing="0.05"
+                android:text="@string/btn_confirm_attempt"
+                android:background="@drawable/btn_cartoon_yellow"
+                android:textColor="@color/ink"/>
 
-        <Button android:id="@+id/btnSym2"
-            android:layout_width="56dp" android:layout_height="56dp"
-            android:layout_margin="4dp" style="@style/CartoonButton"
-            android:paddingTop="0dp" android:paddingBottom="6dp"
-            android:paddingLeft="0dp" android:paddingRight="0dp"
-            android:gravity="center" android:minHeight="0dp"
-            android:text="♣" android:textSize="26sp"
-            android:background="@drawable/btn_cartoon_green"/>
+            <Button
+                android:id="@+id/btnSurrender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                style="@style/CartoonButton"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:textSize="18sp"
+                android:text="✕"
+                android:background="@drawable/btn_cartoon_red"/>
 
-        <Button android:id="@+id/btnSym3"
-            android:layout_width="56dp" android:layout_height="56dp"
-            android:layout_margin="4dp" style="@style/CartoonButton"
-            android:paddingTop="0dp" android:paddingBottom="6dp"
-            android:paddingLeft="0dp" android:paddingRight="0dp"
-            android:gravity="center" android:minHeight="0dp"
-            android:text="♠" android:textSize="26sp"
-            android:background="@drawable/btn_cartoon_green"/>
+        </LinearLayout>
 
-        <Button android:id="@+id/btnSym4"
-            android:layout_width="56dp" android:layout_height="56dp"
-            android:layout_margin="4dp" style="@style/CartoonButton"
-            android:paddingTop="0dp" android:paddingBottom="6dp"
-            android:paddingLeft="0dp" android:paddingRight="0dp"
-            android:gravity="center" android:minHeight="0dp"
-            android:text="♥" android:textSize="26sp"
-            android:background="@drawable/btn_cartoon_red"/>
-
-        <Button android:id="@+id/btnSym5"
-            android:layout_width="56dp" android:layout_height="56dp"
-            android:layout_margin="4dp" style="@style/CartoonButton"
-            android:paddingTop="0dp" android:paddingBottom="6dp"
-            android:paddingLeft="0dp" android:paddingRight="0dp"
-            android:gravity="center" android:minHeight="0dp"
-            android:text="♦" android:textSize="26sp"
-            android:background="@drawable/btn_cartoon_red"/>
-
-        <Button android:id="@+id/btnSym6"
-            android:layout_width="56dp" android:layout_height="56dp"
-            android:layout_margin="4dp" style="@style/CartoonButton"
-            android:paddingTop="0dp" android:paddingBottom="6dp"
-            android:paddingLeft="0dp" android:paddingRight="0dp"
-            android:gravity="center" android:minHeight="0dp"
-            android:text="★" android:textSize="26sp"
-            android:textColor="@color/ink"
-            android:background="@drawable/btn_cartoon_yellow"/>
     </LinearLayout>
 
-    <!-- POTVRDI — uvek vidljiv na samom dnu (kao u activity_skocko.xml) -->
-    <Button
-        android:id="@+id/btnConfirmAttempt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/CartoonButton"
-        android:textSize="20sp"
-        android:letterSpacing="0.05"
-        android:text="@string/btn_confirm_attempt"
-        android:background="@drawable/btn_cartoon_green"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="12dp"/>
-
-</LinearLayout>
+</FrameLayout>

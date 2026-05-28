@@ -6,7 +6,6 @@
         <item name="colorPrimary">@color/retro_acc</item>
         <item name="colorOnPrimary">@color/retro_bg</item>
         <item name="colorSurface">@color/retro_bg</item>
-        <item name="android:windowFullscreen">true</item>
         <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="28">shortEdges</item>
         <!-- Globalni stil za sve TextViewe: bold monospace -->
         <item name="android:textViewStyle">@style/RetroBaseText</item>
