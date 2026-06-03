@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Zatvorena/prazna ćelija u Skočko — tamnozelena, zaobljeni uglovi -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#0A3D2A"/>
+    <stroke android:width="2dp" android:color="#062A1C"/>
+    <corners android:radius="10dp"/>
+</shape>

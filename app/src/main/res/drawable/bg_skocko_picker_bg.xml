@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Picker kontejner: rgba(10,61,42,0.6) → #990A3D2A, 3dp stroke, radius 14dp -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#990A3D2A"/>
+    <stroke android:width="3dp" android:color="#0A3D2A"/>
+    <corners android:radius="14dp"/>
+</shape>
