@@ -240,25 +240,90 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="55dp"
-                    android:orientation="horizontal"
+                    android:background="@drawable/bg_skocko_protivnik"
                     android:gravity="center_vertical"
-                    android:background="@drawable/bg_skocko_resenje"
-                    android:paddingStart="4dp" android:paddingEnd="4dp"
-                    android:paddingTop="3dp" android:paddingBottom="6dp">
-                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
-                        <TextView android:id="@+id/tvSolC1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+                    android:orientation="horizontal"
+                    android:paddingStart="4dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="4dp"
+                    android:paddingBottom="6dp">
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_skocko_cell_filled">
+
+                        <TextView
+                            android:id="@+id/tvSolC1"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:paddingBottom="3dp"
+                            android:text="?"
+                            android:textColor="@color/sa_3"
+                            android:textSize="20sp" />
                     </FrameLayout>
-                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
-                        <TextView android:id="@+id/tvSolC2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_skocko_cell_filled">
+
+                        <TextView
+                            android:id="@+id/tvSolC2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:paddingBottom="3dp"
+                            android:text="?"
+                            android:textColor="@color/sa_3"
+                            android:textSize="20sp" />
                     </FrameLayout>
-                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
-                        <TextView android:id="@+id/tvSolC3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_skocko_cell_filled">
+
+                        <TextView
+                            android:id="@+id/tvSolC3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:paddingBottom="3dp"
+                            android:text="?"
+                            android:textColor="@color/sa_3"
+                            android:textSize="20sp" />
                     </FrameLayout>
-                    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:layout_margin="2dp" android:background="@drawable/bg_skocko_cell_filled">
-                        <TextView android:id="@+id/tvSolC4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:text="?" android:textSize="20sp" android:textColor="@color/sa_3" android:paddingBottom="3dp"/>
+
+                    <FrameLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_margin="2dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_skocko_cell_filled">
+
+                        <TextView
+                            android:id="@+id/tvSolC4"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:paddingBottom="3dp"
+                            android:text="?"
+                            android:textColor="@color/sa_3"
+                            android:textSize="20sp" />
                     </FrameLayout>
                     <!-- Spacer za poravnanje sa peg kolonom -->
-                    <View android:layout_width="36dp" android:layout_height="1dp" android:layout_marginStart="4dp"/>
+                    <View
+                        android:layout_width="36dp"
+                        android:layout_height="1dp"
+                        android:layout_marginStart="4dp" />
                 </LinearLayout>
 
             </LinearLayout>
