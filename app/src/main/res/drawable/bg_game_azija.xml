@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Spojnice background: Azija — tamno crveni gradijent (as paleta) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <gradient
+        android:angle="270"
+        android:startColor="#8B1A30"
+        android:centerColor="#5A1020"
+        android:endColor="#3A0810"/>
+</shape>

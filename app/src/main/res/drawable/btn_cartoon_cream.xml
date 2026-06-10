@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cartoon button — krem/vanilla varijanta za odgovore u Ko zna zna -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="4dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/ink"/>
+            <corners android:radius="@dimen/btn_radius"/>
+        </shape>
+    </item>
+    <item android:bottom="4dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:angle="270"
+                android:startColor="#FFF8E7"
+                android:endColor="#FFE4B0"/>
+            <stroke android:width="@dimen/stroke_thick" android:color="@color/ink"/>
+            <corners android:radius="@dimen/btn_radius"/>
+        </shape>
+    </item>
+</layer-list>

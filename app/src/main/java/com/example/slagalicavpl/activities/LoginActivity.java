@@ -27,7 +27,6 @@ public class LoginActivity extends AppCompatActivity {
         tvForgotPassword = findViewById(R.id.tvForgotPassword);
 
         btnLogin.setOnClickListener(v -> RetroButtonAnimation.flash(btnLogin, () -> {
-            // TODO KT2: validate credentials via Firebase Auth
             Intent intent = new Intent(this, GameActivity.class);
             startActivity(intent);
         }));
@@ -37,7 +36,6 @@ public class LoginActivity extends AppCompatActivity {
         }));
 
         tvForgotPassword.setOnClickListener(v -> {
-            // TODO KT2: show reset password dialog
         });
 
         TextView tvProfileDemo = findViewById(R.id.tvProfileDemo);

@@ -1,506 +1,359 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- SPOJNICE · AZIJA · cartoon dizajn
+     Java IDs: btnConfirm (PRESKOČI), btnSurrender (ODUSTANI)
+     Extra IDs (KT2): tvRound, tvLeft1-5, tvRight1-5, connector1-5 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/retro_bg"
-    tools:context=".activities.fragments.SpojniceFragment">
+    android:background="@drawable/bg_game_azija">
 
-    <!-- Game HUD -->
+    <!-- HUD — tamno (as_3) -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:background="@color/retro_bg">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_retro_chip"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="○" android:fontFamily="monospace" android:textSize="11sp"
-                android:textColor="@color/retro_acc" android:layout_marginEnd="4dp"/>
-
-            <TextView android:id="@+id/tvTokens" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="14"
-                android:fontFamily="monospace" android:textSize="11sp"
-                android:textStyle="bold" android:textColor="@color/retro_acc"/>
-        </LinearLayout>
-
-        <View android:layout_width="6dp" android:layout_height="1dp"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_retro_chip"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="★" android:fontFamily="monospace" android:textSize="11sp"
-                android:textColor="@color/retro_ink" android:layout_marginEnd="4dp"/>
-
-            <TextView android:id="@+id/tvStars" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="287"
-                android:fontFamily="monospace" android:textSize="11sp"
-                android:textStyle="bold" android:textColor="@color/retro_ink"/>
-        </LinearLayout>
-
-        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="28dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@drawable/bg_retro_score_box"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp">
-
-            <TextView android:id="@+id/tvScoreMe" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="20"
-                android:fontFamily="monospace" android:textSize="15sp"
-                android:textStyle="bold" android:textColor="@color/retro_acc"/>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text=" VS " android:fontFamily="monospace" android:textSize="9sp"
-                android:textColor="@color/retro_dim"/>
-
-            <TextView android:id="@+id/tvScoreOpp" android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:text="15"
-                android:fontFamily="monospace" android:textSize="15sp"
-                android:textStyle="bold" android:textColor="@color/retro_ink"/>
-        </LinearLayout>
+        android:layout_height="wrap_content"
+        android:background="#7A1F3D"
+        android:orientation="vertical">
+        <include layout="@layout/include_hud"/>
     </LinearLayout>
 
-    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#60FFFFFF"/>
 
-    <!-- Game header row -->
+    <!-- Baner: naziv igre -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
+        android:background="#06112A"
         android:gravity="center_vertical"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:background="@color/retro_bg">
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="8dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tvRound"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvRound"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="IGRA 2/6"
-                style="@style/RetroLabel"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/game_spojnice_name"
-                android:fontFamily="monospace"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/retro_ink"
-                android:letterSpacing="0.05"/>
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/btnSurrender"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            style="@style/RetroButtonSmall"
-            android:background="@drawable/bg_retro_btn_face_accent"
-            android:text="@string/btn_surrender"
-            android:textColor="@color/retro_bg"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:drawableStart="@drawable/ic_retro_flag"
-            android:drawablePadding="6dp"/>
+            android:fontFamily="sans-serif-black"
+            android:letterSpacing="0.04"
+            android:text="🏮 AZIJA · SPOJNICE"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"/>
     </LinearLayout>
 
-    <View android:layout_width="match_parent" android:layout_height="2dp" android:background="@color/retro_ink"/>
-
-    <!-- Scrollable game content -->
-    <androidx.core.widget.NestedScrollView
+    <!-- Sadržaj -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/retro_bg">
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="10dp">
 
+        <!-- Red 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <Button
+                android:id="@+id/tvLeft1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Tokio"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginEnd="4dp"/>
+
+            <View
+                android:id="@+id/connector1"
+                android:layout_width="20dp"
+                android:layout_height="4dp"
+                android:background="#2D9A4A"
+                android:visibility="invisible"/>
+
+            <Button
+                android:id="@+id/tvRight1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Tajland"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- Red 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <Button
+                android:id="@+id/tvLeft2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Peking"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginEnd="4dp"/>
+
+            <View
+                android:id="@+id/connector2"
+                android:layout_width="20dp"
+                android:layout_height="4dp"
+                android:background="#2D9A4A"
+                android:visibility="invisible"/>
+
+            <Button
+                android:id="@+id/tvRight2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Kina"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- Red 3 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <Button
+                android:id="@+id/tvLeft3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Seul"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginEnd="4dp"/>
+
+            <View
+                android:id="@+id/connector3"
+                android:layout_width="20dp"
+                android:layout_height="4dp"
+                android:background="#2D9A4A"
+                android:visibility="invisible"/>
+
+            <Button
+                android:id="@+id/tvRight3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Vijetnam"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- Red 4 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="6dp">
+
+            <Button
+                android:id="@+id/tvLeft4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Bangkok"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginEnd="4dp"/>
+
+            <View
+                android:id="@+id/connector4"
+                android:layout_width="20dp"
+                android:layout_height="4dp"
+                android:background="#2D9A4A"
+                android:visibility="invisible"/>
+
+            <Button
+                android:id="@+id/tvRight4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Japan"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- Red 5 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="14dp">
+
+            <Button
+                android:id="@+id/tvLeft5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="Hanoi"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginEnd="4dp"/>
+
+            <View
+                android:id="@+id/connector5"
+                android:layout_width="20dp"
+                android:layout_height="4dp"
+                android:background="#2D9A4A"
+                android:visibility="invisible"/>
+
+            <Button
+                android:id="@+id/tvRight5"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_salmon"
+                android:text="J. Koreja"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-black"
+                android:gravity="center"
+                android:minHeight="0dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="8dp"
+                android:layout_marginStart="4dp"/>
+        </LinearLayout>
+
+        <!-- Status tekst -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RUNDA 1 – POVEZANO 0/5"
+            android:fontFamily="sans-serif-black"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:letterSpacing="0.04"
+            android:gravity="center"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Dugmad: PRESKOČI + ODUSTANI -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:orientation="horizontal">
 
-            <!-- Info label -->
-            <TextView
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/btnConfirm"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/game_spojnice_instruction"
-                style="@style/RetroLabel"
-                android:gravity="center"
-                android:layout_marginBottom="10dp"/>
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_yellow"
+                android:text="PRESKOČI"
+                android:textColor="@color/ink"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.04"
+                android:paddingTop="6dp"
+                android:paddingBottom="12dp"
+                android:layout_marginEnd="8dp"/>
 
-            <!-- Timer row -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <Button
+                android:id="@+id/btnSurrender"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
-
-                <ProgressBar
-                    android:id="@+id/progressTimer"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="10dp"
-                    android:layout_weight="1"
-                    android:progressDrawable="@drawable/bg_retro_progress"
-                    android:progress="75"
-                    android:max="100"/>
-
-                <TextView
-                    android:id="@+id/tvTimer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0:22"
-                    android:fontFamily="monospace"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"
-                    android:layout_marginStart="10dp"
-                    android:minWidth="40dp"/>
-            </LinearLayout>
-
-            <!-- Criterion label -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="POVEŽI IZVOĐAČA SA PESMOM"
-                style="@style/RetroLabel"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"/>
-
-            <!-- Column headers -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="IZVOĐAČ"
-                    style="@style/RetroLabel"
-                    android:gravity="center"
-                    android:layout_marginEnd="6dp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="PESMA"
-                    style="@style/RetroLabel"
-                    android:gravity="center"/>
-            </LinearLayout>
-
-            <!-- Row 1: connected pair (revealed) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="46dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:id="@+id/tvLeft1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="ABBA"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"
-                    android:background="@drawable/bg_retro_step_revealed"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content"
-                    android:text="✓"
-                    android:fontFamily="monospace"
-                    android:textSize="10sp"
-                    android:textColor="@color/retro_gr"
-                    android:gravity="center"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:id="@+id/tvRight1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="DANCING QUEEN"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"
-                    android:background="@drawable/bg_retro_step_revealed"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"/>
-            </LinearLayout>
-
-            <!-- Row 2: connected pair (revealed) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="46dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:id="@+id/tvLeft2"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="THE BEATLES"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"
-                    android:background="@drawable/bg_retro_step_revealed"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content"
-                    android:text="✓"
-                    android:fontFamily="monospace"
-                    android:textSize="10sp"
-                    android:textColor="@color/retro_gr"
-                    android:gravity="center"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:id="@+id/tvRight2"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="HEY JUDE"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_ink"
-                    android:background="@drawable/bg_retro_step_revealed"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"/>
-            </LinearLayout>
-
-            <!-- Row 3: left selected (active), right unconnected -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="46dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:id="@+id/tvLeft3"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="ROLLING STONES"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_bg"
-                    android:background="@drawable/bg_retro_step_active"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content"
-                    android:text="·"
-                    android:fontFamily="monospace"
-                    android:textSize="10sp"
-                    android:textColor="@color/retro_dim"
-                    android:gravity="center"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:id="@+id/tvRight3"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="HOUND DOG"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_dim"
-                    android:background="@drawable/bg_retro_step_hidden"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"/>
-            </LinearLayout>
-
-            <!-- Row 4: unconnected -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="46dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="5dp">
-
-                <TextView
-                    android:id="@+id/tvLeft4"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="ELVIS PRESLEY"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_dim"
-                    android:background="@drawable/bg_retro_step_hidden"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content"
-                    android:text="·"
-                    android:fontFamily="monospace"
-                    android:textSize="10sp"
-                    android:textColor="@color/retro_dim"
-                    android:gravity="center"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:id="@+id/tvRight4"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="PAINT IT BLACK"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_dim"
-                    android:background="@drawable/bg_retro_step_hidden"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"/>
-            </LinearLayout>
-
-            <!-- Row 5: unconnected -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="46dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
-
-                <TextView
-                    android:id="@+id/tvLeft5"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="MADONNA"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_dim"
-                    android:background="@drawable/bg_retro_step_hidden"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:layout_width="12dp"
-                    android:layout_height="wrap_content"
-                    android:text="·"
-                    android:fontFamily="monospace"
-                    android:textSize="10sp"
-                    android:textColor="@color/retro_dim"
-                    android:gravity="center"
-                    android:layout_marginEnd="5dp"/>
-
-                <TextView
-                    android:id="@+id/tvRight5"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="VOGUE"
-                    android:fontFamily="monospace"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/retro_dim"
-                    android:background="@drawable/bg_retro_step_hidden"
-                    android:gravity="center_vertical"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"/>
-            </LinearLayout>
-
-            <!-- Confirm button -->
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginBottom="16dp">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@color/retro_acc"/>
-
-                <Button
-                    android:id="@+id/btnConfirm"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginBottom="4dp"
-                    style="@style/RetroButtonDark"
-                    android:text="@string/btn_confirm"
-                    android:drawableStart="@drawable/ic_retro_check"
-                    android:drawablePadding="8dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"/>
-            </FrameLayout>
-
+                android:layout_weight="1"
+                style="@style/CartoonButton"
+                android:background="@drawable/btn_cartoon_red"
+                android:text="ODUSTANI"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-black"
+                android:letterSpacing="0.04"
+                android:paddingTop="6dp"
+                android:paddingBottom="12dp"/>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 
+    </LinearLayout>
 </LinearLayout>
