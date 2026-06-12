@@ -32,7 +32,7 @@
         android:fontFamily="sans-serif-black"
         android:textSize="24sp"
         android:textColor="@color/player_blue"
-        android:text="13"
+        android:text="0"
         android:layout_marginStart="8dp"
         app:layout_constraintTop_toTopOf="@id/p1_avatar"
         app:layout_constraintStart_toEndOf="@id/p1_avatar"/>
@@ -91,7 +91,7 @@
         android:fontFamily="sans-serif-black"
         android:textSize="24sp"
         android:textColor="#FFFFFF"
-        android:text="15"
+        android:text="0"
         android:gravity="end"
         android:layout_marginEnd="8dp"
         app:layout_constraintTop_toTopOf="@id/p2_avatar"

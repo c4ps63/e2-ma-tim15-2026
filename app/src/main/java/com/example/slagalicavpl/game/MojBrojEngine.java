@@ -28,8 +28,8 @@ public class MojBrojEngine {
         } else if (p2Hit) {
             p2pts = 10;
         } else {
-            int d1 = (p1Result > 0) ? Math.abs(p1Result - target) : Integer.MAX_VALUE;
-            int d2 = (p2Result > 0) ? Math.abs(p2Result - target) : Integer.MAX_VALUE;
+            int d1 = (p1Result >= 0) ? Math.abs(p1Result - target) : Integer.MAX_VALUE;
+            int d2 = (p2Result >= 0) ? Math.abs(p2Result - target) : Integer.MAX_VALUE;
 
             if (d1 == Integer.MAX_VALUE && d2 == Integer.MAX_VALUE) {
                 // nobody scores

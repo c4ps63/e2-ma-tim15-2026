@@ -1,6 +1,7 @@
 package com.example.slagalicavpl.activities.fragments;
 
 import android.content.Context;
+import com.example.slagalicavpl.activities.GameActivity;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -56,6 +57,10 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
 
     private enum Phase { SPINNING_TARGET, SPINNING_NUMBERS, BUILDING, DONE }
     private Phase phase = Phase.SPINNING_TARGET;
+
+    private int currentRound = 1;
+    private int accP1 = 0;
+    private int accP2 = 0;
 
     private MojBrojPuzzle puzzle;
     private final boolean[] tileUsed = new boolean[6];
@@ -130,6 +135,14 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
                     getContext().getSystemService(Context.SENSOR_SERVICE);
             if (sensorManager != null)
                 accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        }
+
+        TextView hudP1 = view.findViewById(R.id.p1_score);
+        TextView hudP2 = view.findViewById(R.id.p2_score);
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
+            if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
         }
 
         setHudClock();
@@ -324,18 +337,49 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
         setHudClock();
 
         int result = MojBrojEngine.evaluate(exprEval.toString());
-
-        tvPlayerResult.setText(result > 0 ? String.valueOf(result) : "0");
+        tvPlayerResult.setText(result >= 0 ? String.valueOf(result) : "?");
         setTilesEnabled(false);
         setOpsEnabled(false);
         setEditEnabled(false);
         btnConfirm.setEnabled(false);
 
+        if (puzzle != null) {
+            int[] scores = MojBrojEngine.computeScores(result, 0, puzzle.target, currentRound);
+            accP1 += scores[0];
+            accP2 += scores[1];
+            updateHud();
+        }
+
         enterPhase(Phase.DONE);
 
-        handler.postDelayed(() -> {
-            if (getActivity() != null) getActivity().finish();
-        }, 3000);
+        if (currentRound == 1) {
+            handler.postDelayed(this::startRound2, 2500);
+        } else {
+            if (getActivity() instanceof GameActivity)
+                ((GameActivity) getActivity()).addScores(accP1, accP2);
+            handler.postDelayed(() -> {
+                if (getActivity() != null) getActivity().finish();
+            }, 2500);
+        }
+    }
+
+    private void startRound2() {
+        if (getView() == null) return;
+        currentRound = 2;
+        tvPlayerResult.setText(getString(R.string.result_pending));
+        tvOpponentResult.setText(getString(R.string.result_pending));
+        tvTarget.setText("RUNDA 2");
+        clearExpression();
+        handler.postDelayed(() -> enterPhase(Phase.SPINNING_TARGET), 800);
+    }
+
+    private void updateHud() {
+        if (getView() == null || !(getActivity() instanceof GameActivity)) return;
+        GameActivity ga = (GameActivity) getActivity();
+        TextView s1 = getView().findViewById(R.id.p1_score);
+        TextView s2 = getView().findViewById(R.id.p2_score);
+        if (s1 != null) s1.setText(String.valueOf(ga.getP1Total() + accP1));
+        if (s2 != null) s2.setText(String.valueOf(ga.getP2Total() + accP2));
     }
 
     @Override

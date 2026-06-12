@@ -18,6 +18,17 @@ public class GameActivity extends AppCompatActivity {
     // Game order per spec: Ko zna zna, Spojnice, Asocijacije, Skočko, Korak po korak, Moj broj
     // For GUI demo: shows Korak po Korak (game 5) then Moj Broj (game 6)
 
+    private int totalP1 = 0;
+    private int totalP2 = 0;
+
+    public void addScores(int p1, int p2) {
+        totalP1 += p1;
+        totalP2 += p2;
+    }
+
+    public int getP1Total() { return totalP1; }
+    public int getP2Total() { return totalP2; }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -79,6 +79,14 @@ public class KorakPoKorakFragment extends Fragment
             engine.submitAnswer(input);
         });
 
+        TextView hudP1 = view.findViewById(R.id.p1_score);
+        TextView hudP2 = view.findViewById(R.id.p2_score);
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
+            if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
+        }
+
         KorakPuzzle puzzle = KorakRepository.getInstance().getRandomPuzzle();
         engine = new KorakPoKorakEngine(puzzle, this);
 
@@ -96,6 +104,7 @@ public class KorakPoKorakFragment extends Fragment
     public void onRoundStarted(int round, int activePlayer) {
         for (int i = 0; i < MAX_STEPS; i++) lockStep(i);
         etAnswer.setText("");
+        etAnswer.setBackgroundResource(R.drawable.bg_expression_display);
     }
 
     @Override
@@ -140,6 +149,19 @@ public class KorakPoKorakFragment extends Fragment
     }
 
     @Override
+    public void onAnswerResult(boolean correct, int pts) {
+        etAnswer.setBackgroundResource(correct
+                ? R.drawable.bg_expression_correct
+                : R.drawable.bg_expression_wrong);
+        if (!correct) {
+            handler.postDelayed(() -> {
+                if (getView() != null)
+                    etAnswer.setBackgroundResource(R.drawable.bg_expression_display);
+            }, 350);
+        }
+    }
+
+    @Override
     public void onRoundTransition(int nextRound, int nextPlayer) {
         handler.postDelayed(() -> engine.startRound(nextRound, nextPlayer), 2500);
     }
@@ -147,6 +169,8 @@ public class KorakPoKorakFragment extends Fragment
     @Override
     public void onGameOver(int p1Score, int p2Score) {
         setHudClock();
+        if (getActivity() instanceof GameActivity)
+            ((GameActivity) getActivity()).addScores(p1Score, p2Score);
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity) {
                 ((GameActivity) getActivity()).showMojBroj();
@@ -159,8 +183,11 @@ public class KorakPoKorakFragment extends Fragment
         if (getView() == null) return;
         TextView s1 = getView().findViewById(R.id.p1_score);
         TextView s2 = getView().findViewById(R.id.p2_score);
-        if (s1 != null) s1.setText(String.valueOf(p1Score));
-        if (s2 != null) s2.setText(String.valueOf(p2Score));
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (s1 != null) s1.setText(String.valueOf(ga.getP1Total() + p1Score));
+            if (s2 != null) s2.setText(String.valueOf(ga.getP2Total() + p2Score));
+        }
     }
 
     private void startCountdown(int seconds, Runnable onFinish) {
