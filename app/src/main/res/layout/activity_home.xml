@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="32dp"
+    android:background="@drawable/bg_sky_gradient">
+
+    <!-- Logo / naslov -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🏛️"
+        android:textSize="72sp"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SLAGALICA"
+        android:fontFamily="sans-serif-black"
+        android:textColor="#FFFFFF"
+        android:textSize="36sp"
+        android:letterSpacing="0.06"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/tvHomeGreeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dobrodošao!"
+        android:fontFamily="sans-serif"
+        android:textColor="#DDEAFF"
+        android:textSize="15sp"
+        android:layout_marginBottom="48dp"/>
+
+    <!-- Igraj Online -->
+    <Button
+        android:id="@+id/btnPlayOnline"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:text="🌐  IGRAJ ONLINE"
+        android:fontFamily="sans-serif-black"
+        android:textSize="16sp"
+        android:background="@drawable/btn_cartoon_yellow"
+        android:textColor="@color/ink"
+        android:layout_marginBottom="14dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="18dp"/>
+
+    <!-- Igraj Offline -->
+    <Button
+        android:id="@+id/btnPlayOffline"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:text="🤖  IGRAJ VS BOT"
+        android:fontFamily="sans-serif-black"
+        android:textSize="16sp"
+        android:background="@drawable/btn_cartoon_blue"
+        android:layout_marginBottom="32dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="18dp"/>
+
+    <!-- Profil -->
+    <Button
+        android:id="@+id/btnProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="👤  Moj profil"
+        android:fontFamily="sans-serif"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="@android:color/transparent"
+        android:stateListAnimator="@null"/>
+
+</LinearLayout>

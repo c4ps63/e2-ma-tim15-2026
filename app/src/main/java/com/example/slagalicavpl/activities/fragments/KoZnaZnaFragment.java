@@ -19,6 +19,7 @@ import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.activities.GameActivity;
 import com.example.slagalicavpl.game.KoZnaZnaEngine;
 import com.example.slagalicavpl.model.Question;
+import com.example.slagalicavpl.multiplayer.KoZnaZnaSync;
 import com.example.slagalicavpl.multiplayer.LocalKoZnaZnaSync;
 import com.example.slagalicavpl.repository.QuestionRepository;
 
@@ -90,9 +91,13 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
         }
 
+        KoZnaZnaSync sync = (getActivity() instanceof GameActivity)
+                ? ((GameActivity) getActivity()).getKoZnaZnaSync()
+                : new LocalKoZnaZnaSync();
+
         engine = new KoZnaZnaEngine(
                 QuestionRepository.getInstance().getQuestionsForGame(),
-                new LocalKoZnaZnaSync(),
+                sync,
                 this);
 
         tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");

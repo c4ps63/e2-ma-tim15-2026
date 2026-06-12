@@ -35,8 +35,8 @@ public class SkockoFragment extends Fragment {
         }));
 
         view.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
-            // TODO KT2: confirm dialog
-            if (getActivity() != null) getActivity().finish();
+            if (getActivity() instanceof GameActivity)
+                ((GameActivity) getActivity()).showKorakPoKorak();
         });
     }
 }
