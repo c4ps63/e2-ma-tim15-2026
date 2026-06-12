@@ -23,6 +23,7 @@ public class KorakPoKorakEngine {
         void onHeaderChanged(String text);
         void onInputCleared();
         void onInputEnabled(boolean enabled);
+        void onAnswerResult(boolean correct, int pts);
         void onRoundTransition(int nextRound, int nextPlayer);
         void onGameOver(int p1Score, int p2Score);
         void onScoreChanged(int p1Score, int p2Score);
@@ -81,15 +82,19 @@ public class KorakPoKorakEngine {
             if (correct) {
                 int pts = BASE_PTS - STEP_DROP * (currentStep - 1);
                 awardPoints(activePlayer, pts);
+                listener.onAnswerResult(true, pts);
                 listener.onInputEnabled(false);
                 listener.onCancelTimers();
                 endRound();
             } else {
+                listener.onAnswerResult(false, 0);
                 listener.onInputCleared();
             }
         } else if (phase == Phase.STEAL) {
             int stealPlayer = (activePlayer == 1) ? 2 : 1;
-            if (correct) awardPoints(stealPlayer, STEAL_PTS);
+            int pts = correct ? STEAL_PTS : 0;
+            if (correct) awardPoints(stealPlayer, pts);
+            listener.onAnswerResult(correct, pts);
             listener.onInputEnabled(false);
             listener.onCancelTimers();
             endRound();

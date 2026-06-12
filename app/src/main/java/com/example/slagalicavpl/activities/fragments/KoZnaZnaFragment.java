@@ -19,6 +19,7 @@ import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.activities.GameActivity;
 import com.example.slagalicavpl.game.KoZnaZnaEngine;
 import com.example.slagalicavpl.model.Question;
+import com.example.slagalicavpl.multiplayer.KoZnaZnaSync;
 import com.example.slagalicavpl.multiplayer.LocalKoZnaZnaSync;
 import com.example.slagalicavpl.repository.QuestionRepository;
 
@@ -84,9 +85,19 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
                 ((GameActivity) getActivity()).showSpojnice();
         });
 
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+        }
+
+        KoZnaZnaSync sync = (getActivity() instanceof GameActivity)
+                ? ((GameActivity) getActivity()).getKoZnaZnaSync()
+                : new LocalKoZnaZnaSync();
+
         engine = new KoZnaZnaEngine(
                 QuestionRepository.getInstance().getQuestionsForGame(),
-                new LocalKoZnaZnaSync(),
+                sync,
                 this);
 
         tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");
@@ -140,8 +151,11 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
 
     @Override
     public void onScoreChanged(int localScore, int opponentScore) {
-        if (tvP1Score != null) tvP1Score.setText(String.valueOf(localScore));
-        if (tvP2Score != null) tvP2Score.setText(String.valueOf(opponentScore));
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total() + localScore));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total() + opponentScore));
+        }
     }
 
     @Override
@@ -151,6 +165,9 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
         tvQuestionLabel.setText("KRAJ IGRE");
         tvQuestion.setText("TI: " + localScore + " bod.   PROTIVNIK: " + opponentScore + " bod.");
         tvTimer.setText("✓");
+
+        if (getActivity() instanceof GameActivity)
+            ((GameActivity) getActivity()).addScores(localScore, opponentScore);
 
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)

@@ -50,4 +50,12 @@ public class KorakRepository {
     public KorakPuzzle getRandomPuzzle() {
         return PUZZLES[rng.nextInt(PUZZLES.length)];
     }
+
+    public KorakPuzzle getPuzzleByIndex(int idx) {
+        return PUZZLES[idx % PUZZLES.length];
+    }
+
+    public int getRandomIndex() {
+        return rng.nextInt(PUZZLES.length);
+    }
 }

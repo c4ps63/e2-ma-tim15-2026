@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "928308480133",
+    "project_id": "slagalica-vrtlogalica",
+    "storage_bucket": "slagalica-vrtlogalica.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:928308480133:android:ad5b2561ff15c6992ac1ec",
+        "android_client_info": {
+          "package_name": "com.example.slagalicavpl"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmA6PD3t76ByGK4t5_4o3F01DQKShpebs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
