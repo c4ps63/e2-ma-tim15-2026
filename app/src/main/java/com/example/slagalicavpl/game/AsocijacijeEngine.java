@@ -2,6 +2,7 @@ package com.example.slagalicavpl.game;
 
 import com.example.slagalicavpl.model.AsocijacijePuzzle;
 import com.example.slagalicavpl.multiplayer.AsocijacijeSync;
+import com.example.slagalicavpl.util.StringNormalizer;
 
 public class AsocijacijeEngine {
 
@@ -80,7 +81,7 @@ public class AsocijacijeEngine {
     public boolean guessColumn(int col, String text) {
         if (!localsTurn || paused) return false;
         if (colSolved[col]) return false;
-        if (text.trim().equalsIgnoreCase(currentPuzzle.colSolutions[col])) {
+        if (StringNormalizer.matches(text, currentPuzzle.colSolutions[col])) {
             int pts = colScore(col);
             localRoundPts += pts;
             colSolved[col] = true;
@@ -97,7 +98,7 @@ public class AsocijacijeEngine {
 
     public boolean guessFinal(String text) {
         if (!localsTurn || paused || finalSolved) return false;
-        if (text.trim().equalsIgnoreCase(currentPuzzle.finalSolution)) {
+        if (StringNormalizer.matches(text, currentPuzzle.finalSolution)) {
             int pts = finalScore();
             localRoundPts += pts;
             finalSolved = true;
