@@ -138,9 +138,6 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             return false;
         });
 
-        view.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
-            if (getActivity() instanceof GameActivity)
-                ((GameActivity) getActivity()).showSkocko();
         // Surrender
         root.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
             cancelTimer();

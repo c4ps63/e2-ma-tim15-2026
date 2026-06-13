@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:background="@drawable/bg_sky_gradient">
 
-    <!-- Header — tamni bg_hud gradijent -->
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,7 +51,6 @@
             android:id="@+id/tvUnreadBadge"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
-            android:text="3"
             android:fontFamily="sans-serif-black"
             android:textSize="14sp"
             android:textColor="@color/ink"
@@ -60,13 +59,14 @@
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
             android:paddingTop="4dp"
-            android:paddingBottom="8dp"/>
+            android:paddingBottom="8dp"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <View android:layout_width="match_parent" android:layout_height="1dp"
         android:background="#60FFFFFF"/>
 
-    <!-- Filter chips: SVE / NEPROČITANE -->
+    <!-- Filter + označi sve -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -104,357 +104,34 @@
             android:textSize="13sp"
             android:textColor="@color/ink"
             android:text="@string/filter_unread"
-            android:background="@drawable/card_paper"/>
+            android:background="@drawable/card_paper"
+            android:layout_marginEnd="10dp"/>
+
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btnMarkAllRead"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            style="@style/CartoonButton"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:textSize="11sp"
+            android:textColor="#FFFFFF"
+            android:text="@string/btn_mark_all_read"
+            android:background="@drawable/btn_cartoon_blue"/>
     </LinearLayout>
 
-    <!-- Lista notifikacija -->
-    <androidx.core.widget.NestedScrollView
+    <!-- Dinamička lista -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvNotifications"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="20dp">
-
-            <!-- Dugme "Označi sve kao pročitane" -->
-            <Button
-                android:id="@+id/btnMarkAllRead"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                style="@style/CartoonButton"
-                android:paddingTop="4dp"
-                android:paddingBottom="10dp"
-                android:textSize="13sp"
-                android:textColor="#FFFFFF"
-                android:text="@string/btn_mark_all_read"
-                android:background="@drawable/btn_cartoon_blue"
-                android:layout_marginBottom="12dp"/>
-
-            <!-- Notifikacija 1: CHAT — nepročitana -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/card_paper"
-                android:paddingBottom="6dp"
-                android:layout_marginBottom="10dp">
-
-                <!-- Obojena leva traka -->
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/sky_light"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="4dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="26dp"
-                            android:text="ČET"
-                            android:fontFamily="sans-serif-black"
-                            android:textSize="9sp"
-                            android:textColor="#FFFFFF"
-                            android:background="@drawable/btn_cartoon_blue"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="4dp"
-                            android:layout_marginEnd="8dp"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="pre 2 min"
-                            android:fontFamily="sans-serif"
-                            android:textSize="10sp"
-                            android:textColor="@color/ink"
-                            android:alpha="0.5"
-                            android:gravity="end"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="MARKO: Hoćeš revanš?"
-                        android:fontFamily="sans-serif-black"
-                        android:textSize="13sp"
-                        android:textColor="@color/ink"
-                        android:layout_marginBottom="2dp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Nova poruka od Marko Petrović"
-                        android:fontFamily="sans-serif"
-                        android:textSize="11sp"
-                        android:textColor="@color/ink"
-                        android:alpha="0.6"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Notifikacija 2: RANG — nepročitana -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/card_paper"
-                android:paddingBottom="6dp"
-                android:layout_marginBottom="10dp">
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/eu_1"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="4dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="26dp"
-                            android:text="RANG"
-                            android:fontFamily="sans-serif-black"
-                            android:textSize="9sp"
-                            android:textColor="@color/ink"
-                            android:background="@drawable/btn_cartoon_yellow"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="4dp"
-                            android:layout_marginEnd="8dp"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="pre 1h"
-                            android:fontFamily="sans-serif"
-                            android:textSize="10sp"
-                            android:textColor="@color/ink"
-                            android:alpha="0.5"
-                            android:gravity="end"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Ušao si u TOP 10!"
-                        android:fontFamily="sans-serif-black"
-                        android:textSize="13sp"
-                        android:textColor="@color/ink"
-                        android:layout_marginBottom="2dp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Trenutno si na 8. mestu nedeljne rang liste"
-                        android:fontFamily="sans-serif"
-                        android:textSize="11sp"
-                        android:textColor="@color/ink"
-                        android:alpha="0.6"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Notifikacija 3: NAGRADA — nepročitana -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/card_paper"
-                android:paddingBottom="6dp"
-                android:layout_marginBottom="10dp">
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/sa_1"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="4dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="26dp"
-                            android:text="NAGRADA"
-                            android:fontFamily="sans-serif-black"
-                            android:textSize="9sp"
-                            android:textColor="#FFFFFF"
-                            android:background="@drawable/btn_cartoon_green"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="4dp"
-                            android:layout_marginEnd="8dp"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="pre 3h"
-                            android:fontFamily="sans-serif"
-                            android:textSize="10sp"
-                            android:textColor="@color/ink"
-                            android:alpha="0.5"
-                            android:gravity="end"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Primio si +5 žetona!"
-                        android:fontFamily="sans-serif-black"
-                        android:textSize="13sp"
-                        android:textColor="@color/ink"
-                        android:layout_marginBottom="2dp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Nedeljna nagrada za 1. mesto u regionu"
-                        android:fontFamily="sans-serif"
-                        android:textSize="11sp"
-                        android:textColor="@color/ink"
-                        android:alpha="0.6"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Notifikacija 4: OSTALO — pročitana (smanjena alpha) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@drawable/card_paper"
-                android:paddingBottom="6dp"
-                android:alpha="0.55"
-                android:layout_marginBottom="10dp">
-
-                <View
-                    android:layout_width="5dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/sky_dark"/>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="4dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="26dp"
-                            android:text="OSTALO"
-                            android:fontFamily="sans-serif-black"
-                            android:textSize="9sp"
-                            android:textColor="@color/ink"
-                            android:background="@drawable/card_paper"
-                            android:gravity="center"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="4dp"
-                            android:layout_marginEnd="8dp"/>
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="juče"
-                            android:fontFamily="sans-serif"
-                            android:textSize="10sp"
-                            android:textColor="@color/ink"
-                            android:alpha="0.5"
-                            android:gravity="end"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Dobrodošao u Ligu 3!"
-                        android:fontFamily="sans-serif-black"
-                        android:textSize="13sp"
-                        android:textColor="@color/ink"
-                        android:layout_marginBottom="2dp"/>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Napredovao si u narednu ligu. Zarađuješ +3 žetona dnevno"
-                        android:fontFamily="sans-serif"
-                        android:textSize="11sp"
-                        android:textColor="@color/ink"
-                        android:alpha="0.6"/>
-                </LinearLayout>
-            </LinearLayout>
-
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="20dp"/>
 
 </LinearLayout>
