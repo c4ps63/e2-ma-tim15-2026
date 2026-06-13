@@ -361,6 +361,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     }
 
     private void startRoundCountdown() {
+        View timerWrap = getView() != null ? getView().findViewById(R.id.timer_wrap) : null;
+        if (timerWrap != null) timerWrap.setVisibility(View.VISIBLE);
         setHudNumber(ROUND_SECS, false);
         roundTimer = new CountDownTimer(ROUND_SECS * 1000L, 1000) {
             @Override public void onTick(long msLeft) {

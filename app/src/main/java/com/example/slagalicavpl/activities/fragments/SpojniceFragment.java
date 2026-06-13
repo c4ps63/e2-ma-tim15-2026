@@ -33,6 +33,7 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     private final Button[] rightBtns        = new Button[5];
     private final View[]   connectors       = new View[5];
     private final boolean[] connectedDisplay = new boolean[5];
+    private final boolean[] lockedWrong      = new boolean[5];
 
     private TextView tvStatus;
     private TextView tvTimerHud;
@@ -177,6 +178,7 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         boolean ok = engine.connectPair(left, row);
         if (!ok) {
             // Lock the left button permanently — wrong guess costs you that item
+            lockedWrong[left] = true;
             leftBtns[left].setEnabled(false);
             leftBtns[left].setBackgroundResource(R.drawable.btn_cartoon_red);
             leftBtns[left].setAlpha(0.5f);
@@ -195,7 +197,7 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         boolean localActive = isLocalActive();
 
         for (int i = 0; i < 5; i++) {
-            if (!connectedDisplay[i]) {
+            if (!connectedDisplay[i] && !lockedWrong[i]) {
                 leftBtns[i].setEnabled(localActive);
                 rightBtns[i].setEnabled(localActive);
             }
@@ -272,6 +274,7 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             rightBtns[i].setEnabled(localActive);
             connectors[i].setVisibility(View.INVISIBLE);
             connectedDisplay[i] = false;
+            lockedWrong[i] = false;
         }
         selectedLeft = -1;
         btnConfirm.setEnabled(localActive);

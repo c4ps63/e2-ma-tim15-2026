@@ -396,13 +396,16 @@ public class KorakPoKorakFragment extends Fragment
 
     @Override
     public void onGameOver(int p1Score, int p2Score) {
+        // Include scores from the passive round (the round where we listened via Firebase)
+        int totalP1 = passiveP1pts + p1Score;
+        int totalP2 = passiveP2pts + p2Score;
         if (multiplayer && korakSync != null) {
-            korakSync.writeGameOver(p1Score, p2Score);
+            korakSync.writeGameOver(totalP1, totalP2);
             korakSync.cancelListener();
         }
         setHudClock();
         if (getActivity() instanceof GameActivity)
-            ((GameActivity) getActivity()).addScores(p1Score, p2Score);
+            ((GameActivity) getActivity()).addScores(totalP1, totalP2);
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)
                 ((GameActivity) getActivity()).showMojBroj();

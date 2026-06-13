@@ -96,6 +96,13 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         tvTimerHud = root.findViewById(R.id.timer_value);
         tvP1Score  = root.findViewById(R.id.p1_score);
         tvP2Score  = root.findViewById(R.id.p2_score);
+
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+        }
+
         etGuess    = root.findViewById(R.id.etGuess);
         btnSubmit  = root.findViewById(R.id.btnSubmit);
         btnPass    = root.findViewById(R.id.btnPass);
