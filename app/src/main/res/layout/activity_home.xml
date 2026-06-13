@@ -72,6 +72,39 @@
         android:textColor="#FFFFFF"
         android:textSize="14sp"
         android:background="@android:color/transparent"
-        android:stateListAnimator="@null"/>
+        android:stateListAnimator="@null"
+        android:layout_marginBottom="10dp"/>
+
+    <!-- Notifikacije — dugme sa bedžom nepročitanih -->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnNotifications"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔔  Obaveštenja"
+            android:fontFamily="sans-serif"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:background="@android:color/transparent"
+            android:stateListAnimator="@null"/>
+
+        <!-- Bedž nepročitanih (prikazan u gornjem desnom uglu) -->
+        <TextView
+            android:id="@+id/tvNotifBadge"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-black"
+            android:textSize="10sp"
+            android:textColor="@color/ink"
+            android:background="@drawable/btn_cartoon_yellow"
+            android:gravity="center"
+            android:paddingBottom="2dp"
+            android:visibility="gone"/>
+    </FrameLayout>
 
 </LinearLayout>
