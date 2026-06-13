@@ -54,7 +54,13 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
     private final int[] currentGuess = {-1, -1, -1, -1};
     private int         activeRow    = 0;
     private boolean     localActive  = false;
-    private boolean     bonusPhase   = false;  // true during R1_BONUS_OPP / R2_BONUS_LOCAL
+    private boolean     bonusPhase   = false;
+    private SkockoEngine.Phase currentSkockoPhase = SkockoEngine.Phase.R1_LOCAL;
+
+    // Firebase sync ref za pisanje pokušaja i inicijalizaciju tajni
+    private com.example.slagalicavpl.multiplayer.FirebaseSkockoSync firebaseSkockoSync;
+    private String  myRole         = "p1";
+    private boolean localStartsFirst = true;
 
     // ── lifecycle ────────────────────────────────────────────────────────────
 
@@ -130,14 +136,46 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         if (root.findViewById(R.id.p2_name) != null)
             ((TextView) root.findViewById(R.id.p2_name)).setText("PROTIVNIK");
 
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+        }
+
         btnConfirm.setOnClickListener(v -> onConfirmAttempt());
         root.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
             cancelTimer();
             engine.onTimerExpired();
         });
 
-        engine = new SkockoEngine(new LocalSkockoSync(), this);
-        engine.startGame();
+        boolean multiplayer = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isMultiplayer();
+        if (multiplayer && getActivity() instanceof GameActivity) {
+            com.google.firebase.database.DatabaseReference roomRef =
+                    ((GameActivity) getActivity()).getRoomRef();
+            myRole           = ((GameActivity) getActivity()).getMyRole();
+            localStartsFirst = "p1".equals(myRole);
+            firebaseSkockoSync = new com.example.slagalicavpl.multiplayer.FirebaseSkockoSync(
+                    roomRef, myRole);
+            engine = new SkockoEngine(firebaseSkockoSync, this);
+            engine.setLocalStartsFirst(localStartsFirst);
+
+            if ("p1".equals(myRole)) {
+                // P1 generiše tajne, piše na Firebase, pa starta
+                engine.startGame(); // generiše round1Secret i round2Secret
+                firebaseSkockoSync.writeSecrets(
+                        engine.getRound1Secret(), engine.getRound2Secret());
+            } else {
+                // P2 čeka tajne od P1
+                firebaseSkockoSync.readSecrets((s1, s2) -> {
+                    if (getView() == null) return;
+                    engine.startGame(s1, s2);
+                });
+            }
+        } else {
+            engine = new SkockoEngine(new LocalSkockoSync(), this);
+            engine.startGame();
+        }
     }
 
     @Override
@@ -151,8 +189,11 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
     @Override
     public void onRoundStarted(int round, SkockoEngine.Phase phase) {
+        currentSkockoPhase = phase;
         bonusPhase  = false;
-        localActive = (phase == SkockoEngine.Phase.R1_LOCAL);
+        localActive = localStartsFirst
+                ? (phase == SkockoEngine.Phase.R1_LOCAL)
+                : (phase == SkockoEngine.Phase.R2_OPP);
         activeRow   = 0;
         resetBoard();           // clears all 6 rows + opp row + sol row
         resetGuessState();
@@ -166,8 +207,23 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
     @Override
     public void onPhaseChanged(SkockoEngine.Phase phase) {
+        currentSkockoPhase = phase;
         bonusPhase  = true;
-        localActive = (phase == SkockoEngine.Phase.R2_BONUS_LOCAL);
+        localActive = localStartsFirst
+                ? (phase == SkockoEngine.Phase.R2_BONUS_LOCAL)
+                : (phase == SkockoEngine.Phase.R1_BONUS_OPP);
+
+        // Write done=false for the main phase that just ended without solving.
+        // Only the player who was active in that phase writes the signal.
+        // P1 was active in R1_LOCAL → entering R1_BONUS_OPP signals "r1main_p1 = false"
+        // P2 was active in R2_OPP  → entering R2_BONUS_LOCAL signals "r2main_p2 = false"
+        if (firebaseSkockoSync != null) {
+            if (phase == SkockoEngine.Phase.R1_BONUS_OPP && localStartsFirst) {
+                firebaseSkockoSync.writePhaseDone("r1main_p1", false);
+            } else if (phase == SkockoEngine.Phase.R2_BONUS_LOCAL && !localStartsFirst) {
+                firebaseSkockoSync.writePhaseDone("r2main_p2", false);
+            }
+        }
 
         // Keep board rows intact — only clear the stealing row
         for (int c = 0; c < 4; c++) oppCells[c].setText("");
@@ -191,8 +247,12 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
     @Override
     public void onAttemptResult(int attemptIndex, int[] guess, int hits, int nears,
                                 boolean byLocal) {
+        // Piši lokalni pokušaj na Firebase da protivnik može da ga vidi
+        if (byLocal && firebaseSkockoSync != null) {
+            firebaseSkockoSync.writeAttempt(localPhaseKey(), attemptIndex, guess, hits, nears);
+        }
+
         if (bonusPhase) {
-            // Stealing attempt: show in the opponent row (above solution)
             for (int c = 0; c < 4; c++)
                 oppCells[c].setText(SkockoEngine.SYMBOLS[guess[c]]);
             setPegsArray(oppPegs, hits, nears);
@@ -201,14 +261,14 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
                 setPickerEnabled(false);
             }
         } else {
-            // Main phase: fill next board row
             if (activeRow < 6) {
                 fillRow(activeRow, guess);
                 setPegs(activeRow, hits, nears);
                 activeRow++;
+                if (localActive) wireActiveRowListeners();
             }
             if (byLocal) {
-                clearCurrentGuess();   // clears state + wires next row listeners
+                clearCurrentGuess();
                 setPickerEnabled(true);
                 btnConfirm.setEnabled(false);
             }
@@ -220,6 +280,11 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         cancelTimer();
         setPickerEnabled(false);
         btnConfirm.setEnabled(false);
+
+        // Piši "done/false" samo ako je lokalni igrač bio aktivan u ovoj fazi
+        if (localActive && firebaseSkockoSync != null) {
+            firebaseSkockoSync.writePhaseDone(localPhaseKey(), false);
+        }
 
         for (int c = 0; c < 4; c++)
             solCells[c].setText(SkockoEngine.SYMBOLS[secret[c]]);
@@ -236,6 +301,11 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         setPickerEnabled(false);
         btnConfirm.setEnabled(false);
 
+        // Piši "done/true" za tekuću fazu na Firebase
+        if (byLocal && firebaseSkockoSync != null) {
+            firebaseSkockoSync.writePhaseDone(localPhaseKey(), true);
+        }
+
         for (int c = 0; c < 4; c++)
             solCells[c].setText(SkockoEngine.SYMBOLS[secret[c]]);
 
@@ -248,8 +318,14 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
     @Override
     public void onScoreChanged(int localScore, int oppScore) {
-        if (tvP1Score != null) tvP1Score.setText(String.valueOf(localScore));
-        if (tvP2Score != null) tvP2Score.setText(String.valueOf(oppScore));
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total() + localScore));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total() + oppScore));
+        } else {
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(localScore));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(oppScore));
+        }
     }
 
     @Override
@@ -268,10 +344,22 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
             tvStatus.setText("KRAJ  ·  TI: " + localScore + "   PROTIVNIK: " + oppScore);
         if (tvTimerHud != null) tvTimerHud.setText("✓");
 
+        if (getActivity() instanceof GameActivity)
+            ((GameActivity) getActivity()).addScores(localScore, oppScore);
+
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)
                 ((GameActivity) getActivity()).showKorakPoKorak();
         }, 2500);
+    }
+
+    /** Returns the Firebase phase key for the current local-active phase. */
+    private String localPhaseKey() {
+        if (localStartsFirst) {
+            return (currentSkockoPhase == SkockoEngine.Phase.R1_LOCAL) ? "r1main_p1" : "r2bonus_p1";
+        } else {
+            return (currentSkockoPhase == SkockoEngine.Phase.R1_BONUS_OPP) ? "r1bonus_p2" : "r2main_p2";
+        }
     }
 
     // ── user interaction ──────────────────────────────────────────────────────
@@ -303,9 +391,132 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         btnConfirm.setEnabled(full);
     }
 
-        view.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
-            if (getActivity() instanceof GameActivity)
-                ((GameActivity) getActivity()).showKorakPoKorak();
-        });
+    private void onConfirmAttempt() {
+        if (!localActive) return;
+        for (int g : currentGuess) if (g < 0) return;
+        engine.submitAttempt(currentGuess.clone());
+    }
+
+    // ── board helpers ─────────────────────────────────────────────────────────
+
+    private void resetBoard() {
+        for (int r = 0; r < 6; r++) {
+            for (int c = 0; c < 4; c++) {
+                cells[r][c].setText("");
+                cells[r][c].setBackgroundResource(R.drawable.bg_skocko_cell_empty);
+                cells[r][c].setOnClickListener(null);
+            }
+            setPegs(r, 0, 0);
+        }
+        for (int c = 0; c < 4; c++) {
+            oppCells[c].setText("");
+            solCells[c].setText("");
+        }
+        setPegsArray(oppPegs, 0, 0);
+    }
+
+    private void resetGuessState() {
+        for (int i = 0; i < 4; i++) currentGuess[i] = -1;
+    }
+
+    private void clearCurrentGuess() {
+        for (int c = 0; c < 4; c++) {
+            currentGuess[c] = -1;
+            cells[activeRow][c].setText("");
+            cells[activeRow][c].setBackgroundResource(R.drawable.bg_skocko_cell_empty);
+        }
+        btnConfirm.setEnabled(false);
+    }
+
+    private void wireActiveRowListeners() {
+        for (int c = 0; c < 4; c++) {
+            final int col = c;
+            cells[activeRow][col].setOnClickListener(v -> {
+                if (currentGuess[col] >= 0) {
+                    currentGuess[col] = -1;
+                    cells[activeRow][col].setText("");
+                    cells[activeRow][col].setBackgroundResource(R.drawable.bg_skocko_cell_empty);
+                    btnConfirm.setEnabled(false);
+                }
+            });
+        }
+    }
+
+    private void clearBonusCellOnTap(int col) {
+        if (currentGuess[col] >= 0) {
+            currentGuess[col] = -1;
+            oppCells[col].setText("");
+            btnConfirm.setEnabled(false);
+        }
+    }
+
+    private void fillRow(int row, int[] guess) {
+        for (int c = 0; c < 4; c++) {
+            cells[row][c].setText(SkockoEngine.SYMBOLS[guess[c]]);
+            cells[row][c].setBackgroundResource(R.drawable.bg_skocko_cell_filled);
+        }
+    }
+
+    private void setPegs(int row, int hits, int nears) {
+        setPegsArray(pegs[row], hits, nears);
+    }
+
+    private void setPegsArray(View[] pegRow, int hits, int nears) {
+        for (int i = 0; i < 4; i++) {
+            if      (i < hits)        pegRow[i].setBackgroundResource(R.drawable.bg_peg_hit);
+            else if (i < hits+nears)  pegRow[i].setBackgroundResource(R.drawable.bg_peg_near);
+            else                      pegRow[i].setBackgroundResource(R.drawable.bg_peg_miss);
+        }
+    }
+
+    private void setPickerEnabled(boolean enabled) {
+        for (TextView t : picker) if (t != null) t.setEnabled(enabled);
+    }
+
+    // ── timer ────────────────────────────────────────────────────────────────
+
+    private void startTimer(int secs) {
+        cancelTimer();
+        updateTimerHud(secs);
+        roundTimer = new CountDownTimer(secs * 1000L, 1000) {
+            @Override public void onTick(long msLeft) { updateTimerHud((int)(msLeft / 1000)); }
+            @Override public void onFinish() {
+                updateTimerHud(0);
+                engine.onTimerExpired();
+            }
+        }.start();
+    }
+
+    private void cancelTimer() {
+        if (roundTimer != null) { roundTimer.cancel(); roundTimer = null; }
+    }
+
+    private void updateTimerHud(int s) {
+        if (tvTimerHud == null) return;
+        tvTimerHud.setText(String.valueOf(s));
+        tvTimerHud.setTextColor(s <= WARN_SECS ? Color.RED : Color.parseColor("#102341"));
+    }
+
+    private int timerSecsFor(SkockoEngine.Phase phase) {
+        return (phase == SkockoEngine.Phase.R1_BONUS_OPP
+             || phase == SkockoEngine.Phase.R2_BONUS_LOCAL) ? BONUS_SECS : ROUND_SECS;
+    }
+
+    // ── status / round banner ────────────────────────────────────────────────
+
+    private void updateRoundBanner(int round, SkockoEngine.Phase phase) {
+        if (tvRound == null) return;
+        tvRound.setText("RUNDA " + round);
+    }
+
+    private void updateStatus(SkockoEngine.Phase phase) {
+        if (tvStatus == null) return;
+        switch (phase) {
+            case R1_LOCAL:      tvStatus.setText("TVOJ RED — POGODI ŠIFRICU"); break;
+            case R1_BONUS_OPP:  tvStatus.setText("PROTIVNIK POKUŠAVA DA UKRADE"); break;
+            case R2_OPP:        tvStatus.setText("PROTIVNIK NA REDU"); break;
+            case R2_BONUS_LOCAL:tvStatus.setText("TVOJ RED — UKRADI ŠIFRICU!"); break;
+            default:            tvStatus.setText(""); break;
+        }
     }
 }

@@ -91,17 +91,43 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
         }
 
-        KoZnaZnaSync sync = (getActivity() instanceof GameActivity)
-                ? ((GameActivity) getActivity()).getKoZnaZnaSync()
-                : new LocalKoZnaZnaSync();
+        boolean multiplayer = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isMultiplayer();
 
-        engine = new KoZnaZnaEngine(
-                QuestionRepository.getInstance().getQuestionsForGame(),
-                sync,
-                this);
+        if (multiplayer && getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync fbSync =
+                    new com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync(
+                            ga.getRoomRef(), ga.getMyRole());
 
-        tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");
-        engine.startGame();
+            tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");
+
+            if ("p1".equals(ga.getMyRole())) {
+                int[] indices = QuestionRepository.getInstance().generateShuffledIndices();
+                fbSync.writeQuestionOrder(indices);
+                engine = new KoZnaZnaEngine(
+                        QuestionRepository.getInstance().getQuestionsByIndices(indices),
+                        fbSync, this);
+                engine.startGame();
+            } else {
+                fbSync.readQuestionOrder(indices -> {
+                    if (getView() == null) return;
+                    engine = new KoZnaZnaEngine(
+                            QuestionRepository.getInstance().getQuestionsByIndices(indices),
+                            fbSync, this);
+                    engine.startGame();
+                });
+            }
+        } else {
+            KoZnaZnaSync sync = (getActivity() instanceof GameActivity)
+                    ? ((GameActivity) getActivity()).getKoZnaZnaSync()
+                    : new LocalKoZnaZnaSync();
+            engine = new KoZnaZnaEngine(
+                    QuestionRepository.getInstance().getQuestionsForGame(),
+                    sync, this);
+            tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");
+            engine.startGame();
+        }
     }
 
     @Override
@@ -112,7 +138,7 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
     }
 
     private void onAnswerTapped(char option) {
-        if (engine.getPhase() != KoZnaZnaEngine.Phase.QUESTION) return;
+        if (engine == null || engine.getPhase() != KoZnaZnaEngine.Phase.QUESTION) return;
         long elapsed = System.currentTimeMillis() - questionStartTime;
         setAnswersEnabled(false);
         engine.submitAnswer(option, elapsed);
@@ -140,11 +166,15 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
         cancelTimer();
         setAnswersEnabled(false);
 
+        // Show correct answer (green), my wrong answer (red), opponent's wrong answer (blue)
         highlightCorrect(correctOption);
         if (localAnswer != 0 && localAnswer != correctOption) highlightWrong(localAnswer);
+        if (opponentAnswer != 0 && opponentAnswer != correctOption) highlightOpponent(opponentAnswer);
 
+        String opp = opponentAnswer != 0 ? String.valueOf(opponentAnswer) : "—";
         String deltaText = (localDelta > 0 ? "+" : "") + localDelta;
-        tvQuestionLabel.setText("TAČNO: " + correctOption + "   TI: " + deltaText);
+        tvQuestionLabel.setText("TAČNO: " + correctOption
+                + "   TI: " + deltaText + "   OPP: " + opp);
 
         handler.postDelayed(() -> engine.nextQuestion(), RESULT_SHOW_MS);
     }
@@ -227,6 +257,10 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
 
     private void highlightWrong(char option) {
         buttonForOption(option).setBackgroundResource(R.drawable.btn_cartoon_red);
+    }
+
+    private void highlightOpponent(char option) {
+        buttonForOption(option).setBackgroundResource(R.drawable.btn_cartoon_blue);
     }
 
     private Button buttonForOption(char option) {

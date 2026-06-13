@@ -56,4 +56,21 @@ public class QuestionRepository {
         Collections.shuffle(pool);
         return pool.subList(0, 5);
     }
+
+    /** Returns questions by the given indices (for shared multiplayer order). */
+    public List<Question> getQuestionsByIndices(int[] indices) {
+        List<Question> result = new ArrayList<>();
+        for (int i : indices) result.add(ALL[i]);
+        return result;
+    }
+
+    /** Returns a shuffled array of 5 indices into ALL[]. P1 calls this and shares with P2. */
+    public int[] generateShuffledIndices() {
+        List<Integer> pool = new ArrayList<>();
+        for (int i = 0; i < ALL.length; i++) pool.add(i);
+        Collections.shuffle(pool);
+        int[] result = new int[5];
+        for (int i = 0; i < 5; i++) result[i] = pool.get(i);
+        return result;
+    }
 }

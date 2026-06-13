@@ -40,11 +40,16 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     private TextView tvP2Score;
     private Button   btnConfirm;
 
-    private SpojniceEngine       engine;
-    private CountDownTimer        roundTimer;
-    private final Handler         handler = new Handler(Looper.getMainLooper());
-    private int                   selectedLeft = -1;
-    private SpojniceEngine.Phase  currentPhase;
+    private SpojniceEngine                                          engine;
+    private CountDownTimer                                          roundTimer;
+    private final Handler                                           handler = new Handler(Looper.getMainLooper());
+    private int                                                     selectedLeft = -1;
+    private SpojniceEngine.Phase                                    currentPhase;
+    private int                                                     currentRound = 1;
+    private String                                                  myRole = "p1";
+    private boolean                                                 localStartsFirst = true;
+
+    private com.example.slagalicavpl.multiplayer.FirebaseSpojniceSync firebaseSpojSync;
 
     @Nullable
     @Override
@@ -106,13 +111,48 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
         }
 
-        engine = new SpojniceEngine(
-                repo.getRound1Pairs(),
-                repo.getRound2Pairs(),
-                new LocalSpojniceSync(),
-                this);
+        boolean multiplayer = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isMultiplayer();
 
-        engine.startGame();
+        if (multiplayer && getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            myRole = ga.getMyRole();
+            localStartsFirst = "p1".equals(myRole);
+
+            com.google.firebase.database.DatabaseReference roomRef = ga.getRoomRef();
+            firebaseSpojSync = new com.example.slagalicavpl.multiplayer.FirebaseSpojniceSync(
+                    roomRef, myRole);
+
+            engine = new SpojniceEngine(
+                    repo.getRound1Pairs(),
+                    repo.getRound2Pairs(),
+                    firebaseSpojSync,
+                    this);
+            engine.setLocalStartsFirst(localStartsFirst);
+
+            if ("p1".equals(myRole)) {
+                // P1 generates slots for both rounds before starting the engine
+                int[] slots1 = generateShuffledSlots();
+                int[] slots2 = generateShuffledSlots();
+                engine.setExternalSlots(slots1, slots2);
+                firebaseSpojSync.writeAllSlots(slots1, slots2);
+                engine.startGame(); // uses externalSlots1 for round 1
+            } else {
+                // P2 reads slots from Firebase, then starts
+                firebaseSpojSync.readAllSlots((s1, s2) -> {
+                    if (getView() == null) return;
+                    engine.setExternalSlots(s1, s2);
+                    engine.startGame();
+                });
+            }
+        } else {
+            engine = new SpojniceEngine(
+                    repo.getRound1Pairs(),
+                    repo.getRound2Pairs(),
+                    new LocalSpojniceSync(),
+                    this);
+            engine.startGame();
+        }
     }
 
     @Override
@@ -132,17 +172,92 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
 
     private void onRightTapped(int row) {
         if (!isLocalActive() || selectedLeft < 0) return;
-        boolean ok = engine.connectPair(selectedLeft, row);
-        if (!ok) {
-            tvStatus.setText("POGREŠNO!");
-            handler.postDelayed(this::updateStatusText, 800);
-        }
+        int left = selectedLeft;
         clearSelection();
+        boolean ok = engine.connectPair(left, row);
+        if (!ok) {
+            // Lock the left button permanently — wrong guess costs you that item
+            leftBtns[left].setEnabled(false);
+            leftBtns[left].setBackgroundResource(R.drawable.btn_cartoon_red);
+            leftBtns[left].setAlpha(0.5f);
+            tvStatus.setText("POGREŠNO! — ZAKLJUČANO");
+            handler.postDelayed(this::updateStatusText, 1500);
+        }
+    }
+
+    @Override
+    public void onPhaseChanged(SpojniceEngine.Phase phase) {
+        // Write done signal for the phase we're LEAVING (the one that just ended)
+        if (firebaseSpojSync != null) {
+            writeDoneForEndedPhase(phase);
+        }
+        currentPhase = phase;
+        boolean localActive = isLocalActive();
+
+        for (int i = 0; i < 5; i++) {
+            if (!connectedDisplay[i]) {
+                leftBtns[i].setEnabled(localActive);
+                rightBtns[i].setEnabled(localActive);
+            }
+        }
+        selectedLeft = -1;
+        clearLeftHighlights();
+        btnConfirm.setEnabled(localActive);
+
+        // If this is a steal phase and all pairs are already connected, skip immediately
+        boolean isStealPhase = (phase == SpojniceEngine.Phase.R1_OPP
+                             || phase == SpojniceEngine.Phase.R2_LOCAL);
+        if (isStealPhase && localActive) {
+            boolean anyLeft = false;
+            for (boolean c : connectedDisplay) if (!c) { anyLeft = true; break; }
+            if (!anyLeft) {
+                handler.post(() -> engine.pass());
+                return;
+            }
+        }
+
+        updateStatusText();
+        startPhaseTimer();
+    }
+
+    /**
+     * When phase transitions to `newPhase`, the previous phase just ended.
+     * The player who was active in the previous phase writes the done signal.
+     *
+     * Phase transitions:
+     *   R1_LOCAL → R1_OPP : P1 (localStartsFirst) was active → writes p1_r1
+     *   R1_OPP   → R2_OPP : P2 (!localStartsFirst) was active → writes p2_steal
+     *   R2_OPP   → R2_LOCAL: P2 (!localStartsFirst) was active → writes p2_r2
+     *   R2_LOCAL → DONE   : handled in onGameOver
+     */
+    private void writeDoneForEndedPhase(SpojniceEngine.Phase newPhase) {
+        switch (newPhase) {
+            case R1_OPP:
+                // P1 just finished R1_LOCAL
+                if (localStartsFirst) firebaseSpojSync.writePhaseDone("p1_r1");
+                break;
+            case R2_OPP:
+                // P2 just finished R1_OPP (steal) — only P2 writes this
+                if (!localStartsFirst) firebaseSpojSync.writePhaseDone("p2_steal");
+                break;
+            case R2_LOCAL:
+                // P2 just finished R2_OPP — only P2 writes
+                if (!localStartsFirst) firebaseSpojSync.writePhaseDone("p2_r2");
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
     public void onRoundStarted(int round, SpojniceEngine.Phase phase,
                                List<ConnectPair> pairs, int[] rightSlots) {
+        // When P2 (localStartsFirst=false) transitions steal→round2, done signal is sent here
+        // because the engine calls onRoundStarted (not onPhaseChanged) for round boundaries.
+        if (round == 2 && firebaseSpojSync != null && !localStartsFirst) {
+            firebaseSpojSync.writePhaseDone("p2_steal");
+        }
+        currentRound = round;
         currentPhase = phase;
         boolean localActive = isLocalActive();
 
@@ -166,26 +281,13 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     }
 
     @Override
-    public void onPhaseChanged(SpojniceEngine.Phase phase) {
-        currentPhase = phase;
-        boolean localActive = isLocalActive();
-
-        for (int i = 0; i < 5; i++) {
-            if (!connectedDisplay[i]) {
-                leftBtns[i].setEnabled(localActive);
-                rightBtns[i].setEnabled(localActive);
-            }
-        }
-        selectedLeft = -1;
-        clearLeftHighlights();
-        btnConfirm.setEnabled(localActive);
-
-        updateStatusText();
-        startPhaseTimer();
-    }
-
-    @Override
     public void onPairConnected(int leftRow, int rightRow, boolean byLocal) {
+        // Write connection to Firebase when locally active
+        if (byLocal && firebaseSpojSync != null) {
+            String connKey = localConnectionKey();
+            if (connKey != null) firebaseSpojSync.writeConnection(connKey, leftRow, rightRow);
+        }
+
         if (leftRow != rightRow) {
             CharSequence tmp = rightBtns[leftRow].getText();
             rightBtns[leftRow].setText(rightBtns[rightRow].getText());
@@ -205,6 +307,18 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         updateStatusText();
     }
 
+    /** Returns the Firebase connection key for the current local active phase. */
+    private String localConnectionKey() {
+        if (localStartsFirst) {
+            if (currentPhase == SpojniceEngine.Phase.R1_LOCAL) return "conn_p1_r1";
+            if (currentPhase == SpojniceEngine.Phase.R2_LOCAL) return "conn_p1_steal";
+        } else {
+            if (currentPhase == SpojniceEngine.Phase.R1_OPP)  return "conn_p2_steal";
+            if (currentPhase == SpojniceEngine.Phase.R2_OPP)  return "conn_p2_r2";
+        }
+        return null;
+    }
+
     @Override
     public void onScoreChanged(int localScore, int opponentScore) {
         if (getActivity() instanceof GameActivity) {
@@ -218,6 +332,11 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     public void onGameOver(int localScore, int opponentScore) {
         cancelTimer();
         setAllButtonsEnabled(false);
+
+        // P1 writes done signal for its last active phase (R2_LOCAL)
+        if (firebaseSpojSync != null && localStartsFirst)
+            firebaseSpojSync.writePhaseDone("p1_steal");
+
         tvStatus.setText("KRAJ · TI: " + localScore + "   PROTIVNIK: " + opponentScore);
         if (tvTimerHud != null) tvTimerHud.setText("✓");
 
@@ -261,11 +380,21 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         for (boolean c : connectedDisplay) if (c) cnt++;
         String label;
         switch (currentPhase) {
-            case R1_LOCAL: label = "RUNDA 1 · TI IGRAŠ";           break;
-            case R1_OPP:   label = "RUNDA 1 · PROTIVNIK KRADE";     break;
-            case R2_OPP:   label = "RUNDA 2 · PROTIVNIK IGRA";      break;
-            case R2_LOCAL: label = "RUNDA 2 · TI KRADEŠ";           break;
-            default:       label = "KRAJ IGRE";                      break;
+            case R1_LOCAL:
+                label = localStartsFirst ? "RUNDA 1 · TI IGRAŠ" : "RUNDA 1 · PROTIVNIK IGRA";
+                break;
+            case R1_OPP:
+                label = localStartsFirst ? "RUNDA 1 · PROTIVNIK KRADE" : "RUNDA 1 · TI KRADEŠ";
+                break;
+            case R2_OPP:
+                label = localStartsFirst ? "RUNDA 2 · PROTIVNIK IGRA" : "RUNDA 2 · TI IGRAŠ";
+                break;
+            case R2_LOCAL:
+                label = localStartsFirst ? "RUNDA 2 · TI KRADEŠ" : "RUNDA 2 · PROTIVNIK KRADE";
+                break;
+            default:
+                label = "KRAJ IGRE";
+                break;
         }
         tvStatus.setText(label + " · " + cnt + "/5");
     }
@@ -304,7 +433,21 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     }
 
     private boolean isLocalActive() {
-        return currentPhase == SpojniceEngine.Phase.R1_LOCAL
-            || currentPhase == SpojniceEngine.Phase.R2_LOCAL;
+        if (localStartsFirst)
+            return currentPhase == SpojniceEngine.Phase.R1_LOCAL
+                || currentPhase == SpojniceEngine.Phase.R2_LOCAL;
+        else
+            return currentPhase == SpojniceEngine.Phase.R1_OPP
+                || currentPhase == SpojniceEngine.Phase.R2_OPP;
+    }
+
+    private int[] generateShuffledSlots() {
+        int[] s = {0, 1, 2, 3, 4};
+        java.util.Random rng = new java.util.Random();
+        for (int i = 4; i > 0; i--) {
+            int j = rng.nextInt(i + 1);
+            int t = s[i]; s[i] = s[j]; s[j] = t;
+        }
+        return s;
     }
 }

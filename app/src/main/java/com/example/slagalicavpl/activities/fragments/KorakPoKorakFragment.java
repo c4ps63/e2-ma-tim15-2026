@@ -213,6 +213,22 @@ public class KorakPoKorakFragment extends Fragment
             }
 
             @Override
+            public void onGuess(String text, boolean correct) {
+                handler.post(() -> {
+                    etAnswer.setText(text);
+                    etAnswer.setBackgroundResource(correct
+                            ? R.drawable.bg_expression_correct
+                            : R.drawable.bg_expression_wrong);
+                    if (!correct) {
+                        handler.postDelayed(() -> {
+                            if (getView() != null)
+                                etAnswer.setBackgroundResource(R.drawable.bg_expression_display);
+                        }, 350);
+                    }
+                });
+            }
+
+            @Override
             public void onStealPhase() {
                 handler.post(() -> {
                     passiveStealEnabled = true;
@@ -303,6 +319,11 @@ public class KorakPoKorakFragment extends Fragment
         for (int i = 0; i < MAX_STEPS; i++) lockStep(i);
         etAnswer.setText("");
         etAnswer.setBackgroundResource(R.drawable.bg_expression_display);
+        if (tvRound != null) {
+            boolean iAmActive = !multiplayer || isActivePlayer(round);
+            tvRound.setText("RUNDA " + round + "/2  ·  "
+                    + (iAmActive ? "JA" : "PROTIVNIK") + " NA POTEZU");
+        }
     }
 
     @Override
@@ -351,6 +372,9 @@ public class KorakPoKorakFragment extends Fragment
         etAnswer.setBackgroundResource(correct
                 ? R.drawable.bg_expression_correct
                 : R.drawable.bg_expression_wrong);
+        if (multiplayer && korakSync != null) {
+            korakSync.writeGuess(etAnswer.getText().toString().trim(), correct);
+        }
         if (!correct) {
             handler.postDelayed(() -> {
                 if (getView() != null)

@@ -116,26 +116,53 @@ public class GameActivity extends AppCompatActivity {
     }
 
     // ── Navigacione metode koje pozivaju fragmenti ────────────────────────────
-    // Svaki fragment zove ovu metodu; u multiplayer-u to piše u Firebase
-    // i oba uređaja dobijaju notifikaciju.
 
     private void navigateTo(String navKey) {
         if (roomRef != null) {
-            // Piše u Firebase — listener applyNav će biti pozvan na oba uređaja
             roomRef.child("nav").setValue(navKey);
         } else {
-            // Offline — direktna navigacija
             lastNav = navKey;
             applyNav(navKey);
         }
     }
 
-    public void showSpojnice()    { navigateTo(NAV_SPOJNICE); }
-    public void showAsocijacije() { navigateTo(NAV_ASOCIJACIJE); }
-    public void showSkocko()      { navigateTo(NAV_SKOCKO); }
-    public void showKorakPoKorak(){ navigateTo(NAV_KORAK); }
-    public void showMojBroj()     { navigateTo(NAV_MOJBROJ); }
-    public void finishGame()      { navigateTo(NAV_DONE); }
+    /**
+     * Barrier metoda: u online modu čeka da oba igrača signalizuju spremnost
+     * pre nego što navigira na sledeću igru.
+     * U offline modu navigira direktno.
+     */
+    public void signalReady(String navKey) {
+        if (roomRef == null) {
+            lastNav = navKey;
+            applyNav(navKey);
+            return;
+        }
+        // Upiši svoju spremnost
+        roomRef.child("ready").child(myRole).setValue(navKey);
+
+        // P1 koordinira — sluša dok oba nisu spremna
+        if (!"p1".equals(myRole)) return;
+
+        roomRef.child("ready").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                String p1nav = snapshot.child("p1").getValue(String.class);
+                String p2nav = snapshot.child("p2").getValue(String.class);
+                if (navKey.equals(p1nav) && navKey.equals(p2nav)) {
+                    roomRef.child("ready").removeEventListener(this);
+                    navigateTo(navKey);
+                }
+            }
+            @Override public void onCancelled(DatabaseError e) {}
+        });
+    }
+
+    public void showSpojnice()    { signalReady(NAV_SPOJNICE); }
+    public void showAsocijacije() { signalReady(NAV_ASOCIJACIJE); }
+    public void showSkocko()      { signalReady(NAV_SKOCKO); }
+    public void showKorakPoKorak(){ signalReady(NAV_KORAK); }
+    public void showMojBroj()     { signalReady(NAV_MOJBROJ); }
+    public void finishGame()      { signalReady(NAV_DONE); }
 
     // ── Cleanup ───────────────────────────────────────────────────────────────
 

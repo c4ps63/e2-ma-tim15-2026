@@ -1,5 +1,8 @@
 package com.example.slagalicavpl.multiplayer;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.example.slagalicavpl.model.Question;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,11 +20,41 @@ public class FirebaseKoZnaZnaSync implements KoZnaZnaSync {
 
     private ValueEventListener activeListener;
     private DatabaseReference  activeRef;
+    private final Handler      handler = new Handler(Looper.getMainLooper());
 
     public FirebaseKoZnaZnaSync(DatabaseReference roomRef, String myRole) {
         this.roomRef = roomRef;
         this.myRole  = myRole;
         this.oppRole = myRole.equals("p1") ? "p2" : "p1";
+    }
+
+    public interface QuestionOrderCallback { void onOrder(int[] indices); }
+
+    /** P1 writes the shared question indices so both players see the same questions. */
+    public void writeQuestionOrder(int[] indices) {
+        Map<String, Object> m = new HashMap<>();
+        for (int i = 0; i < indices.length; i++) m.put(String.valueOf(i), indices[i]);
+        roomRef.child("koznaZna").child("questionOrder").setValue(m);
+    }
+
+    /** P2 reads the question order written by P1. Retries every 300ms until available. */
+    public void readQuestionOrder(QuestionOrderCallback cb) {
+        roomRef.child("koznaZna").child("questionOrder")
+               .addListenerForSingleValueEvent(new ValueEventListener() {
+                   @Override public void onDataChange(DataSnapshot snap) {
+                       if (!snap.exists()) {
+                           handler.postDelayed(() -> readQuestionOrder(cb), 300);
+                           return;
+                       }
+                       int[] indices = new int[5];
+                       for (int i = 0; i < 5; i++) {
+                           Object v = snap.child(String.valueOf(i)).getValue();
+                           indices[i] = v instanceof Number ? ((Number) v).intValue() : 0;
+                       }
+                       handler.post(() -> cb.onOrder(indices));
+                   }
+                   @Override public void onCancelled(DatabaseError e) {}
+               });
     }
 
     @Override

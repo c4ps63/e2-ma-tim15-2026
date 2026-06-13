@@ -47,8 +47,12 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
     private final Handler     handler = new Handler(Looper.getMainLooper());
 
     private boolean localsTurn  = true;
-    private boolean awaitGuess  = false;  // a field was opened, guess mode active
-    private int     selectedCol = -1;     // column tapped for guessing
+    private boolean awaitGuess  = false;
+    private int     selectedCol = -1;
+    private int     currentRound = 1;
+
+    // Firebase sync referenca za broadcast lokalnih akcija
+    private com.example.slagalicavpl.multiplayer.FirebaseAsocijacijeSync firebaseAsocSync;
 
     // ── lifecycle ────────────────────────────────────────────────────────────
 
@@ -120,6 +124,8 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
 
         // "PRESKOČI" button
         btnPass.setOnClickListener(v -> {
+            if (firebaseAsocSync != null)
+                firebaseAsocSync.broadcastLocalAction("done", -1, -1, null);
             engine.passGuess();
         });
 
@@ -138,20 +144,37 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             return false;
         });
 
-        view.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
-            if (getActivity() instanceof GameActivity)
-                ((GameActivity) getActivity()).showSkocko();
-        // Surrender
         root.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
             cancelTimer();
-            engine.onTimerExpired();
+            if (engine != null) engine.onTimerExpired();
         });
+
+        boolean multiplayer = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isMultiplayer();
+        String myRole = (getActivity() instanceof GameActivity)
+                ? ((GameActivity) getActivity()).getMyRole() : "p1";
+
+        com.example.slagalicavpl.multiplayer.AsocijacijeSync sync;
+        if (multiplayer && getActivity() instanceof GameActivity) {
+            com.google.firebase.database.DatabaseReference roomRef =
+                    ((GameActivity) getActivity()).getRoomRef();
+            firebaseAsocSync = new com.example.slagalicavpl.multiplayer.FirebaseAsocijacijeSync(
+                    roomRef, myRole);
+            sync = firebaseAsocSync;
+        } else {
+            sync = new LocalAsocijacijeSync();
+        }
 
         engine = new AsocijacijeEngine(
                 AsocijacijeRepository.getRound1(),
                 AsocijacijeRepository.getRound2(),
-                new LocalAsocijacijeSync(),
+                sync,
                 this);
+
+        // U online modu: P1 počinje rundu 1, P2 počinje rundu 2
+        if (multiplayer) {
+            engine.setLocalStartsRound1("p1".equals(myRole));
+        }
 
         engine.startGame();
     }
@@ -167,6 +190,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
 
     @Override
     public void onRoundStarted(int round, boolean localFirst) {
+        currentRound = round;
         localsTurn  = localFirst;
         awaitGuess  = false;
         selectedCol = -1;
@@ -249,8 +273,14 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
 
     @Override
     public void onScoreChanged(int localTotal, int oppTotal) {
-        if (tvP1Score != null) tvP1Score.setText(String.valueOf(localTotal));
-        if (tvP2Score != null) tvP2Score.setText(String.valueOf(oppTotal));
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total() + localTotal));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total() + oppTotal));
+        } else {
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(localTotal));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(oppTotal));
+        }
     }
 
     @Override
@@ -269,6 +299,10 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         disableAll();
         setStatus("KRAJ  ·  TI: " + localTotal + "   PROTIVNIK: " + oppTotal);
         if (tvTimerHud != null) tvTimerHud.setText("✓");
+
+        if (getActivity() instanceof GameActivity)
+            ((GameActivity) getActivity()).addScores(localTotal, oppTotal);
+
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)
                 ((GameActivity) getActivity()).showSkocko();
@@ -281,6 +315,8 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         if (!localsTurn || awaitGuess) return;
         if (engine.isCellOpened(col, row)) return;
         engine.openField(col, row);
+        if (firebaseAsocSync != null)
+            firebaseAsocSync.broadcastLocalAction("openField", col, row, null);
     }
 
     private void onColHeaderTapped(int col) {
@@ -289,8 +325,9 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
 
         String text = etGuess.getText().toString().trim();
         if (!text.isEmpty()) {
-            // Immediately submit for this column
             selectedCol = col;
+            if (firebaseAsocSync != null)
+                firebaseAsocSync.broadcastLocalAction("guessColumn", col, -1, text);
             engine.guessColumn(col, text);
             etGuess.setText("");
             selectedCol = -1;
@@ -321,6 +358,8 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             setStatus("Unesi konačno rešenje!");
             return;
         }
+        if (firebaseAsocSync != null)
+            firebaseAsocSync.broadcastLocalAction("guessFinal", -1, -1, text);
         engine.guessFinal(text);
         etGuess.setText("");
     }
@@ -338,11 +377,15 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         }
         if (selectedCol >= 0 && !engine.isColSolved(selectedCol)) {
             int col = selectedCol;
+            if (firebaseAsocSync != null)
+                firebaseAsocSync.broadcastLocalAction("guessColumn", col, -1, text);
             engine.guessColumn(col, text);
             etGuess.setText("");
             selectedCol = -1;
             highlightSelectedCol(-1);
         } else {
+            if (firebaseAsocSync != null)
+                firebaseAsocSync.broadcastLocalAction("guessFinal", -1, -1, text);
             engine.guessFinal(text);
             etGuess.setText("");
         }

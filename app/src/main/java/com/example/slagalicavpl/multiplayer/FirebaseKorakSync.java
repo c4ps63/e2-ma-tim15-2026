@@ -22,6 +22,8 @@ public class FirebaseKorakSync {
         void onPuzzleSelected(int puzzleIdx);
         /** Called when the active player advances to a new step. */
         void onStepAdvanced(int stepIndex);
+        /** Called each time the active player submits a guess (correct or wrong). */
+        void onGuess(String text, boolean correct);
         /** Called when active player's turn ends and steal becomes available. */
         void onStealPhase();
         /** Called when the round ends (before game-over check). */
@@ -48,6 +50,14 @@ public class FirebaseKorakSync {
 
     public void writeStep(int stepIndex) {
         ref.child("step").setValue(stepIndex);
+    }
+
+    public void writeGuess(String text, boolean correct) {
+        Map<String, Object> m = new HashMap<>();
+        m.put("text",    text);
+        m.put("correct", correct);
+        m.put("ts",      System.currentTimeMillis());
+        ref.child("guess").setValue(m);
     }
 
     public void writeStealPhase() {
@@ -77,6 +87,7 @@ public class FirebaseKorakSync {
         listener = new ValueEventListener() {
             private int lastStep = -1;
             private String lastPhase = "";
+            private long lastGuesTs = 0;
 
             @Override
             public void onDataChange(DataSnapshot snap) {
@@ -97,6 +108,19 @@ public class FirebaseKorakSync {
                     if (step != lastStep) {
                         lastStep = step;
                         cb.onStepAdvanced(step);
+                    }
+                }
+
+                // Guess changes — show opponent's guesses in real-time
+                DataSnapshot gSnap = snap.child("guess");
+                if (gSnap.exists()) {
+                    Object tsRaw = gSnap.child("ts").getValue();
+                    long ts = tsRaw instanceof Number ? ((Number) tsRaw).longValue() : 0;
+                    if (ts > lastGuesTs) {
+                        lastGuesTs = ts;
+                        String gText = gSnap.child("text").getValue(String.class);
+                        Boolean gCorrect = gSnap.child("correct").getValue(Boolean.class);
+                        if (gText != null && gCorrect != null) cb.onGuess(gText, gCorrect);
                     }
                 }
 

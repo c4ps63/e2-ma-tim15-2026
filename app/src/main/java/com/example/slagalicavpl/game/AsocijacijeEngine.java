@@ -54,6 +54,19 @@ public class AsocijacijeEngine {
     private int localScore = 0;
     private int oppScore   = 0;
 
+    // true = lokalni igrač igra prvi u rundi 1 (standardno); false = protivnik prvi
+    private boolean localStartsRound1 = true;
+
+    /** Postavi ko počinje rundu 1 (za online: p1=true, p2=false). */
+    public void setLocalStartsRound1(boolean localFirst) {
+        this.localStartsRound1 = localFirst;
+    }
+
+    private boolean localFirstForRound(int round) {
+        // Runda 1: localStartsRound1; Runda 2: suprotno
+        return round == 1 ? localStartsRound1 : !localStartsRound1;
+    }
+
     public AsocijacijeEngine(AsocijacijePuzzle round1, AsocijacijePuzzle round2,
                               AsocijacijeSync sync, Listener listener) {
         this.round1Puzzle = round1;
@@ -162,8 +175,8 @@ public class AsocijacijeEngine {
             for (int r = 0; r < 4; r++) cellOpened[c][r] = false;
         }
 
-        // Round 1: local starts; Round 2: opponent starts
-        localsTurn = (round == 1);
+        // Round 1: local starts; Round 2: opponent starts (može biti override-ovan)
+        localsTurn = localFirstForRound(round);
         listener.onRoundStarted(round, localsTurn);
 
         if (!localsTurn) startOpponentTurn();
