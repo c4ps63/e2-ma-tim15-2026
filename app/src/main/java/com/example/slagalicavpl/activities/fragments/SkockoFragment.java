@@ -394,6 +394,8 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
     private void onConfirmAttempt() {
         if (!localActive) return;
         for (int g : currentGuess) if (g < 0) return;
+        setPickerEnabled(false);
+        btnConfirm.setEnabled(false);
         engine.submitAttempt(currentGuess.clone());
     }
 
@@ -410,43 +412,17 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         }
         for (int c = 0; c < 4; c++) {
             oppCells[c].setText("");
-            solCells[c].setText("");
+            oppCells[c].setOnClickListener(null);
+            solCells[c].setText("?");
         }
         setPegsArray(oppPegs, 0, 0);
     }
 
-    private void resetGuessState() {
-        for (int i = 0; i < 4; i++) currentGuess[i] = -1;
-    }
-
-    private void clearCurrentGuess() {
-        for (int c = 0; c < 4; c++) {
-            currentGuess[c] = -1;
-            cells[activeRow][c].setText("");
-            cells[activeRow][c].setBackgroundResource(R.drawable.bg_skocko_cell_empty);
-        }
-        btnConfirm.setEnabled(false);
-    }
-
     private void wireActiveRowListeners() {
+        if (activeRow >= 6) return;
         for (int c = 0; c < 4; c++) {
             final int col = c;
-            cells[activeRow][col].setOnClickListener(v -> {
-                if (currentGuess[col] >= 0) {
-                    currentGuess[col] = -1;
-                    cells[activeRow][col].setText("");
-                    cells[activeRow][col].setBackgroundResource(R.drawable.bg_skocko_cell_empty);
-                    btnConfirm.setEnabled(false);
-                }
-            });
-        }
-    }
-
-    private void clearBonusCellOnTap(int col) {
-        if (currentGuess[col] >= 0) {
-            currentGuess[col] = -1;
-            oppCells[col].setText("");
-            btnConfirm.setEnabled(false);
+            cells[activeRow][col].setOnClickListener(v -> clearCellOnTap(col));
         }
     }
 
@@ -454,6 +430,7 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         for (int c = 0; c < 4; c++) {
             cells[row][c].setText(SkockoEngine.SYMBOLS[guess[c]]);
             cells[row][c].setBackgroundResource(R.drawable.bg_skocko_cell_filled);
+            cells[row][c].setOnClickListener(null);
         }
     }
 
@@ -462,26 +439,59 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
     }
 
     private void setPegsArray(View[] pegRow, int hits, int nears) {
-        for (int i = 0; i < 4; i++) {
-            if      (i < hits)        pegRow[i].setBackgroundResource(R.drawable.bg_peg_hit);
-            else if (i < hits+nears)  pegRow[i].setBackgroundResource(R.drawable.bg_peg_near);
-            else                      pegRow[i].setBackgroundResource(R.drawable.bg_peg_miss);
+        int[] kinds = new int[4];
+        int idx = 0;
+        for (int i = 0; i < hits;         i++) kinds[idx++] = 2;
+        for (int i = 0; i < nears;        i++) kinds[idx++] = 1;
+        for (int i = 0; i < 4-hits-nears; i++) kinds[idx++] = 0;
+        for (int p = 0; p < 4; p++) {
+            int bg = (kinds[p] == 2) ? R.drawable.bg_peg_hit
+                   : (kinds[p] == 1) ? R.drawable.bg_peg_near
+                   : R.drawable.bg_peg_miss;
+            pegRow[p].setBackgroundResource(bg);
         }
     }
 
-    private void setPickerEnabled(boolean enabled) {
-        for (TextView t : picker) if (t != null) t.setEnabled(enabled);
+    private void resetGuessState() {
+        for (int c = 0; c < 4; c++) currentGuess[c] = -1;
+        btnConfirm.setEnabled(false);
     }
 
-    // ── timer ────────────────────────────────────────────────────────────────
+    private void clearCurrentGuess() {
+        resetGuessState();
+        if (localActive && activeRow < 6) {
+            for (int c = 0; c < 4; c++) {
+                cells[activeRow][c].setText("");
+                cells[activeRow][c].setBackgroundResource(R.drawable.bg_skocko_cell_empty);
+            }
+            wireActiveRowListeners();
+        }
+    }
+
+    private void clearCellOnTap(int col) {
+        if (!localActive || bonusPhase || activeRow >= 6) return;
+        currentGuess[col] = -1;
+        cells[activeRow][col].setText("");
+        cells[activeRow][col].setBackgroundResource(R.drawable.bg_skocko_cell_empty);
+        btnConfirm.setEnabled(false);
+    }
+
+    private void clearBonusCellOnTap(int col) {
+        if (!localActive || !bonusPhase) return;
+        currentGuess[col] = -1;
+        oppCells[col].setText("");
+        btnConfirm.setEnabled(false);
+    }
+
+    // ── timer ─────────────────────────────────────────────────────────────────
 
     private void startTimer(int secs) {
         cancelTimer();
-        updateTimerHud(secs);
+        updateTimer(secs);
         roundTimer = new CountDownTimer(secs * 1000L, 1000) {
-            @Override public void onTick(long msLeft) { updateTimerHud((int)(msLeft / 1000)); }
+            @Override public void onTick(long ms) { updateTimer((int)(ms / 1000)); }
             @Override public void onFinish() {
-                updateTimerHud(0);
+                updateTimer(0);
                 engine.onTimerExpired();
             }
         }.start();
@@ -491,7 +501,7 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         if (roundTimer != null) { roundTimer.cancel(); roundTimer = null; }
     }
 
-    private void updateTimerHud(int s) {
+    private void updateTimer(int s) {
         if (tvTimerHud == null) return;
         tvTimerHud.setText(String.valueOf(s));
         tvTimerHud.setTextColor(s <= WARN_SECS ? Color.RED : Color.parseColor("#102341"));
@@ -499,24 +509,32 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
     private int timerSecsFor(SkockoEngine.Phase phase) {
         return (phase == SkockoEngine.Phase.R1_BONUS_OPP
-             || phase == SkockoEngine.Phase.R2_BONUS_LOCAL) ? BONUS_SECS : ROUND_SECS;
+             || phase == SkockoEngine.Phase.R2_BONUS_LOCAL)
+                ? BONUS_SECS : ROUND_SECS;
     }
 
-    // ── status / round banner ────────────────────────────────────────────────
+    // ── status / banner ───────────────────────────────────────────────────────
 
     private void updateRoundBanner(int round, SkockoEngine.Phase phase) {
         if (tvRound == null) return;
-        tvRound.setText("RUNDA " + round);
+        tvRound.setText("🦜 J. AMERIKA · SKOČKO  ·  RUNDA " + round + "/2");
     }
 
     private void updateStatus(SkockoEngine.Phase phase) {
         if (tvStatus == null) return;
         switch (phase) {
-            case R1_LOCAL:      tvStatus.setText("TVOJ RED — POGODI ŠIFRICU"); break;
-            case R1_BONUS_OPP:  tvStatus.setText("PROTIVNIK POKUŠAVA DA UKRADE"); break;
-            case R2_OPP:        tvStatus.setText("PROTIVNIK NA REDU"); break;
-            case R2_BONUS_LOCAL:tvStatus.setText("TVOJ RED — UKRADI ŠIFRICU!"); break;
-            default:            tvStatus.setText(""); break;
+            case R1_LOCAL:       tvStatus.setText("RUNDA 1  ·  TI POGAĐAŠ");             break;
+            case R1_BONUS_OPP:   tvStatus.setText("BONUS 10s  ·  PROTIVNIK KRADE");       break;
+            case R2_OPP:         tvStatus.setText("RUNDA 2  ·  PROTIVNIK POGAĐA");        break;
+            case R2_BONUS_LOCAL: tvStatus.setText("BONUS 10s  ·  TI KRADEŠ  (1 šansa)"); break;
+            default:             tvStatus.setText("KRAJ");                                 break;
+        }
+    }
+
+    private void setPickerEnabled(boolean enabled) {
+        for (TextView t : picker) {
+            t.setEnabled(enabled);
+            t.setAlpha(enabled ? 1f : 0.4f);
         }
     }
 }

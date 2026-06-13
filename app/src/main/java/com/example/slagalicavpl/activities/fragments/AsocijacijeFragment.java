@@ -144,6 +144,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             return false;
         });
 
+        // Surrender
         root.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
             cancelTimer();
             if (engine != null) engine.onTimerExpired();
