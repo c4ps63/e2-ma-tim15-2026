@@ -50,6 +50,10 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     private String                                                  myRole = "p1";
     private boolean                                                 localStartsFirst = true;
 
+    // Graničnik: jedina zastavica koja kontroliše da li lokalni igrač sme da interaguje.
+    // Postavlja se isključivo kroz applyInputLock() — nikad direktno.
+    private boolean localInputEnabled = false;
+
     private com.example.slagalicavpl.multiplayer.FirebaseSpojniceSync firebaseSpojSync;
 
     @Nullable
@@ -97,7 +101,9 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             rightBtns[i].setOnClickListener(v -> onRightTapped(row));
         }
 
-        btnConfirm.setOnClickListener(v -> engine.pass());
+        btnConfirm.setOnClickListener(v -> {
+            if (localInputEnabled) engine.pass();
+        });
 
         view.findViewById(R.id.btnSurrender).setOnClickListener(v -> {
             cancelTimer();
@@ -132,14 +138,12 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             engine.setLocalStartsFirst(localStartsFirst);
 
             if ("p1".equals(myRole)) {
-                // P1 generates slots for both rounds before starting the engine
                 int[] slots1 = generateShuffledSlots();
                 int[] slots2 = generateShuffledSlots();
                 engine.setExternalSlots(slots1, slots2);
                 firebaseSpojSync.writeAllSlots(slots1, slots2);
-                engine.startGame(); // uses externalSlots1 for round 1
+                engine.startGame();
             } else {
-                // P2 reads slots from Firebase, then starts
                 firebaseSpojSync.readAllSlots((s1, s2) -> {
                     if (getView() == null) return;
                     engine.setExternalSlots(s1, s2);
@@ -163,8 +167,27 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         handler.removeCallbacksAndMessages(null);
     }
 
+    // ── Graničnik: jedina tačka koja dozvoljava ili zabranjuje unos ──────────
+
+    /**
+     * Postavlja graničnik. Poziva se isključivo na kraju onPhaseChanged/onRoundStarted
+     * i u onGameOver. Uvek se pre toga eksplicitno postavlja na false (lock).
+     */
+    private void applyInputLock(boolean active) {
+        localInputEnabled = active;
+        for (int i = 0; i < 5; i++) {
+            if (!connectedDisplay[i] && !lockedWrong[i]) {
+                leftBtns[i].setEnabled(active);
+                rightBtns[i].setEnabled(active);
+            }
+        }
+        btnConfirm.setEnabled(active);
+    }
+
+    // ── Klik handleri ─────────────────────────────────────────────────────────
+
     private void onLeftTapped(int row) {
-        if (!isLocalActive()) return;
+        if (!localInputEnabled) return;          // graničnik
         if (connectedDisplay[row]) return;
         if (selectedLeft == row) { clearSelection(); return; }
         selectedLeft = row;
@@ -172,12 +195,11 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     }
 
     private void onRightTapped(int row) {
-        if (!isLocalActive() || selectedLeft < 0) return;
+        if (!localInputEnabled || selectedLeft < 0) return;  // graničnik
         int left = selectedLeft;
         clearSelection();
         boolean ok = engine.connectPair(left, row);
         if (!ok) {
-            // Lock the left button permanently — wrong guess costs you that item
             lockedWrong[left] = true;
             leftBtns[left].setEnabled(false);
             leftBtns[left].setBackgroundResource(R.drawable.btn_cartoon_red);
@@ -187,63 +209,57 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         }
     }
 
+    // ── Engine callback-ovi ───────────────────────────────────────────────────
+
     @Override
     public void onPhaseChanged(SpojniceEngine.Phase phase) {
-        // Write done signal for the phase we're LEAVING (the one that just ended)
+        // Odmah zaključaj unos tokom tranzicije faze
+        applyInputLock(false);
+
         if (firebaseSpojSync != null) {
             writeDoneForEndedPhase(phase);
         }
         currentPhase = phase;
-        boolean localActive = isLocalActive();
-
-        for (int i = 0; i < 5; i++) {
-            if (!connectedDisplay[i] && !lockedWrong[i]) {
-                leftBtns[i].setEnabled(localActive);
-                rightBtns[i].setEnabled(localActive);
-            }
-        }
         selectedLeft = -1;
         clearLeftHighlights();
-        btnConfirm.setEnabled(localActive);
 
-        // If this is a steal phase and all pairs are already connected, skip immediately
+        boolean localActive = isLocalActive();
+
+        // Ako je faza krađe i sve su već spojene — preskočiti automatski
         boolean isStealPhase = (phase == SpojniceEngine.Phase.R1_OPP
                              || phase == SpojniceEngine.Phase.R2_LOCAL);
         if (isStealPhase && localActive) {
             boolean anyLeft = false;
             for (boolean c : connectedDisplay) if (!c) { anyLeft = true; break; }
             if (!anyLeft) {
+                // Graničnik ostaje zaključan (false) — engine.pass() odmah prelazi dalje
                 handler.post(() -> engine.pass());
                 return;
             }
         }
 
+        // Otključaj tek na kraju, kad je sve postavljeno
+        applyInputLock(localActive);
         updateStatusText();
         startPhaseTimer();
     }
 
     /**
-     * When phase transitions to `newPhase`, the previous phase just ended.
-     * The player who was active in the previous phase writes the done signal.
+     * Aktivan igrač piše done signal kada napušta svoju fazu.
      *
-     * Phase transitions:
-     *   R1_LOCAL → R1_OPP : P1 (localStartsFirst) was active → writes p1_r1
-     *   R1_OPP   → R2_OPP : P2 (!localStartsFirst) was active → writes p2_steal
-     *   R2_OPP   → R2_LOCAL: P2 (!localStartsFirst) was active → writes p2_r2
-     *   R2_LOCAL → DONE   : handled in onGameOver
+     * R1_LOCAL → R1_OPP : P1 piše p1_r1
+     * R1_OPP   → R2_OPP : P2 piše p2_steal  (via onRoundStarted za round 2)
+     * R2_OPP   → R2_LOCAL: P2 piše p2_r2
      */
     private void writeDoneForEndedPhase(SpojniceEngine.Phase newPhase) {
         switch (newPhase) {
             case R1_OPP:
-                // P1 just finished R1_LOCAL
                 if (localStartsFirst) firebaseSpojSync.writePhaseDone("p1_r1");
                 break;
             case R2_OPP:
-                // P2 just finished R1_OPP (steal) — only P2 writes this
                 if (!localStartsFirst) firebaseSpojSync.writePhaseDone("p2_steal");
                 break;
             case R2_LOCAL:
-                // P2 just finished R2_OPP — only P2 writes
                 if (!localStartsFirst) firebaseSpojSync.writePhaseDone("p2_r2");
                 break;
             default:
@@ -254,14 +270,14 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     @Override
     public void onRoundStarted(int round, SpojniceEngine.Phase phase,
                                List<ConnectPair> pairs, int[] rightSlots) {
-        // When P2 (localStartsFirst=false) transitions steal→round2, done signal is sent here
-        // because the engine calls onRoundStarted (not onPhaseChanged) for round boundaries.
+        // Odmah zaključaj unos tokom tranzicije runde
+        applyInputLock(false);
+
         if (round == 2 && firebaseSpojSync != null && !localStartsFirst) {
             firebaseSpojSync.writePhaseDone("p2_steal");
         }
         currentRound = round;
         currentPhase = phase;
-        boolean localActive = isLocalActive();
 
         for (int i = 0; i < 5; i++) {
             leftBtns[i].setText(pairs.get(i).left);
@@ -270,22 +286,20 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             rightBtns[i].setBackgroundResource(R.drawable.btn_cartoon_salmon);
             leftBtns[i].setAlpha(1f);
             rightBtns[i].setAlpha(1f);
-            leftBtns[i].setEnabled(localActive);
-            rightBtns[i].setEnabled(localActive);
             connectors[i].setVisibility(View.INVISIBLE);
             connectedDisplay[i] = false;
             lockedWrong[i] = false;
         }
         selectedLeft = -1;
-        btnConfirm.setEnabled(localActive);
 
+        // Otključaj tek na kraju
+        applyInputLock(isLocalActive());
         updateStatusText();
         startPhaseTimer();
     }
 
     @Override
     public void onPairConnected(int leftRow, int rightRow, boolean byLocal) {
-        // Write connection to Firebase when locally active
         if (byLocal && firebaseSpojSync != null) {
             String connKey = localConnectionKey();
             if (connKey != null) firebaseSpojSync.writeConnection(connKey, leftRow, rightRow);
@@ -310,7 +324,6 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         updateStatusText();
     }
 
-    /** Returns the Firebase connection key for the current local active phase. */
     private String localConnectionKey() {
         if (localStartsFirst) {
             if (currentPhase == SpojniceEngine.Phase.R1_LOCAL) return "conn_p1_r1";
@@ -334,9 +347,8 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     @Override
     public void onGameOver(int localScore, int opponentScore) {
         cancelTimer();
-        setAllButtonsEnabled(false);
+        applyInputLock(false);  // graničnik — zaključaj sve na kraju igre
 
-        // P1 writes done signal for its last active phase (R2_LOCAL)
         if (firebaseSpojSync != null && localStartsFirst)
             firebaseSpojSync.writePhaseDone("p1_steal");
 
@@ -352,6 +364,8 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         }, 2500);
     }
 
+    // ── Tajmer ────────────────────────────────────────────────────────────────
+
     private void startPhaseTimer() {
         cancelTimer();
         updateTimer(ROUND_SECS);
@@ -362,7 +376,9 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             }
             @Override public void onFinish() {
                 updateTimer(0);
-                engine.onTimerExpired();
+                // Graničnik: tajmer sme da promeni fazu SAMO kada je lokalni igrač aktivan.
+                // Tokom pasivnih faza (protivnik igra), Firebase/LocalSync signal menja fazu.
+                if (localInputEnabled) engine.onTimerExpired();
             }
         }.start();
     }
@@ -376,6 +392,8 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         tvTimerHud.setText(String.valueOf(s));
         tvTimerHud.setTextColor(s <= WARN_SECS ? Color.RED : Color.parseColor("#102341"));
     }
+
+    // ── Pomoćne metode ────────────────────────────────────────────────────────
 
     private void updateStatusText() {
         if (tvStatus == null) return;
@@ -425,14 +443,6 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
                 leftBtns[i].setAlpha(1f);
             }
         }
-    }
-
-    private void setAllButtonsEnabled(boolean enabled) {
-        for (int i = 0; i < 5; i++) {
-            leftBtns[i].setEnabled(enabled);
-            rightBtns[i].setEnabled(enabled);
-        }
-        btnConfirm.setEnabled(enabled);
     }
 
     private boolean isLocalActive() {
