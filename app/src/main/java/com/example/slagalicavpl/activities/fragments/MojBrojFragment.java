@@ -1,6 +1,7 @@
 package com.example.slagalicavpl.activities.fragments;
 
 import android.content.Context;
+import com.example.slagalicavpl.activities.GameActivity;
 import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -24,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.game.MojBrojEngine;
 import com.example.slagalicavpl.model.MojBrojPuzzle;
+import com.example.slagalicavpl.multiplayer.FirebaseMojBrojSync;
 import com.example.slagalicavpl.repository.MojBrojRepository;
 
 import java.util.ArrayList;
@@ -54,11 +56,20 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     private final StringBuilder exprEval = new StringBuilder();
     private final StringBuilder exprDisp = new StringBuilder();
 
-    private enum Phase { SPINNING_TARGET, SPINNING_NUMBERS, BUILDING, DONE }
+    private enum Phase { SPINNING_TARGET, WAITING_TARGET, SPINNING_NUMBERS, WAITING_NUMBERS, BUILDING, DONE }
     private Phase phase = Phase.SPINNING_TARGET;
+
+    private int currentRound = 1;
+    private int accP1 = 0;
+    private int accP2 = 0;
 
     private MojBrojPuzzle puzzle;
     private final boolean[] tileUsed = new boolean[6];
+
+    // Multiplayer
+    private boolean            multiplayer = false;
+    private String             myRole      = "p1";
+    private FirebaseMojBrojSync mojBrojSync;
 
     private final Handler        handler   = new Handler(Looper.getMainLooper());
     private       CountDownTimer spinTimer;
@@ -132,8 +143,28 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
                 accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         }
 
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            multiplayer = ga.isMultiplayer();
+            myRole      = ga.getMyRole();
+            if (multiplayer && ga.getRoomRef() != null) {
+                mojBrojSync = new FirebaseMojBrojSync(ga.getRoomRef(), myRole);
+            }
+
+            TextView hudP1 = view.findViewById(R.id.p1_score);
+            TextView hudP2 = view.findViewById(R.id.p2_score);
+            if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
+            if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
+        }
+
         setHudClock();
-        enterPhase(Phase.SPINNING_TARGET);
+        enterPhase(isRoundStarter() ? Phase.SPINNING_TARGET : Phase.WAITING_TARGET);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mojBrojSync != null) mojBrojSync.cancelListener();
     }
 
     @Override
@@ -151,17 +182,28 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
         if (sensorManager != null) sensorManager.unregisterListener(this);
     }
 
+    /** True if this player controls the STOP for this round (p1 in round1, p2 in round2). */
+    private boolean isRoundStarter() {
+        if (!multiplayer) return true;
+        return ("p1".equals(myRole) && currentRound == 1)
+            || ("p2".equals(myRole) && currentRound == 2);
+    }
+
     private void enterPhase(Phase next) {
         phase = next;
         handler.removeCallbacksAndMessages(null);
         cancelAllTimers();
         switch (phase) {
-            case SPINNING_TARGET:  setupSpinTarget();  break;
-            case SPINNING_NUMBERS: setupSpinNumbers(); break;
-            case BUILDING:         setupBuilding();    break;
-            case DONE:             setHudClock();      break;
+            case SPINNING_TARGET:  setupSpinTarget();   break;
+            case WAITING_TARGET:   setupWaitTarget();   break;
+            case SPINNING_NUMBERS: setupSpinNumbers();  break;
+            case WAITING_NUMBERS:  setupWaitNumbers();  break;
+            case BUILDING:         setupBuilding();     break;
+            case DONE:             setHudClock();       break;
         }
     }
+
+    // ── Starter: spinning target ──────────────────────────────────────────────
 
     private void setupSpinTarget() {
         btnConfirm.setText("STOP");
@@ -183,8 +225,59 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     private void lockTarget() {
         puzzle = MojBrojRepository.getInstance().generatePuzzle();
         tvTarget.setText(String.valueOf(puzzle.target));
+
+        if (multiplayer && mojBrojSync != null) {
+            mojBrojSync.writeRoundStart(currentRound);
+            mojBrojSync.writeTarget(puzzle.target);
+        }
+
         enterPhase(Phase.SPINNING_NUMBERS);
     }
+
+    // ── Follower: wait for target from Firebase ───────────────────────────────
+
+    private void setupWaitTarget() {
+        btnConfirm.setEnabled(false);
+        tvShakeHint.setVisibility(View.GONE);
+        tvTarget.setText("...");
+        setTilesText("?");
+        setTilesEnabled(false);
+        setOpsEnabled(false);
+        setEditEnabled(false);
+
+        if (mojBrojSync == null) return;
+        mojBrojSync.listenAsFollower(currentRound, new FirebaseMojBrojSync.FollowerListener() {
+            @Override
+            public void onTargetLocked(int target) {
+                handler.post(() -> {
+                    puzzle = new MojBrojPuzzle(target, new int[6]);
+                    tvTarget.setText(String.valueOf(target));
+                    enterPhase(Phase.WAITING_NUMBERS);
+                });
+            }
+
+            @Override
+            public void onTilesLocked(int[] tiles) {
+                handler.post(() -> {
+                    if (puzzle != null) {
+                        puzzle = new MojBrojPuzzle(puzzle.target, tiles);
+                    }
+                    for (int i = 0; i < 6; i++) {
+                        tileUsed[i] = false;
+                        btnNumbers[i].setText(String.valueOf(tiles[i]));
+                    }
+                    enterPhase(Phase.BUILDING);
+                });
+            }
+
+            @Override
+            public void onOpponentResult(int result) {
+                handler.post(() -> showOpponentResult(result));
+            }
+        });
+    }
+
+    // ── Starter: spinning numbers ─────────────────────────────────────────────
 
     private void setupSpinNumbers() {
         btnConfirm.setText("STOP");
@@ -209,8 +302,27 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
             tileUsed[i] = false;
             btnNumbers[i].setText(String.valueOf(puzzle.tiles[i]));
         }
+
+        if (multiplayer && mojBrojSync != null) {
+            mojBrojSync.writeTiles(puzzle.tiles);
+        }
+
         enterPhase(Phase.BUILDING);
     }
+
+    // ── Follower: wait for tiles ──────────────────────────────────────────────
+
+    private void setupWaitNumbers() {
+        btnConfirm.setEnabled(false);
+        tvShakeHint.setVisibility(View.GONE);
+        setTilesText("...");
+        setTilesEnabled(false);
+        setOpsEnabled(false);
+        setEditEnabled(false);
+        // The follower listener was already started in setupWaitTarget; it will call onTilesLocked
+    }
+
+    // ── Both players: building expression ────────────────────────────────────
 
     private void setupBuilding() {
         btnConfirm.setText(getString(R.string.btn_confirm));
@@ -221,7 +333,14 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
         setEditEnabled(true);
         clearExpression();
         startRoundCountdown();
+
+        // Starter starts listening for opponent result now
+        if (multiplayer && mojBrojSync != null && isRoundStarter()) {
+            mojBrojSync.listenAsStarter(result -> handler.post(() -> showOpponentResult(result)));
+        }
     }
+
+    // ── Timer helpers ─────────────────────────────────────────────────────────
 
     private void startSpinAnimation(Runnable tickFn) {
         Runnable loop = new Runnable() {
@@ -259,6 +378,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
         if (spinTimer  != null) { spinTimer.cancel();  spinTimer  = null; }
         if (roundTimer != null) { roundTimer.cancel(); roundTimer = null; }
     }
+
+    // ── User interaction ──────────────────────────────────────────────────────
 
     private void onConfirmOrStop() {
         switch (phase) {
@@ -324,24 +445,127 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
         setHudClock();
 
         int result = MojBrojEngine.evaluate(exprEval.toString());
-
-        tvPlayerResult.setText(result > 0 ? String.valueOf(result) : "0");
+        tvPlayerResult.setText(result >= 0 ? String.valueOf(result) : "?");
         setTilesEnabled(false);
         setOpsEnabled(false);
         setEditEnabled(false);
         btnConfirm.setEnabled(false);
 
+        if (puzzle != null && !multiplayer) {
+            // Offline: compute scores immediately
+            int[] scores = MojBrojEngine.computeScores(result, 0, puzzle.target, currentRound);
+            accP1 += scores[0];
+            accP2 += scores[1];
+            updateHud();
+            enterPhase(Phase.DONE);
+            finishRound();
+            return;
+        }
+
         enterPhase(Phase.DONE);
 
-        handler.postDelayed(() -> {
-            if (getActivity() != null) getActivity().finish();
-        }, 3000);
+        if (multiplayer && mojBrojSync != null) {
+            mySubmittedResult = result;
+            mySubmitted = true;
+            mojBrojSync.writeResult(result);
+            // Ako je protivnik već poslao rezultat pre nas, finalizeOnlineRound() je čekao —
+            // pozovi ga odmah da ne ostanemo zaglavljeni
+            if (oppResultReceived) {
+                finalizeOnlineRound();
+            } else {
+                scheduleOnlineRoundTimeout();
+            }
+        }
     }
+
+    private boolean mySubmitted       = false;
+    private boolean oppResultReceived = false;
+    private int     mySubmittedResult = -1;
+    private int     oppResult         = -1;
+    private boolean roundFinalized    = false;
+
+    private void scheduleOnlineRoundTimeout() {
+        // Wait up to 90s for opponent, then finalize with what we have
+        handler.postDelayed(this::finalizeOnlineRound, 90_000);
+    }
+
+    private void showOpponentResult(int result) {
+        oppResult = result;
+        oppResultReceived = true;
+        if (tvOpponentResult != null)
+            tvOpponentResult.setText(result >= 0 ? String.valueOf(result) : "?");
+        finalizeOnlineRound();
+    }
+
+    private void finalizeOnlineRound() {
+        if (roundFinalized) return;
+        if (!mySubmitted) return;   // wait until we've also submitted
+        roundFinalized = true;
+        handler.removeCallbacksAndMessages(null);
+
+        int myRes = mySubmittedResult;
+        int opp   = oppResultReceived ? oppResult : -1;
+
+        // Determine p1/p2 results based on roles
+        int p1res = "p1".equals(myRole) ? myRes : opp;
+        int p2res = "p2".equals(myRole) ? myRes : opp;
+        if (p1res < 0) p1res = 0;
+        if (p2res < 0) p2res = 0;
+
+        int[] scores = MojBrojEngine.computeScores(p1res, p2res, puzzle != null ? puzzle.target : 0, currentRound);
+        accP1 += scores[0];
+        accP2 += scores[1];
+        updateHud();
+        finishRound();
+    }
+
+    private void finishRound() {
+        if (currentRound == 1) {
+            handler.postDelayed(this::startRound2, 2500);
+        } else {
+            if (getActivity() instanceof GameActivity) {
+                GameActivity ga = (GameActivity) getActivity();
+                ga.addScores(accP1, accP2);
+                handler.postDelayed(() -> {
+                    if (getActivity() instanceof GameActivity)
+                        ((GameActivity) getActivity()).finishGame();
+                }, 2500);
+            }
+        }
+    }
+
+    private void startRound2() {
+        if (getView() == null) return;
+        currentRound = 2;
+        roundFinalized    = false;
+        mySubmitted       = false;
+        mySubmittedResult = -1;
+        oppResultReceived = false;
+        oppResult         = -1;
+        tvPlayerResult.setText(getString(R.string.result_pending));
+        tvOpponentResult.setText(getString(R.string.result_pending));
+        tvTarget.setText("RUNDA 2");
+        clearExpression();
+        if (mojBrojSync != null) mojBrojSync.cancelListener();
+        handler.postDelayed(() -> enterPhase(isRoundStarter() ? Phase.SPINNING_TARGET : Phase.WAITING_TARGET), 800);
+    }
+
+    private void updateHud() {
+        if (getView() == null || !(getActivity() instanceof GameActivity)) return;
+        GameActivity ga = (GameActivity) getActivity();
+        TextView s1 = getView().findViewById(R.id.p1_score);
+        TextView s2 = getView().findViewById(R.id.p2_score);
+        if (s1 != null) s1.setText(String.valueOf(ga.getP1Total() + accP1));
+        if (s2 != null) s2.setText(String.valueOf(ga.getP2Total() + accP2));
+    }
+
+    // ── Shake sensor ──────────────────────────────────────────────────────────
 
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() != Sensor.TYPE_ACCELEROMETER) return;
         if (phase != Phase.SPINNING_TARGET && phase != Phase.SPINNING_NUMBERS) return;
+        if (!isRoundStarter()) return;
 
         float x = event.values[0], y = event.values[1], z = event.values[2];
         double net = Math.sqrt(x*x + y*y + z*z) - SensorManager.GRAVITY_EARTH;
@@ -357,6 +581,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+    // ── UI helpers ────────────────────────────────────────────────────────────
 
     private void setHudNumber(int value, boolean red) {
         if (tvTimerHud == null) return;

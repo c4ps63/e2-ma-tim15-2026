@@ -100,6 +100,12 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         });
 
         ConnectRepository repo = ConnectRepository.getInstance();
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+        }
+
         engine = new SpojniceEngine(
                 repo.getRound1Pairs(),
                 repo.getRound2Pairs(),
@@ -201,8 +207,11 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
 
     @Override
     public void onScoreChanged(int localScore, int opponentScore) {
-        if (tvP1Score != null) tvP1Score.setText(String.valueOf(localScore));
-        if (tvP2Score != null) tvP2Score.setText(String.valueOf(opponentScore));
+        if (getActivity() instanceof GameActivity) {
+            GameActivity ga = (GameActivity) getActivity();
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total() + localScore));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total() + opponentScore));
+        }
     }
 
     @Override
@@ -211,6 +220,9 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         setAllButtonsEnabled(false);
         tvStatus.setText("KRAJ · TI: " + localScore + "   PROTIVNIK: " + opponentScore);
         if (tvTimerHud != null) tvTimerHud.setText("✓");
+
+        if (getActivity() instanceof GameActivity)
+            ((GameActivity) getActivity()).addScores(localScore, opponentScore);
 
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)
