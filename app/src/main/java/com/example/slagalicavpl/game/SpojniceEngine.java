@@ -164,6 +164,20 @@ public class SpojniceEngine {
 
     private boolean processConnection(int leftRow, int rightRow, boolean byLocal) {
         if (connected[leftRow]) return false;
+
+        // Za protivničke konekcije rightRow koji je stigao iz Firebasea
+        // odgovara poziciji u PROTIVNIKOVOM rightSlots stanju u trenutku klika.
+        // Ako je Firebase isporučio konekcije u key order-u (ne insercijskom),
+        // prethodni swapovi su drugačije primijenjeni → stored rightRow je pogrešan.
+        // Rješenje: pronađi STVARNU trenutnu poziciju para u lokalnom rightSlots-u.
+        if (!byLocal) {
+            rightRow = -1;
+            for (int j = 0; j < PAIRS_PER_ROUND; j++) {
+                if (rightSlots[j] == leftRow) { rightRow = j; break; }
+            }
+            if (rightRow == -1) return false;
+        }
+
         if (rightSlots[rightRow] != leftRow) return false;
 
         if (leftRow != rightRow) {
