@@ -18,6 +18,9 @@ import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.activities.GameActivity;
 import com.example.slagalicavpl.game.SkockoEngine;
 import com.example.slagalicavpl.multiplayer.LocalSkockoSync;
+import com.example.slagalicavpl.repository.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
@@ -59,8 +62,9 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
     // Firebase sync ref za pisanje pokušaja i inicijalizaciju tajni
     private com.example.slagalicavpl.multiplayer.FirebaseSkockoSync firebaseSkockoSync;
-    private String  myRole         = "p1";
+    private String  myRole           = "p1";
     private boolean localStartsFirst = true;
+    private boolean localMainRoundSolved = false;
 
     // ── lifecycle ────────────────────────────────────────────────────────────
 
@@ -140,6 +144,7 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+            ga.applyAvatarsToHud(root);
         }
 
         btnConfirm.setOnClickListener(v -> onConfirmAttempt());
@@ -297,6 +302,7 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
     @Override
     public void onSolved(int[] secret, boolean byLocal, int pointsEarned) {
+        if (byLocal && !bonusPhase) localMainRoundSolved = true;
         cancelTimer();
         setPickerEnabled(false);
         btnConfirm.setEnabled(false);
@@ -343,6 +349,10 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         if (tvStatus != null)
             tvStatus.setText("KRAJ  ·  TI: " + localScore + "   PROTIVNIK: " + oppScore);
         if (tvTimerHud != null) tvTimerHud.setText("✓");
+
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
+            UserRepository.getInstance().incrementSkocko(fbUser.getUid(), localMainRoundSolved);
 
         if (getActivity() instanceof GameActivity)
             ((GameActivity) getActivity()).addScores(localScore, oppScore);

@@ -21,6 +21,9 @@ import com.example.slagalicavpl.game.SpojniceEngine;
 import com.example.slagalicavpl.model.ConnectPair;
 import com.example.slagalicavpl.multiplayer.LocalSpojniceSync;
 import com.example.slagalicavpl.repository.ConnectRepository;
+import com.example.slagalicavpl.repository.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.List;
 
@@ -50,9 +53,8 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     private String                                                  myRole = "p1";
     private boolean                                                 localStartsFirst = true;
 
-    // Graničnik: jedina zastavica koja kontroliše da li lokalni igrač sme da interaguje.
-    // Postavlja se isključivo kroz applyInputLock() — nikad direktno.
     private boolean localInputEnabled = false;
+    private int localPairsConnected = 0;
 
     private com.example.slagalicavpl.multiplayer.FirebaseSpojniceSync firebaseSpojSync;
 
@@ -116,6 +118,7 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+            ga.applyAvatarsToHud(view);
         }
 
         boolean multiplayer = getActivity() instanceof GameActivity
@@ -300,6 +303,8 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
 
     @Override
     public void onPairConnected(int leftRow, int rightRow, boolean byLocal) {
+        if (byLocal) localPairsConnected++;
+
         if (byLocal && firebaseSpojSync != null) {
             String connKey = localConnectionKey();
             if (connKey != null) firebaseSpojSync.writeConnection(connKey, leftRow, rightRow);
@@ -354,6 +359,10 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
 
         tvStatus.setText("KRAJ · TI: " + localScore + "   PROTIVNIK: " + opponentScore);
         if (tvTimerHud != null) tvTimerHud.setText("✓");
+
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
+            UserRepository.getInstance().incrementSpojnice(fbUser.getUid(), localPairsConnected, 10);
 
         if (getActivity() instanceof GameActivity)
             ((GameActivity) getActivity()).addScores(localScore, opponentScore);

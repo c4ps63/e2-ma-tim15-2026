@@ -23,6 +23,9 @@ import com.example.slagalicavpl.activities.GameActivity;
 import com.example.slagalicavpl.game.AsocijacijeEngine;
 import com.example.slagalicavpl.multiplayer.LocalAsocijacijeSync;
 import com.example.slagalicavpl.repository.AsocijacijeRepository;
+import com.example.slagalicavpl.repository.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.Listener {
 
@@ -50,6 +53,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
     private boolean awaitGuess  = false;
     private int     selectedCol = -1;
     private int     currentRound = 1;
+    private int     localFinalsSolved = 0;
 
     // Firebase sync referenca za broadcast lokalnih akcija
     private com.example.slagalicavpl.multiplayer.FirebaseAsocijacijeSync firebaseAsocSync;
@@ -101,6 +105,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+            ga.applyAvatarsToHud(root);
         }
 
         etGuess    = root.findViewById(R.id.etGuess);
@@ -254,6 +259,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
 
     @Override
     public void onFinalSolved(int pts, boolean byLocal) {
+        if (byLocal) localFinalsSolved++;
         cancelTimer();
         disableAll();
         // Reveal all remaining hidden cells
@@ -307,6 +313,10 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         disableAll();
         setStatus("KRAJ  ·  TI: " + localTotal + "   PROTIVNIK: " + oppTotal);
         if (tvTimerHud != null) tvTimerHud.setText("✓");
+
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
+            UserRepository.getInstance().incrementAsocijacije(fbUser.getUid(), localFinalsSolved, 2);
 
         if (getActivity() instanceof GameActivity)
             ((GameActivity) getActivity()).addScores(localTotal, oppTotal);

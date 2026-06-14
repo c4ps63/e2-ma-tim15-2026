@@ -99,10 +99,11 @@
 
                 <!-- Inicijal korisnika -->
                 <TextView
+                    android:id="@+id/tvAvatarInitial"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="L"
+                    android:text="?"
                     android:fontFamily="sans-serif-black"
                     android:textColor="#FFFFFF"
                     android:textSize="52sp"/>

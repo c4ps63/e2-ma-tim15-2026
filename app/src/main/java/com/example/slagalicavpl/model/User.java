@@ -5,6 +5,7 @@ public class User {
     public String username;
     public String email;
     public String region;
+    public String avatarColor;
     public int gamesPlayed;
     public int gamesWon;
     public int tokens;

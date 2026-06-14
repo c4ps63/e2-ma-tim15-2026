@@ -22,6 +22,9 @@ import com.example.slagalicavpl.model.Question;
 import com.example.slagalicavpl.multiplayer.KoZnaZnaSync;
 import com.example.slagalicavpl.multiplayer.LocalKoZnaZnaSync;
 import com.example.slagalicavpl.repository.QuestionRepository;
+import com.example.slagalicavpl.repository.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listener {
 
@@ -89,6 +92,7 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+            ga.applyAvatarsToHud(view);
         }
 
         boolean multiplayer = getActivity() instanceof GameActivity
@@ -165,6 +169,12 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
                                int localDelta, int opponentDelta) {
         cancelTimer();
         setAnswersEnabled(false);
+
+        if (localAnswer != 0) {
+            FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+            if (fbUser != null)
+                UserRepository.getInstance().incrementKzz(fbUser.getUid(), localAnswer == correctOption);
+        }
 
         // Show correct answer (green), my wrong answer (red), opponent's wrong answer (blue)
         highlightCorrect(correctOption);

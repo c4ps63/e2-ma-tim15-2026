@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,10 +48,6 @@ public class LoginActivity extends AppCompatActivity {
                         "Kontaktiraj tim za podršku ili pokušaj reset lozinke u profilu.",
                         Toast.LENGTH_LONG).show());
 
-        // demo link profila (samo za razvoj)
-        TextView tvProfileDemo = findViewById(R.id.tvProfileDemo);
-        tvProfileDemo.setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
     }
 
     private void attemptLogin() {
