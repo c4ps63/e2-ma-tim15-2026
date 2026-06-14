@@ -208,7 +208,7 @@ public class AsocijacijeEngine {
         boolean[][] openSnap   = new boolean[4][4];
         for (int c = 0; c < 4; c++) openSnap[c] = cellOpened[c].clone();
 
-        sync.startOpponentTurn(currentPuzzle, solvedSnap, openSnap,
+        sync.startOpponentTurn(currentPuzzle, solvedSnap, openSnap, currentRound,
                 new AsocijacijeSync.Callback() {
 
                     @Override

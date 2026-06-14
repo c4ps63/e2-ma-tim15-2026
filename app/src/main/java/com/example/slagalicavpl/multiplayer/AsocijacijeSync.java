@@ -20,6 +20,7 @@ public interface AsocijacijeSync {
     void startOpponentTurn(AsocijacijePuzzle puzzle,
                            boolean[] colSolved,
                            boolean[][] cellOpened,
+                           int round,
                            Callback cb);
 
     void cancel();

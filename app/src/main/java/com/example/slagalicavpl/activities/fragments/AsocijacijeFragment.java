@@ -137,7 +137,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         // "PRESKOČI" button
         btnPass.setOnClickListener(v -> {
             if (firebaseAsocSync != null)
-                firebaseAsocSync.broadcastLocalAction("done", -1, -1, null);
+                firebaseAsocSync.writeDone(currentRound);
             engine.passGuess();
         });
 
@@ -334,7 +334,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         if (engine.isCellOpened(col, row)) return;
         engine.openField(col, row);
         if (firebaseAsocSync != null)
-            firebaseAsocSync.broadcastLocalAction("openField", col, row, null);
+            firebaseAsocSync.writeOpenField(currentRound, col, row);
     }
 
     private void onColHeaderTapped(int col) {
@@ -345,7 +345,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         if (!text.isEmpty()) {
             selectedCol = col;
             if (firebaseAsocSync != null)
-                firebaseAsocSync.broadcastLocalAction("guessColumn", col, -1, text);
+                firebaseAsocSync.writeGuessColumn(currentRound, col, text);
             engine.guessColumn(col, text);
             etGuess.setText("");
             selectedCol = -1;
@@ -377,7 +377,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             return;
         }
         if (firebaseAsocSync != null)
-            firebaseAsocSync.broadcastLocalAction("guessFinal", -1, -1, text);
+            firebaseAsocSync.writeGuessFinal(currentRound, text);
         engine.guessFinal(text);
         etGuess.setText("");
     }
@@ -396,14 +396,14 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         if (selectedCol >= 0 && !engine.isColSolved(selectedCol)) {
             int col = selectedCol;
             if (firebaseAsocSync != null)
-                firebaseAsocSync.broadcastLocalAction("guessColumn", col, -1, text);
+                firebaseAsocSync.writeGuessColumn(currentRound, col, text);
             engine.guessColumn(col, text);
             etGuess.setText("");
             selectedCol = -1;
             highlightSelectedCol(-1);
         } else {
             if (firebaseAsocSync != null)
-                firebaseAsocSync.broadcastLocalAction("guessFinal", -1, -1, text);
+                firebaseAsocSync.writeGuessFinal(currentRound, text);
             engine.guessFinal(text);
             etGuess.setText("");
         }
