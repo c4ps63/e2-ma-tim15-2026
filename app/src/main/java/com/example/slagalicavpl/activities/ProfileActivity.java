@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,9 +34,10 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvStatKoZnaZnaTacnih, tvStatKoZnaZnaPromasenih;
     private TextView tvStatSpojnice, tvStatAsocijacije;
     private TextView tvStatSkocko, tvStatKorak, tvStatMojBroj;
-    private TextView tvAvatarInitial;
-    private View     viewAvatarCircle;
-    private String   currentUid;
+    private TextView    tvAvatarInitial;
+    private View        viewAvatarCircle;
+    private ProgressBar pbStatKzz, pbStatSpojnice, pbStatSkocko, pbStatKorak, pbStatMojBroj;
+    private String      currentUid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +62,11 @@ public class ProfileActivity extends AppCompatActivity {
         tvStatMojBroj           = findViewById(R.id.tvStatMojBroj);
         tvAvatarInitial         = findViewById(R.id.tvAvatarInitial);
         viewAvatarCircle        = findViewById(R.id.viewAvatarCircle);
+        pbStatKzz               = findViewById(R.id.pbStatKzz);
+        pbStatSpojnice          = findViewById(R.id.pbStatSpojnice);
+        pbStatSkocko            = findViewById(R.id.pbStatSkocko);
+        pbStatKorak             = findViewById(R.id.pbStatKorak);
+        pbStatMojBroj           = findViewById(R.id.pbStatMojBroj);
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
@@ -120,11 +127,23 @@ public class ProfileActivity extends AppCompatActivity {
                 tvStatKoZnaZnaTacnih.setText(String.valueOf(u.kzzCorrect));
                 tvStatKoZnaZnaPromasenih.setText(String.valueOf(u.kzzTotal - u.kzzCorrect));
 
-                tvStatSpojnice.setText(pct(u.spojniceConnected, u.spojniceTotal) + "%");
+                int pctKzz      = pct(u.kzzCorrect, u.kzzTotal);
+                int pctSpojnice = pct(u.spojniceConnected, u.spojniceTotal);
+                int pctSkocko   = pct(u.skockoCorrect, u.skockoTotal);
+                int pctKorak    = pct(u.korakCorrect, u.korakTotal);
+                int pctMojBroj  = pct(u.mojBrojCorrect, u.mojBrojTotal);
+
+                tvStatSpojnice.setText(pctSpojnice + "%");
                 tvStatAsocijacije.setText(u.asocijacijeSolved + "/" + u.asocijacijeTotal + " rešenih");
-                tvStatSkocko.setText(pct(u.skockoCorrect, u.skockoTotal) + "%");
-                tvStatKorak.setText(pct(u.korakCorrect, u.korakTotal) + "%");
-                tvStatMojBroj.setText(pct(u.mojBrojCorrect, u.mojBrojTotal) + "% tačnih");
+                tvStatSkocko.setText(pctSkocko + "%");
+                tvStatKorak.setText(pctKorak + "%");
+                tvStatMojBroj.setText(pctMojBroj + "% tačnih");
+
+                if (pbStatKzz      != null) pbStatKzz.setProgress(pctKzz);
+                if (pbStatSpojnice != null) pbStatSpojnice.setProgress(pctSpojnice);
+                if (pbStatSkocko   != null) pbStatSkocko.setProgress(pctSkocko);
+                if (pbStatKorak    != null) pbStatKorak.setProgress(pctKorak);
+                if (pbStatMojBroj  != null) pbStatMojBroj.setProgress(pctMojBroj);
             }
 
             @Override
