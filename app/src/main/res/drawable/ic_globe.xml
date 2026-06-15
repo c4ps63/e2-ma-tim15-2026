@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Earth globe — ocean + continent paths, 200×208 viewport (extra 8 for drop-shadow) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="260dp"
+    android:height="268dp"
+    android:viewportWidth="200"
+    android:viewportHeight="208">
+
+    <!-- Drop shadow -->
+    <path
+        android:fillColor="#0D2B54"
+        android:pathData="M100,10 A96,96,0,1,0,100,202 A96,96,0,1,0,100,10 Z"/>
+
+    <!-- Ocean -->
+    <path
+        android:fillColor="#3AA3E8"
+        android:pathData="M100,4 A96,96,0,1,0,100,196 A96,96,0,1,0,100,4 Z"/>
+
+    <!-- Continents clipped to globe circle -->
+    <group>
+        <clip-path android:pathData="M100,4 A95,95,0,1,0,100,194 A95,95,0,1,0,100,4 Z"/>
+
+        <!-- N. America -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1.5"
+            android:pathData="M12,40 L27,30 L40,38 L47,55 L46,75 L39,88 L30,85 L24,98 L19,90 L14,72 Z"/>
+        <!-- Caribbean -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1"
+            android:pathData="M52,30 L60,28 L61,40 L56,46 L51,40 Z"/>
+        <!-- Central America -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1"
+            android:pathData="M35,92 L41,98 L42,110 L39,116 L35,110 Z"/>
+        <!-- S. America -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1.5"
+            android:pathData="M42,118 L52,120 L55,140 L50,165 L44,178 L39,170 L37,148 L40,128 Z"/>
+
+        <!-- Europe -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1.5"
+            android:pathData="M132,38 L150,34 L159,44 L154,56 L144,58 L136,52 Z"/>
+        <!-- Eurasia -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1.5"
+            android:pathData="M158,36 L183,40 L192,58 L185,80 L172,84 L162,76 L158,58 Z"/>
+        <!-- Middle East -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1"
+            android:pathData="M164,78 L174,80 L170,98 L164,96 Z"/>
+        <!-- Africa -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1.5"
+            android:pathData="M142,60 L158,63 L162,88 L156,116 L148,136 L140,126 L138,98 L140,76 Z"/>
+        <!-- Australia -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1.5"
+            android:pathData="M168,126 L186,128 L188,146 L178,154 L166,144 Z"/>
+        <!-- Greenland -->
+        <path android:fillColor="#2FA84A" android:strokeColor="#1E7A36" android:strokeWidth="1"
+            android:pathData="M70,6 L88,4 L90,18 L80,24 L68,18 Z"/>
+    </group>
+
+    <!-- Top-left highlight -->
+    <path
+        android:fillColor="#33FFFFFF"
+        android:pathData="M55,22 Q100,8 140,28 Q110,14 70,18 Z"/>
+
+    <!-- Border ring -->
+    <path
+        android:strokeColor="#0D2B54"
+        android:strokeWidth="5"
+        android:fillColor="#00000000"
+        android:pathData="M100,4 A96,96,0,1,0,100,196 A96,96,0,1,0,100,4 Z"/>
+
+</vector>
