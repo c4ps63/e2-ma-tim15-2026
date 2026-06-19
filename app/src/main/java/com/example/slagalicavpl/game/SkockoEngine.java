@@ -6,27 +6,35 @@ import java.util.Random;
 
 public class SkockoEngine {
 
-    public static final int      CODE_LENGTH = 4;
+    public static final int      CODE_LENGTH  = 4;
     public static final int      MAX_ATTEMPTS = 6;
     public static final String[] SYMBOLS = {"🦉", "♣", "♠", "♥", "♦", "★"};
 
-    // Phases: local plays round 1, opponent gets bonus if local failed;
-    //         opponent plays round 2, local gets bonus if opponent failed.
+    /**
+     * Phase flow (same for both players):
+     *   R1_LOCAL → R1_BONUS_OPP → R2_OPP → R2_BONUS_LOCAL → DONE
+     *
+     * For P1 (localStartsFirst=true):
+     *   R1_LOCAL       = P1 active (main guessing)
+     *   R1_BONUS_OPP   = P2 bonus steal (Firebase/AI)
+     *   R2_OPP         = P2 active (Firebase/AI)
+     *   R2_BONUS_LOCAL = P1 bonus steal (active)
+     *
+     * For P2 (localStartsFirst=false):
+     *   R1_LOCAL       = P1 active (Firebase/AI)
+     *   R1_BONUS_OPP   = P2 bonus steal (active)
+     *   R2_OPP         = P2 active (main guessing)
+     *   R2_BONUS_LOCAL = P1 bonus steal (Firebase/AI)
+     */
     public enum Phase {
-        R1_LOCAL,        // local player's 30s main turn
-        R1_BONUS_OPP,    // opponent's 10s bonus after local failed round 1
-        R2_OPP,          // opponent's 30s main turn
-        R2_BONUS_LOCAL,  // local player's 10s bonus after opponent failed round 2
-        DONE
+        R1_LOCAL, R1_BONUS_OPP, R2_OPP, R2_BONUS_LOCAL, DONE
     }
 
     public interface Listener {
         void onRoundStarted(int round, Phase phase);
         void onPhaseChanged(Phase phase);
         void onAttemptResult(int attemptIndex, int[] guess, int hits, int nears, boolean byLocal);
-        /** Fired when someone solves — fragment shows solution + score, then calls continueAfterSolve(). */
         void onSolved(int[] secret, boolean byLocal, int pointsEarned);
-        /** Fired when nobody solved the round — fragment shows solution, then calls continueAfterSolve(). */
         void onRoundFailed(int[] secret);
         void onScoreChanged(int localScore, int oppScore);
         void onGameOver(int localScore, int oppScore);
@@ -47,22 +55,38 @@ public class SkockoEngine {
     private int[]    round2Secret;
     private int[]    currentSecret;
 
+    // P1 sets true, P2 sets false
+    private boolean localStartsFirst = true;
+
     public SkockoEngine(SkockoSync sync, Listener listener) {
         this.sync     = sync;
         this.listener = listener;
     }
 
+    public void setLocalStartsFirst(boolean v) { localStartsFirst = v; }
+
     public void startGame() {
-        round1Secret  = randomCode();
-        round2Secret  = randomCode();
-        localScore    = 0;
-        oppScore      = 0;
+        round1Secret = randomCode();
+        round2Secret = randomCode();
+        localScore   = 0;
+        oppScore     = 0;
         beginPhase(Phase.R1_LOCAL, 1, round1Secret);
     }
 
-    /** Called by fragment when local player submits a guess. Returns false if not local phase. */
+    public void startGame(int[] secret1, int[] secret2) {
+        round1Secret = secret1.clone();
+        round2Secret = secret2.clone();
+        localScore   = 0;
+        oppScore     = 0;
+        beginPhase(Phase.R1_LOCAL, 1, round1Secret);
+    }
+
+    public int[] getRound1Secret() { return round1Secret; }
+    public int[] getRound2Secret() { return round2Secret; }
+
+    /** Submit a guess from the local player. Returns false if not the local player's turn. */
     public boolean submitAttempt(int[] guess) {
-        if (phase != Phase.R1_LOCAL && phase != Phase.R2_BONUS_LOCAL) return false;
+        if (!isLocalActivePhase()) return false;
 
         int hits  = countHits(currentSecret, guess);
         int nears = countNears(currentSecret, guess);
@@ -70,21 +94,20 @@ public class SkockoEngine {
         listener.onAttemptResult(attemptIndex, guess, hits, nears, true);
 
         if (hits == CODE_LENGTH) {
-            int pts = attemptScore(attemptIndex);
+            int pts = isBonusPhase() ? 10 : attemptScore(attemptIndex);
             localScore += pts;
             listener.onScoreChanged(localScore, oppScore);
             pausedForSolve = true;
             listener.onSolved(currentSecret.clone(), true, pts);
         } else {
             attemptIndex++;
-            if (phase == Phase.R2_BONUS_LOCAL || attemptIndex >= MAX_ATTEMPTS) {
+            if (isBonusPhase() || attemptIndex >= MAX_ATTEMPTS) {
                 advancePhase();
             }
         }
         return true;
     }
 
-    /** Called by fragment after the solution-display pause (solve or failed). */
     public void continueAfterSolve() {
         pausedForSolve = false;
         if (pendingContinuation != null) {
@@ -96,39 +119,62 @@ public class SkockoEngine {
         }
     }
 
-    /** Called by fragment when local player's timer expires without solving. */
+    /** Called when timer expires — only advances if it is the local player's turn. */
     public void onTimerExpired() {
         if (phase == Phase.DONE || pausedForSolve) return;
+        if (!isLocalActivePhase()) return; // passive phase — Firebase drives advancement
         sync.cancel();
         advancePhase();
     }
 
-    public Phase getPhase() { return phase; }
-    public int[] getCurrentSecret() { return currentSecret; }
+    public Phase  getPhase()         { return phase; }
+    public int[]  getCurrentSecret() { return currentSecret; }
 
-    // ── helpers ──────────────────────────────────────────────────────────────
+    // ── private helpers ───────────────────────────────────────────────────────
+
+    /** True when the local player should be able to submit guesses. */
+    private boolean isLocalActivePhase() {
+        if (localStartsFirst)
+            return phase == Phase.R1_LOCAL || phase == Phase.R2_BONUS_LOCAL;
+        else
+            return phase == Phase.R1_BONUS_OPP || phase == Phase.R2_OPP;
+    }
+
+    /** True when the current local-active phase is a bonus (single-attempt) phase. */
+    private boolean isBonusPhase() {
+        if (localStartsFirst) return phase == Phase.R2_BONUS_LOCAL;
+        else                  return phase == Phase.R1_BONUS_OPP;
+    }
 
     private void beginPhase(Phase p, int round, int[] secret) {
         sync.cancel();
-        phase                = p;
-        currentSecret        = secret;
-        attemptIndex         = 0;
-        oppAttemptIndex      = 0;
-        pausedForSolve       = false;
-        pendingContinuation  = null;
+        phase               = p;
+        currentSecret       = secret;
+        attemptIndex        = 0;
+        oppAttemptIndex     = 0;
+        pausedForSolve      = false;
+        pendingContinuation = null;
 
         if (round > 0) listener.onRoundStarted(round, phase);
         else           listener.onPhaseChanged(phase);
 
-        if (phase == Phase.R1_BONUS_OPP || phase == Phase.R2_OPP) {
-            startOpponentTurn(phase == Phase.R1_BONUS_OPP ? 1 : MAX_ATTEMPTS);
+        // Start opponent (Firebase/AI) for phases where the opponent is active
+        boolean oppActive = localStartsFirst
+                ? (phase == Phase.R1_BONUS_OPP || phase == Phase.R2_OPP)
+                : (phase == Phase.R1_LOCAL      || phase == Phase.R2_BONUS_LOCAL);
+
+        if (oppActive) {
+            int maxAttempts = localStartsFirst
+                    ? (phase == Phase.R1_BONUS_OPP ? 1 : MAX_ATTEMPTS)
+                    : (phase == Phase.R1_LOCAL      ? MAX_ATTEMPTS : 1);
+            startOpponentTurn(maxAttempts);
         }
     }
 
     private void advanceAfterSolve() {
         switch (phase) {
             case R1_LOCAL:
-            case R1_BONUS_OPP:   beginPhase(Phase.R2_OPP, 2, round2Secret); break;
+            case R1_BONUS_OPP: beginPhase(Phase.R2_OPP, 2, round2Secret); break;
             case R2_OPP:
             case R2_BONUS_LOCAL: finish(); break;
         }
@@ -137,29 +183,21 @@ public class SkockoEngine {
     private void advancePhase() {
         switch (phase) {
             case R1_LOCAL:
-                // Local failed → opponent bonus (still round 1, no solution reveal yet)
                 beginPhase(Phase.R1_BONUS_OPP, 0, round1Secret);
                 break;
-
             case R1_BONUS_OPP:
-                // Nobody solved round 1 → reveal solution, then start round 2
                 pausedForSolve      = true;
                 pendingContinuation = () -> beginPhase(Phase.R2_OPP, 2, round2Secret);
                 listener.onRoundFailed(currentSecret.clone());
                 break;
-
             case R2_OPP:
-                // Opponent failed → local bonus (still round 2, no solution reveal yet)
                 beginPhase(Phase.R2_BONUS_LOCAL, 0, round2Secret);
                 break;
-
             case R2_BONUS_LOCAL:
-                // Nobody solved round 2 → reveal solution, then finish
                 pausedForSolve      = true;
                 pendingContinuation = this::finish;
                 listener.onRoundFailed(currentSecret.clone());
                 break;
-
             default:
                 finish();
         }
@@ -171,17 +209,26 @@ public class SkockoEngine {
                 new SkockoSync.AttemptCallback() {
                     @Override
                     public void onOpponentAttempt(int idx, int[] guess, int hits, int nears) {
-                        if (phase != Phase.R1_BONUS_OPP && phase != Phase.R2_OPP) return;
+                        boolean oppPhase = localStartsFirst
+                                ? (phase == Phase.R1_BONUS_OPP || phase == Phase.R2_OPP)
+                                : (phase == Phase.R1_LOCAL      || phase == Phase.R2_BONUS_LOCAL);
+                        if (!oppPhase) return;
                         oppAttemptIndex = idx;
                         listener.onAttemptResult(idx, guess, hits, nears, false);
                     }
 
                     @Override
                     public void onOpponentDone(boolean solved) {
-                        if (phase != Phase.R1_BONUS_OPP && phase != Phase.R2_OPP) return;
+                        boolean oppPhase = localStartsFirst
+                                ? (phase == Phase.R1_BONUS_OPP || phase == Phase.R2_OPP)
+                                : (phase == Phase.R1_LOCAL      || phase == Phase.R2_BONUS_LOCAL);
+                        if (!oppPhase) return;
                         if (solved) {
-                            int pts = (phase == Phase.R1_BONUS_OPP) ? 10
-                                    : attemptScore(oppAttemptIndex);
+                            // Bonus phases give 10 pts; main phases use attempt-based score
+                            boolean oppBonus = localStartsFirst
+                                    ? (phase == Phase.R1_BONUS_OPP)
+                                    : (phase == Phase.R2_BONUS_LOCAL);
+                            int pts = oppBonus ? 10 : attemptScore(oppAttemptIndex);
                             oppScore += pts;
                             listener.onScoreChanged(localScore, oppScore);
                             pausedForSolve = true;
@@ -210,8 +257,6 @@ public class SkockoEngine {
         if (idx <= 3) return 15;
         return 10;
     }
-
-    // ── static helpers used by LocalSkockoSync ────────────────────────────────
 
     public static int countHits(int[] secret, int[] guess) {
         int h = 0;

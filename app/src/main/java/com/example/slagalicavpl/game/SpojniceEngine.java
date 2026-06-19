@@ -27,12 +27,21 @@ public class SpojniceEngine {
     private final Listener          listener;
     private final Random            rng = new Random();
 
-    private Phase            phase = Phase.R1_LOCAL;
-    private int              localScore    = 0;
-    private int              opponentScore = 0;
+    private Phase             phase = Phase.R1_LOCAL;
+    private int               localScore    = 0;
+    private int               opponentScore = 0;
     private List<ConnectPair> currentPairs;
-    private boolean[]        connected;
-    private int[]            rightSlots;
+    private boolean[]         connected;
+    private int[]             rightSlots;
+
+    // Multiplayer support: P1 sets true, P2 sets false.
+    // When false, R1_OPP and R2_OPP are the local player's active phases,
+    // and R1_LOCAL / R2_LOCAL call startOpponentPhase instead.
+    private boolean localStartsFirst = true;
+
+    // Injected shared slots (P1 generates, P2 receives via Firebase)
+    private int[] externalSlots1 = null;
+    private int[] externalSlots2 = null;
 
     public SpojniceEngine(List<ConnectPair> round1Pairs, List<ConnectPair> round2Pairs,
                           SpojniceSync sync, Listener listener) {
@@ -42,6 +51,14 @@ public class SpojniceEngine {
         this.listener    = listener;
     }
 
+    public void setLocalStartsFirst(boolean v) { localStartsFirst = v; }
+
+    /** P1 calls this to expose what slots it generated. P2 injects the slots received from Firebase. */
+    public void setExternalSlots(int[] slots1, int[] slots2) {
+        externalSlots1 = slots1.clone();
+        externalSlots2 = slots2.clone();
+    }
+
     public void startGame() {
         localScore    = 0;
         opponentScore = 0;
@@ -49,12 +66,12 @@ public class SpojniceEngine {
     }
 
     public boolean connectPair(int leftRow, int rightRow) {
-        if (phase != Phase.R1_LOCAL && phase != Phase.R2_LOCAL) return false;
+        if (!isLocalActivePhase()) return false;
         return processConnection(leftRow, rightRow, true);
     }
 
     public void pass() {
-        if (phase == Phase.R1_LOCAL || phase == Phase.R2_LOCAL) advancePhase();
+        if (isLocalActivePhase()) advancePhase();
     }
 
     public void onTimerExpired() {
@@ -63,13 +80,32 @@ public class SpojniceEngine {
 
     public Phase getPhase() { return phase; }
 
+    /** Returns true when the local player can interact with the board. */
+    private boolean isLocalActivePhase() {
+        if (localStartsFirst)
+            return phase == Phase.R1_LOCAL || phase == Phase.R2_LOCAL;
+        else
+            return phase == Phase.R1_OPP || phase == Phase.R2_OPP;
+    }
+
     private void startRound(int round, List<ConnectPair> pairs, Phase startPhase) {
         currentPairs = pairs;
         connected    = new boolean[PAIRS_PER_ROUND];
-        rightSlots   = shuffledSlots();
-        phase        = startPhase;
+        // Use external slots if provided (multiplayer slot sharing), else random
+        if (round == 1 && externalSlots1 != null) {
+            rightSlots = externalSlots1.clone();
+        } else if (round == 2 && externalSlots2 != null) {
+            rightSlots = externalSlots2.clone();
+        } else {
+            rightSlots = shuffledSlots();
+        }
+        phase = startPhase;
         listener.onRoundStarted(round, phase, currentPairs, rightSlots.clone());
-        if (phase == Phase.R2_OPP) startOpponentPhase();
+
+        // If the start phase is passive for this player, start opponent listener immediately
+        if (!isLocalActivePhase()) {
+            startOpponentPhase();
+        }
     }
 
     private void advancePhase() {
@@ -78,18 +114,27 @@ public class SpojniceEngine {
             case R1_LOCAL:
                 phase = Phase.R1_OPP;
                 listener.onPhaseChanged(phase);
-                startOpponentPhase();
+                if (localStartsFirst) startOpponentPhase();
+                // else: P2 is now active in R1_OPP — no startOpponentPhase
                 break;
+
             case R1_OPP:
                 startRound(2, round2Pairs, Phase.R2_OPP);
                 break;
+
             case R2_OPP:
                 phase = Phase.R2_LOCAL;
                 listener.onPhaseChanged(phase);
+                if (!localStartsFirst) startOpponentPhase();
+                // else: P1 is now active in R2_LOCAL — no startOpponentPhase
                 break;
+
             case R2_LOCAL:
                 phase = Phase.DONE;
                 listener.onGameOver(localScore, opponentScore);
+                break;
+
+            default:
                 break;
         }
     }
@@ -99,19 +144,40 @@ public class SpojniceEngine {
                 new SpojniceSync.ConnectCallback() {
                     @Override
                     public void onOpponentConnect(int leftRow, int rightRow) {
-                        if (phase != Phase.R1_OPP && phase != Phase.R2_OPP) return;
+                        if (!isOpponentActivePhase()) return;
                         processConnection(leftRow, rightRow, false);
                     }
                     @Override
                     public void onOpponentDone() {
-                        if (phase != Phase.R1_OPP && phase != Phase.R2_OPP) return;
+                        if (!isOpponentActivePhase()) return;
                         advancePhase();
                     }
                 });
     }
 
+    private boolean isOpponentActivePhase() {
+        if (localStartsFirst)
+            return phase == Phase.R1_OPP || phase == Phase.R2_OPP;
+        else
+            return phase == Phase.R1_LOCAL || phase == Phase.R2_LOCAL;
+    }
+
     private boolean processConnection(int leftRow, int rightRow, boolean byLocal) {
         if (connected[leftRow]) return false;
+
+        // Za protivničke konekcije rightRow koji je stigao iz Firebasea
+        // odgovara poziciji u PROTIVNIKOVOM rightSlots stanju u trenutku klika.
+        // Ako je Firebase isporučio konekcije u key order-u (ne insercijskom),
+        // prethodni swapovi su drugačije primijenjeni → stored rightRow je pogrešan.
+        // Rješenje: pronađi STVARNU trenutnu poziciju para u lokalnom rightSlots-u.
+        if (!byLocal) {
+            rightRow = -1;
+            for (int j = 0; j < PAIRS_PER_ROUND; j++) {
+                if (rightSlots[j] == leftRow) { rightRow = j; break; }
+            }
+            if (rightRow == -1) return false;
+        }
+
         if (rightSlots[rightRow] != leftRow) return false;
 
         if (leftRow != rightRow) {

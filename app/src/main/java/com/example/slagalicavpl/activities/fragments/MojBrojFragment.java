@@ -27,6 +27,9 @@ import com.example.slagalicavpl.game.MojBrojEngine;
 import com.example.slagalicavpl.model.MojBrojPuzzle;
 import com.example.slagalicavpl.multiplayer.FirebaseMojBrojSync;
 import com.example.slagalicavpl.repository.MojBrojRepository;
+import com.example.slagalicavpl.repository.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +65,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     private int currentRound = 1;
     private int accP1 = 0;
     private int accP2 = 0;
+    private int mojBrojExact = 0;
+    private int mojBrojRounds = 0;
 
     private MojBrojPuzzle puzzle;
     private final boolean[] tileUsed = new boolean[6];
@@ -155,6 +160,7 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
             TextView hudP2 = view.findViewById(R.id.p2_score);
             if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
             if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
+            ga.applyAvatarsToHud(view);
         }
 
         setHudClock();
@@ -361,6 +367,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     }
 
     private void startRoundCountdown() {
+        View timerWrap = getView() != null ? getView().findViewById(R.id.timer_wrap) : null;
+        if (timerWrap != null) timerWrap.setVisibility(View.VISIBLE);
         setHudNumber(ROUND_SECS, false);
         roundTimer = new CountDownTimer(ROUND_SECS * 1000L, 1000) {
             @Override public void onTick(long msLeft) {
@@ -445,6 +453,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
         setHudClock();
 
         int result = MojBrojEngine.evaluate(exprEval.toString());
+        mojBrojRounds++;
+        if (puzzle != null && result == puzzle.target) mojBrojExact++;
         tvPlayerResult.setText(result >= 0 ? String.valueOf(result) : "?");
         setTilesEnabled(false);
         setOpsEnabled(false);
@@ -526,6 +536,17 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
             if (getActivity() instanceof GameActivity) {
                 GameActivity ga = (GameActivity) getActivity();
                 ga.addScores(accP1, accP2);
+
+                FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (fbUser != null) {
+                    String uid = fbUser.getUid();
+                    UserRepository.getInstance().incrementMojBroj(uid, mojBrojExact, mojBrojRounds);
+                    if (multiplayer) {
+                        boolean won = ga.getP1Total() > ga.getP2Total();
+                        UserRepository.getInstance().incrementStats(uid, won, ga.getP1Total());
+                    }
+                }
+
                 handler.postDelayed(() -> {
                     if (getActivity() instanceof GameActivity)
                         ((GameActivity) getActivity()).finishGame();

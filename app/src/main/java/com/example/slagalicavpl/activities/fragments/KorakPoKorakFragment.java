@@ -23,6 +23,9 @@ import com.example.slagalicavpl.game.KorakPoKorakEngine;
 import com.example.slagalicavpl.model.KorakPuzzle;
 import com.example.slagalicavpl.multiplayer.FirebaseKorakSync;
 import com.example.slagalicavpl.repository.KorakRepository;
+import com.example.slagalicavpl.repository.UserRepository;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class KorakPoKorakFragment extends Fragment
         implements KorakPoKorakEngine.Listener {
@@ -104,6 +107,7 @@ public class KorakPoKorakFragment extends Fragment
             }
             if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
             if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
+            ga.applyAvatarsToHud(view);
         }
 
         setHudClock();
@@ -172,6 +176,8 @@ public class KorakPoKorakFragment extends Fragment
     private int passiveP1pts = 0;
     private int passiveP2pts = 0;
     private boolean passiveStealEnabled = false;
+    private boolean localRoundSolved = false;
+    private boolean korakStatSaved   = false;
 
     private void listenPassive(int round) {
         if (korakSync == null) return;
@@ -208,6 +214,22 @@ public class KorakPoKorakFragment extends Fragment
                     for (int i = 0; i <= stepIndex && i < MAX_STEPS; i++) {
                         int pts = KorakPoKorakEngine.BASE_PTS - KorakPoKorakEngine.STEP_DROP * i;
                         revealStep(i, puzzle.clues[i], pts);
+                    }
+                });
+            }
+
+            @Override
+            public void onGuess(String text, boolean correct) {
+                handler.post(() -> {
+                    etAnswer.setText(text);
+                    etAnswer.setBackgroundResource(correct
+                            ? R.drawable.bg_expression_correct
+                            : R.drawable.bg_expression_wrong);
+                    if (!correct) {
+                        handler.postDelayed(() -> {
+                            if (getView() != null)
+                                etAnswer.setBackgroundResource(R.drawable.bg_expression_display);
+                        }, 350);
                     }
                 });
             }
@@ -303,6 +325,11 @@ public class KorakPoKorakFragment extends Fragment
         for (int i = 0; i < MAX_STEPS; i++) lockStep(i);
         etAnswer.setText("");
         etAnswer.setBackgroundResource(R.drawable.bg_expression_display);
+        if (tvRound != null) {
+            boolean iAmActive = !multiplayer || isActivePlayer(round);
+            tvRound.setText("RUNDA " + round + "/2  ·  "
+                    + (iAmActive ? "JA" : "PROTIVNIK") + " NA POTEZU");
+        }
     }
 
     @Override
@@ -348,9 +375,13 @@ public class KorakPoKorakFragment extends Fragment
 
     @Override
     public void onAnswerResult(boolean correct, int pts) {
+        if (correct) localRoundSolved = true;
         etAnswer.setBackgroundResource(correct
                 ? R.drawable.bg_expression_correct
                 : R.drawable.bg_expression_wrong);
+        if (multiplayer && korakSync != null) {
+            korakSync.writeGuess(etAnswer.getText().toString().trim(), correct);
+        }
         if (!correct) {
             handler.postDelayed(() -> {
                 if (getView() != null)
@@ -359,8 +390,17 @@ public class KorakPoKorakFragment extends Fragment
         }
     }
 
+    private void saveKorakStat() {
+        if (korakStatSaved) return;
+        korakStatSaved = true;
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null)
+            UserRepository.getInstance().incrementKorak(fbUser.getUid(), localRoundSolved);
+    }
+
     @Override
     public void onRoundTransition(int nextRound, int nextPlayer) {
+        saveKorakStat();
         if (multiplayer && korakSync != null) {
             korakSync.writeRoundEnd(engine.getP1Points(), engine.getP2Points());
         }
@@ -372,13 +412,16 @@ public class KorakPoKorakFragment extends Fragment
 
     @Override
     public void onGameOver(int p1Score, int p2Score) {
+        saveKorakStat();
+        int totalP1 = passiveP1pts + p1Score;
+        int totalP2 = passiveP2pts + p2Score;
         if (multiplayer && korakSync != null) {
-            korakSync.writeGameOver(p1Score, p2Score);
+            korakSync.writeGameOver(totalP1, totalP2);
             korakSync.cancelListener();
         }
         setHudClock();
         if (getActivity() instanceof GameActivity)
-            ((GameActivity) getActivity()).addScores(p1Score, p2Score);
+            ((GameActivity) getActivity()).addScores(totalP1, totalP2);
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)
                 ((GameActivity) getActivity()).showMojBroj();

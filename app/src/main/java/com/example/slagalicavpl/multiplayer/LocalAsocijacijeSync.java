@@ -16,7 +16,7 @@ public class LocalAsocijacijeSync implements AsocijacijeSync {
 
     @Override
     public void startOpponentTurn(AsocijacijePuzzle puzzle, boolean[] colSolved,
-                                   boolean[][] cellOpened, Callback cb) {
+                                   boolean[][] cellOpened, int round, Callback cb) {
         // 1. Pick a random unopened cell to open
         List<int[]> available = new ArrayList<>();
         for (int c = 0; c < 4; c++)

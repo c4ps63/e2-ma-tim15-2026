@@ -162,5 +162,67 @@ public class UserRepository {
         });
     }
 
+    public void saveAvatarColor(String uid, String hexColor, Callback cb) {
+        db.collection("users").document(uid)
+          .update("avatarColor", hexColor)
+          .addOnSuccessListener(v -> cb.onSuccess())
+          .addOnFailureListener(e -> cb.onError(e.getMessage()));
+    }
+
+    public void incrementSpojnice(String uid, int connected, int total) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            long c = safe(tx.get(ref).getLong("spojniceConnected"));
+            long t = safe(tx.get(ref).getLong("spojniceTotal"));
+            tx.update(ref, "spojniceConnected", c + connected);
+            tx.update(ref, "spojniceTotal", t + total);
+            return null;
+        });
+    }
+
+    public void incrementAsocijacije(String uid, int solved, int total) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            long s = safe(tx.get(ref).getLong("asocijacijeSolved"));
+            long t = safe(tx.get(ref).getLong("asocijacijeTotal"));
+            tx.update(ref, "asocijacijeSolved", s + solved);
+            tx.update(ref, "asocijacijeTotal", t + total);
+            return null;
+        });
+    }
+
+    public void incrementSkocko(String uid, boolean solved) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            long c = safe(tx.get(ref).getLong("skockoCorrect"));
+            long t = safe(tx.get(ref).getLong("skockoTotal"));
+            tx.update(ref, "skockoTotal", t + 1);
+            if (solved) tx.update(ref, "skockoCorrect", c + 1);
+            return null;
+        });
+    }
+
+    public void incrementKorak(String uid, boolean solved) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            long c = safe(tx.get(ref).getLong("korakCorrect"));
+            long t = safe(tx.get(ref).getLong("korakTotal"));
+            tx.update(ref, "korakTotal", t + 1);
+            if (solved) tx.update(ref, "korakCorrect", c + 1);
+            return null;
+        });
+    }
+
+    public void incrementMojBroj(String uid, int correct, int total) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            long c = safe(tx.get(ref).getLong("mojBrojCorrect"));
+            long t = safe(tx.get(ref).getLong("mojBrojTotal"));
+            tx.update(ref, "mojBrojCorrect", c + correct);
+            tx.update(ref, "mojBrojTotal", t + total);
+            return null;
+        });
+    }
+
     private long safe(Long v) { return v != null ? v : 0L; }
 }

@@ -99,10 +99,11 @@
 
                 <!-- Inicijal korisnika -->
                 <TextView
+                    android:id="@+id/tvAvatarInitial"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="L"
+                    android:text="?"
                     android:fontFamily="sans-serif-black"
                     android:textColor="#FFFFFF"
                     android:textSize="52sp"/>
@@ -406,9 +407,10 @@
                     </LinearLayout>
 
                     <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
+                        android:id="@+id/pbStatKzz"
                         android:layout_width="match_parent" android:layout_height="6dp"
                         android:layout_marginTop="8dp"
-                        android:progress="76" android:max="100"
+                        android:progress="0" android:max="100"
                         android:progressTint="#FFD23F" android:progressBackgroundTint="#D8D0C0"/>
                 </LinearLayout>
 
@@ -440,8 +442,9 @@
                                 android:textColor="@color/ink" android:textSize="14sp"/>
                         </LinearLayout>
                         <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:id="@+id/pbStatSpojnice"
                             android:layout_width="match_parent" android:layout_height="6dp"
-                            android:progress="74" android:max="100"
+                            android:progress="0" android:max="100"
                             android:progressTint="#FF5E63" android:progressBackgroundTint="#D8D0C0"/>
                     </LinearLayout>
 
@@ -494,8 +497,9 @@
                                 android:textColor="@color/ink" android:textSize="14sp"/>
                         </LinearLayout>
                         <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:id="@+id/pbStatSkocko"
                             android:layout_width="match_parent" android:layout_height="6dp"
-                            android:progress="55" android:max="100"
+                            android:progress="0" android:max="100"
                             android:progressTint="#21C87A" android:progressBackgroundTint="#D8D0C0"/>
                     </LinearLayout>
 
@@ -519,8 +523,9 @@
                                 android:textColor="@color/ink" android:textSize="14sp"/>
                         </LinearLayout>
                         <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
+                            android:id="@+id/pbStatKorak"
                             android:layout_width="match_parent" android:layout_height="6dp"
-                            android:progress="69" android:max="100"
+                            android:progress="0" android:max="100"
                             android:progressTint="#FF8B1A" android:progressBackgroundTint="#D8D0C0"/>
                     </LinearLayout>
                 </LinearLayout>
@@ -545,8 +550,9 @@
                             android:textColor="@color/ink" android:textSize="14sp"/>
                     </LinearLayout>
                     <ProgressBar style="@android:style/Widget.ProgressBar.Horizontal"
+                        android:id="@+id/pbStatMojBroj"
                         android:layout_width="match_parent" android:layout_height="6dp"
-                        android:progress="48" android:max="100"
+                        android:progress="0" android:max="100"
                         android:progressTint="#FF5E63" android:progressBackgroundTint="#D8D0C0"/>
                 </LinearLayout>
 
