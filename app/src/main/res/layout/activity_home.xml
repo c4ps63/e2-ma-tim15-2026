@@ -1,110 +1,312 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="32dp"
     android:background="@drawable/bg_sky_gradient">
 
-    <!-- Logo / naslov -->
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- ── TOP HUD ─────────────────────────────────────────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="🏛️"
-        android:textSize="72sp"
-        android:layout_marginBottom="8dp"/>
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="@dimen/status_bar_safe"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="6dp">
 
+        <!-- Token chip -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_chip_yellow"
+            android:paddingStart="10dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="4dp"
+            android:layout_marginEnd="6dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🪙"
+                android:textSize="13sp"
+                android:layout_marginEnd="4dp"/>
+            <TextView
+                android:id="@+id/tvTokens"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:text="0"/>
+        </LinearLayout>
+
+        <!-- Star chip -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_chip_white"
+            android:paddingStart="10dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="4dp"
+            android:layout_marginEnd="6dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⭐"
+                android:textSize="13sp"
+                android:layout_marginEnd="4dp"/>
+            <TextView
+                android:id="@+id/tvStars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/ink"
+                android:textSize="14sp"
+                android:text="0"/>
+        </LinearLayout>
+
+        <!-- Liga chip -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_chip_orange"
+            android:paddingStart="10dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="4dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏆"
+                android:textSize="13sp"
+                android:layout_marginEnd="4dp"/>
+            <TextView
+                android:id="@+id/tvLeague"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/ink"
+                android:textSize="13sp"
+                android:text="1. LIGA"/>
+        </LinearLayout>
+
+        <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+        <!-- Avatar -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/btnProfile"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            app:cardCornerRadius="10dp"
+            app:cardBackgroundColor="@color/sky_dark"
+            app:cardElevation="0dp"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView
+                android:id="@+id/tvAvatarLetter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:fontFamily="sans-serif-black"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:text="?"/>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+    <!-- ── NASLOV ──────────────────────────────────────────────────────── -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SLAGALICA"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="2dp"
         android:fontFamily="sans-serif-black"
         android:textColor="#FFFFFF"
-        android:textSize="36sp"
-        android:letterSpacing="0.06"
-        android:layout_marginBottom="4dp"/>
+        android:textSize="34sp"
+        android:letterSpacing="0.02"
+        android:shadowColor="#40000000"
+        android:shadowDy="3"
+        android:shadowRadius="0.1"
+        android:text="IZABERI KONTINENT"/>
 
     <TextView
-        android:id="@+id/tvHomeGreeting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dobrodošao!"
-        android:fontFamily="sans-serif"
-        android:textColor="#DDEAFF"
-        android:textSize="15sp"
-        android:layout_marginBottom="48dp"/>
-
-    <!-- Igraj Online -->
-    <Button
-        android:id="@+id/btnPlayOnline"
-        android:layout_width="260dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="14dp"
-        android:background="@drawable/btn_cartoon_yellow"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="1dp"
         android:fontFamily="sans-serif-black"
-        android:paddingTop="14dp"
-        android:paddingBottom="18dp"
-        android:text="🌐  IGRAJ ONLINE"
-        android:textColor="@color/an_2"
-        android:textSize="16sp" />
+        android:textColor="#FFD23F"
+        android:textSize="12sp"
+        android:letterSpacing="0.08"
+        android:text="ILI KRENI U PUNU PARTIJU →"/>
 
-    <!-- Igraj Offline -->
-    <Button
-        android:id="@+id/btnPlayOffline"
-        android:layout_width="260dp"
-        android:layout_height="wrap_content"
-        android:text="🤖  IGRAJ VS BOT"
-        android:fontFamily="sans-serif-black"
-        android:textSize="16sp"
-        android:background="@drawable/btn_cartoon_blue"
-        android:layout_marginBottom="32dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="18dp"/>
-
-    <!-- Profil -->
-    <Button
-        android:id="@+id/btnProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="👤  Moj profil"
-        android:fontFamily="sans-serif"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp"
-        android:background="@android:color/transparent"
-        android:stateListAnimator="@null"
-        android:layout_marginBottom="10dp"/>
-
-    <!-- Notifikacije — dugme sa bedžom nepročitanih -->
+    <!-- ── PLANETA + PINOVI ────────────────────────────────────────────── -->
     <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Animirani globus — kontinenti se pomijeraju horizontalno -->
+        <com.example.slagalicavpl.views.GlobeView
+            android:id="@+id/imgPlanet"
+            android:layout_width="270dp"
+            android:layout_height="270dp"
+            android:layout_gravity="center"/>
+    </FrameLayout>
+
+    <!-- ── CTA DUGMAD ──────────────────────────────────────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="10dp">
 
         <Button
-            android:id="@+id/btnNotifications"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnPlayOnline"
+            style="@style/CartoonButton"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="🔔  Obaveštenja"
-            android:fontFamily="sans-serif"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:background="@android:color/transparent"
-            android:stateListAnimator="@null"/>
+            android:layout_weight="2"
+            android:layout_marginEnd="10dp"
+            android:textSize="18sp"
+            android:text="▶  PUNA PARTIJA"
+            android:background="@drawable/btn_cartoon_green"/>
 
-        <!-- Bedž nepročitanih (prikazan u gornjem desnom uglu) -->
-        <TextView
-            android:id="@+id/tvNotifBadge"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_gravity="top|end"
-            android:layout_marginTop="2dp"
-            android:fontFamily="sans-serif-black"
-            android:textSize="10sp"
+        <Button
+            android:id="@+id/btnChat"
+            style="@style/CartoonButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="14sp"
             android:textColor="@color/ink"
-            android:background="@drawable/btn_cartoon_yellow"
+            android:text="ČET"
+            android:background="@drawable/btn_cartoon_yellow"/>
+
+    </LinearLayout>
+
+    <!-- ── BOTTOM NAV ──────────────────────────────────────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_bottom_nav"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="24dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <!-- SVET (aktivan) -->
+        <LinearLayout
+            android:id="@+id/navSvet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
             android:gravity="center"
-            android:paddingBottom="2dp"
-            android:visibility="gone"/>
-    </FrameLayout>
+            android:background="@drawable/btn_cartoon_yellow"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_margin="6dp"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🌍" android:textSize="18sp" android:gravity="center"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="SVET" android:textSize="9sp" android:fontFamily="sans-serif-black"
+                android:textColor="@color/ink" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <!-- BOT -->
+        <LinearLayout
+            android:id="@+id/btnPlayOffline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="👥" android:textSize="18sp" android:gravity="center"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="BOT" android:textSize="9sp" android:fontFamily="sans-serif-black"
+                android:textColor="#FFFFFF" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <!-- RANG -->
+        <LinearLayout
+            android:id="@+id/navRang"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🏆" android:textSize="18sp" android:gravity="center"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="RANG" android:textSize="9sp" android:fontFamily="sans-serif-black"
+                android:textColor="#FFFFFF" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <!-- ČET -->
+        <LinearLayout
+            android:id="@+id/navCet"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="💬" android:textSize="18sp" android:gravity="center"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="ČET" android:textSize="9sp" android:fontFamily="sans-serif-black"
+                android:textColor="#FFFFFF" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <!-- PROFIL -->
+        <LinearLayout
+            android:id="@+id/navProfil"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="👤" android:textSize="18sp" android:gravity="center"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="PROFIL" android:textSize="9sp" android:fontFamily="sans-serif-black"
+                android:textColor="#FFFFFF" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

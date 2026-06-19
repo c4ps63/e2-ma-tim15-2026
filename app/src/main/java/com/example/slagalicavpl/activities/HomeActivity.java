@@ -2,78 +2,70 @@ package com.example.slagalicavpl.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalicavpl.R;
-import com.example.slagalicavpl.repository.NotificationRepository;
+import com.example.slagalicavpl.model.User;
 import com.example.slagalicavpl.repository.UserRepository;
 import com.example.slagalicavpl.service.AuthService;
 import com.google.firebase.auth.FirebaseUser;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private TextView tvNotifBadge;
-    private NotificationRepository notifRepo;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        notifRepo    = NotificationRepository.getInstance(this);
-        tvNotifBadge = findViewById(R.id.tvNotifBadge);
+        loadUserProfile();
+        setupNavigation();
+    }
 
-        // Pozdravna poruka sa korisničkim imenom
-        FirebaseUser user = AuthService.getInstance().getCurrentUser();
-        if (user != null) {
-            String uid = user.getUid();
-            UserRepository.getInstance().loadProfile(uid, new UserRepository.ProfileCallback() {
-                @Override
-                public void onLoaded(com.example.slagalicavpl.model.User u) {
-                    TextView tv = findViewById(R.id.tvHomeGreeting);
-                    if (tv != null && u.username != null)
-                        tv.setText("Dobrodošao, " + u.username + "!");
-                }
-                @Override public void onError(String msg) {}
-            });
-        }
+    private void loadUserProfile() {
+        FirebaseUser firebaseUser = AuthService.getInstance().getCurrentUser();
+        if (firebaseUser == null) return;
 
-        Button btnOnline  = findViewById(R.id.btnPlayOnline);
-        Button btnOffline = findViewById(R.id.btnPlayOffline);
-        Button btnProfile = findViewById(R.id.btnProfile);
-        Button btnNotif   = findViewById(R.id.btnNotifications);
+        UserRepository.getInstance().loadProfile(firebaseUser.getUid(),
+                new UserRepository.ProfileCallback() {
+            @Override
+            public void onLoaded(User u) {
+                TextView tvTokens = findViewById(R.id.tvTokens);
+                TextView tvStars  = findViewById(R.id.tvStars);
+                TextView tvLeague = findViewById(R.id.tvLeague);
+                TextView tvAvatar = findViewById(R.id.tvAvatarLetter);
 
-        btnOnline.setOnClickListener(v ->
-                startActivity(new Intent(this, LobbyActivity.class)));
+                tvTokens.setText(String.valueOf(u.tokens));
+                tvStars.setText(String.valueOf(u.stars));
+                tvLeague.setText(((u.stars / 100) + 1) + ". LIGA");
 
-        btnOffline.setOnClickListener(v ->
-                startActivity(new Intent(this, GameActivity.class)));
+                if (u.username != null && !u.username.isEmpty())
+                    tvAvatar.setText(String.valueOf(u.username.charAt(0)).toUpperCase());
+            }
+            @Override public void onError(String msg) {}
+        });
+    }
 
-        btnProfile.setOnClickListener(v ->
+    private void setupNavigation() {
+        findViewById(R.id.btnProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        btnNotif.setOnClickListener(v ->
+        Button btnOnline = findViewById(R.id.btnPlayOnline);
+        Button btnChat   = findViewById(R.id.btnChat);
+        btnOnline.setOnClickListener(v -> startActivity(new Intent(this, LobbyActivity.class)));
+        btnChat.setOnClickListener(v   -> startActivity(new Intent(this, ChatActivity.class)));
+
+        findViewById(R.id.navSvet).setOnClickListener(v ->
+                startActivity(new Intent(this, LobbyActivity.class)));
+        findViewById(R.id.btnPlayOffline).setOnClickListener(v ->
+                startActivity(new Intent(this, GameActivity.class)));
+        findViewById(R.id.navRang).setOnClickListener(v ->
                 startActivity(new Intent(this, NotificationsActivity.class)));
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Ažuriramo badge svaki put kad se vratimo na Home
-        updateNotifBadge();
-    }
-
-    private void updateNotifBadge() {
-        int count = notifRepo.getUnreadCount();
-        if (count > 0) {
-            tvNotifBadge.setVisibility(View.VISIBLE);
-            tvNotifBadge.setText(count > 9 ? "9+" : String.valueOf(count));
-        } else {
-            tvNotifBadge.setVisibility(View.GONE);
-        }
+        findViewById(R.id.navCet).setOnClickListener(v ->
+                startActivity(new Intent(this, ChatActivity.class)));
+        findViewById(R.id.navProfil).setOnClickListener(v ->
+                startActivity(new Intent(this, ProfileActivity.class)));
     }
 }
