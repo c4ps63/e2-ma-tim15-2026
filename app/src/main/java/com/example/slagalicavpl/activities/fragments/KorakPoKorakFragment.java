@@ -394,7 +394,9 @@ public class KorakPoKorakFragment extends Fragment
         if (korakStatSaved) return;
         korakStatSaved = true;
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser != null)
+        boolean friendly = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isFriendlyGame();
+        if (fbUser != null && !friendly)
             UserRepository.getInstance().incrementKorak(fbUser.getUid(), localRoundSolved);
     }
 
@@ -403,6 +405,20 @@ public class KorakPoKorakFragment extends Fragment
         saveKorakStat();
         if (multiplayer && korakSync != null) {
             korakSync.writeRoundEnd(engine.getP1Points(), engine.getP2Points());
+        }
+        // In challenge mode play only one round
+        boolean challengeMode = !multiplayer && getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isChallengeMode();
+        if (challengeMode) {
+            int p1 = passiveP1pts + engine.getP1Points();
+            int p2 = passiveP2pts + engine.getP2Points();
+            if (getActivity() instanceof GameActivity)
+                ((GameActivity) getActivity()).addScores(p1, p2);
+            handler.postDelayed(() -> {
+                if (getActivity() instanceof GameActivity)
+                    ((GameActivity) getActivity()).showMojBroj();
+            }, 2000);
+            return;
         }
         handler.postDelayed(() -> {
             if (multiplayer && korakSync != null) korakSync.cancelListener();

@@ -186,6 +186,17 @@
             android:background="@drawable/btn_cartoon_green"/>
 
         <Button
+            android:id="@+id/btnIzazov"
+            style="@style/CartoonButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="6dp"
+            android:textSize="14sp"
+            android:text="⚔ IZAZOV"
+            android:background="@drawable/btn_cartoon_salmon"/>
+
+        <Button
             android:id="@+id/btnChat"
             style="@style/CartoonButton"
             android:layout_width="0dp"
@@ -231,7 +242,26 @@
                 android:textColor="@color/ink" android:layout_marginTop="2dp"/>
         </LinearLayout>
 
-        <!-- BOT -->
+        <!-- PRIJATELJI -->
+        <LinearLayout
+            android:id="@+id/navPrijatelji"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:clickable="true"
+            android:focusable="true">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="👥" android:textSize="18sp" android:gravity="center"/>
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="PRIJATELJI" android:textSize="8sp" android:fontFamily="sans-serif-black"
+                android:textColor="#FFFFFF" android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <!-- BOT (offline) -->
         <LinearLayout
             android:id="@+id/btnPlayOffline"
             android:layout_width="0dp"
@@ -244,7 +274,7 @@
             android:clickable="true"
             android:focusable="true">
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                android:text="👥" android:textSize="18sp" android:gravity="center"/>
+                android:text="🤖" android:textSize="18sp" android:gravity="center"/>
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                 android:text="BOT" android:textSize="9sp" android:fontFamily="sans-serif-black"
                 android:textColor="#FFFFFF" android:layout_marginTop="2dp"/>

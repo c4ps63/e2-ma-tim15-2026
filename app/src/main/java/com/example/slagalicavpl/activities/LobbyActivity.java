@@ -35,8 +35,10 @@ import java.util.Map;
  */
 public class LobbyActivity extends AppCompatActivity {
 
-    public static final String EXTRA_ROOM_ID = "roomId";
-    public static final String EXTRA_MY_ROLE = "myRole";
+    public static final String EXTRA_ROOM_ID     = "roomId";
+    public static final String EXTRA_MY_ROLE     = "myRole";
+    public static final String EXTRA_IS_FRIENDLY  = "isFriendly";
+    public static final String EXTRA_CHALLENGE_ID = "challengeId";
 
     private DatabaseReference waitingRef;
     private DatabaseReference roomsRef;
@@ -44,7 +46,8 @@ public class LobbyActivity extends AppCompatActivity {
 
     private String  myUid;
     private String  myUsername;
-    private boolean navigating = false;
+    private boolean navigating  = false;
+    private boolean isFriendly  = false;
 
     // čuva podatke protivnika pronađene unutar Transaction.doTransaction()
     private volatile String pendingOpponentUid;
@@ -58,6 +61,7 @@ public class LobbyActivity extends AppCompatActivity {
         FirebaseUser user = UserRepository.getInstance().getCurrentUser();
         if (user == null) { finish(); return; }
 
+        isFriendly = getIntent().getBooleanExtra(EXTRA_IS_FRIENDLY, false);
         myUid      = user.getUid();
         myUsername = user.getEmail() != null ? user.getEmail() : myUid;
 
@@ -91,17 +95,35 @@ public class LobbyActivity extends AppCompatActivity {
                     String p1     = room.child("player1Uid").getValue(String.class);
                     String p2     = room.child("player2Uid").getValue(String.class);
                     String status = room.child("status").getValue(String.class);
-                    // Označi kao finished sve sobe gde sam ja učesnik i status je još "active"
                     if ("active".equals(status)
                             && (myUid.equals(p1) || myUid.equals(p2))) {
                         room.getRef().child("status").setValue("finished");
                     }
                 }
-                startMatchmaking();
+                if (isFriendly) {
+                    startMatchmaking();
+                } else {
+                    deductTokenThenMatch();
+                }
             }
             @Override
             public void onCancelled(DatabaseError e) {
-                startMatchmaking(); // nastavi čak i ako cleanup ne uspe
+                startMatchmaking();
+            }
+        });
+    }
+
+    private void deductTokenThenMatch() {
+        UserRepository.getInstance().deductToken(myUid, new UserRepository.Callback() {
+            @Override
+            public void onSuccess() { startMatchmaking(); }
+            @Override
+            public void onError(String msg) {
+                runOnUiThread(() -> {
+                    Toast.makeText(LobbyActivity.this,
+                            "Nemaš tokena za igru!", Toast.LENGTH_LONG).show();
+                    finish();
+                });
             }
         });
     }
@@ -180,6 +202,7 @@ public class LobbyActivity extends AppCompatActivity {
         room.put("player2Uid",  myUid);
         room.put("player2Name", myUsername);
         room.put("status",      "active");
+        room.put("friendly",    isFriendly);
 
         roomsRef.child(roomId).setValue(room)
             .addOnSuccessListener(v -> startGame(roomId, "p2"))
@@ -215,8 +238,9 @@ public class LobbyActivity extends AppCompatActivity {
 
     private void startGame(String roomId, String myRole) {
         Intent intent = new Intent(this, GameActivity.class);
-        intent.putExtra(EXTRA_ROOM_ID, roomId);
-        intent.putExtra(EXTRA_MY_ROLE, myRole);
+        intent.putExtra(EXTRA_ROOM_ID,     roomId);
+        intent.putExtra(EXTRA_MY_ROLE,     myRole);
+        intent.putExtra(EXTRA_IS_FRIENDLY, isFriendly);
         startActivity(intent);
         finish();
     }
@@ -228,7 +252,10 @@ public class LobbyActivity extends AppCompatActivity {
         super.onDestroy();
         if (roomListener != null) roomsRef.removeEventListener(roomListener);
 
-        // Ako nismo ušli u igru, obrišemo sebe iz waiting slota
+        // Ako nismo ušli u igru, vrati token i obriši sebe iz waiting slota
+        if (!navigating && !isFriendly) {
+            UserRepository.getInstance().refundToken(myUid);
+        }
         if (!navigating) {
             waitingRef.runTransaction(new Transaction.Handler() {
                 @Override
