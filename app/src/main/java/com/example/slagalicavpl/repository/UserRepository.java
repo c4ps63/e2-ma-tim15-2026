@@ -26,6 +26,13 @@ public class UserRepository {
         void onError(String message);
     }
 
+    public interface DailyTokenCallback {
+        /** Pozvana kada su tokeni zaista dodati (bio je novi dan). */
+        void onClaimed();
+        /** Pozvana kada su tokeni već traženi danas. */
+        void onAlreadyClaimed();
+    }
+
     private static UserRepository instance;
     private final FirebaseAuth      auth;
     private final FirebaseFirestore db;
@@ -182,16 +189,29 @@ public class UserRepository {
 
     /** Proverava datum poslednjeg bonusa i dodaje 5 tokena ako je novi dan. */
     public void claimDailyTokensIfNeeded(String uid, String today) {
+        claimDailyTokensIfNeeded(uid, today, null);
+    }
+
+    /**
+     * Proverava datum poslednjeg bonusa i dodaje 5 tokena ako je novi dan.
+     * Poziva callback sa informacijom da li su tokeni zaista dodati.
+     */
+    public void claimDailyTokensIfNeeded(String uid, String today, DailyTokenCallback cb) {
         DocumentReference ref = db.collection("users").document(uid);
-        db.runTransaction(tx -> {
+        db.<Boolean>runTransaction(tx -> {
             String last   = tx.get(ref).getString("lastTokenDate");
             long tokens   = safe(tx.get(ref).getLong("tokens"));
             if (!today.equals(last)) {
                 tx.update(ref, "tokens", tokens + 5);
                 tx.update(ref, "lastTokenDate", today);
+                return true;
             }
-            return null;
-        });
+            return false;
+        }).addOnSuccessListener(claimed -> {
+            if (cb == null) return;
+            if (Boolean.TRUE.equals(claimed)) cb.onClaimed();
+            else cb.onAlreadyClaimed();
+        }).addOnFailureListener(e -> { /* tiho ignoriši */ });
     }
 
     public void saveAvatarColor(String uid, String hexColor, Callback cb) {

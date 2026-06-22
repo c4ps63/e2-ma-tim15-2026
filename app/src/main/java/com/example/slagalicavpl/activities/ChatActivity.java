@@ -27,17 +27,17 @@ import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private ChatRepository       chatRepo;
+    public static boolean isOpen = false;
+
+    private ChatRepository         chatRepo;
     private NotificationRepository notifRepo;
-    private ChatAdapter          adapter;
-    private ListenerRegistration listener;
+    private ChatAdapter            adapter;
+    private ListenerRegistration   listener;
 
     private String myUid;
     private String myUsername;
     private String region;
-
-    // true dok je aktivnost vidljiva korisniku
-    private boolean isInForeground = false;
+    private String lastNotifiedMsgId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,32 +104,36 @@ public class ChatActivity extends AppCompatActivity {
 
     /**
      * Šalje lokalnu notifikaciju ako je pristigla nova poruka od drugog igrača
-     * dok korisnik nije na ovom ekranu.
+     * dok korisnik nije na ovom ekranu (deduplication po msg.id).
      */
     private void notifyIncomingIfNeeded(List<ChatMessage> messages) {
-        if (isInForeground || messages.isEmpty()) return;
+        if (isOpen || messages.isEmpty()) return;
         ChatMessage last = messages.get(messages.size() - 1);
-        if (myUid.equals(last.senderId)) return;
+        if (myUid != null && myUid.equals(last.senderId)) return;
+        String notifId = last.id != null ? "chat_" + last.id : null;
+        if (notifId == null || notifId.equals(lastNotifiedMsgId)) return;
+        if (notifRepo.containsId(notifId)) return;
+        lastNotifiedMsgId = notifId;
 
-        // Poruka je od drugog igrača i app nije u fokusu
         AppNotification n = AppNotification.create(
                 AppNotification.Channel.CHAT,
                 last.senderName + ": " + last.text,
                 "Nova poruka u četu regiona",
                 "chat");
+        n.id = notifId;
         notifRepo.add(n);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        isInForeground = true;
+        isOpen = true;
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        isInForeground = false;
+        isOpen = false;
     }
 
     @Override
