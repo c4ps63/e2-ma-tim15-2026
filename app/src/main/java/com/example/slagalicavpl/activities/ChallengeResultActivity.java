@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.slagalicavpl.R;
+import com.example.slagalicavpl.model.AppNotification;
 import com.example.slagalicavpl.model.Challenge;
 import com.example.slagalicavpl.repository.ChallengeRepository;
+import com.example.slagalicavpl.repository.NotificationRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ValueEventListener;
 
@@ -71,10 +73,37 @@ public class ChallengeResultActivity extends AppCompatActivity {
                 if (allDone && !settled) {
                     settled = true;
                     ChallengeRepository.getInstance().settleChallenge(c);
+                    sendChallengeResultNotification(c);
                 }
             }
             @Override public void onError(String msg) {}
         });
+    }
+
+    private void sendChallengeResultNotification(Challenge c) {
+        if (c.players == null || myUid.isEmpty()) return;
+        Challenge.ChallengePlayer me = c.players.get(myUid);
+        if (me == null) return;
+
+        // Odredi rank igrača
+        long rank = c.players.values().stream()
+                .filter(p -> p.score > me.score).count() + 1;
+        int n = c.players.size();
+
+        String title, body;
+        AppNotification.Channel ch;
+        if (rank == 1) {
+            int prize = (int)(c.stakeStars * n * 0.75);
+            title = "Pobedio si izazov! +" + prize + " ⭐";
+            body  = "Zauzeo si 1. mesto od " + n + " igrača sa " + me.score + " bodova.";
+            ch    = AppNotification.Channel.REWARD;
+        } else {
+            title = rank + ". mesto u izazovu";
+            body  = "Završio si na " + rank + ". mestu od " + n + " sa " + me.score + " bodova.";
+            ch    = AppNotification.Channel.RANKING;
+        }
+        NotificationRepository.getInstance(this)
+                .add(AppNotification.create(ch, title, body, "ranking"));
     }
 
     private boolean allFinished(Challenge c) {

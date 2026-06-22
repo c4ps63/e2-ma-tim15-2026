@@ -5,6 +5,11 @@ import android.content.SharedPreferences;
 
 import com.example.slagalicavpl.model.AppNotification;
 import com.example.slagalicavpl.notification.NotificationChannels;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 
@@ -18,9 +23,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class NotificationRepository {
 
-    private static final String PREFS    = "app_notifications";
-    private static final String KEY_IDS  = "notif_ids";
-    private static final String PFX      = "notif_";
+    private static final String PREFS      = "app_notifications";
+    private static final String KEY_IDS    = "notif_ids";
+    private static final String PFX        = "notif_";
+    private static final String KEY_VER    = "notif_data_version";
+    /** Promenom ove vrednosti brišu se svi stari (mokovani) podaci pri sledećem pokretanju. */
+    private static final String DATA_VER   = "v2_real";
+    private static final String DB_URL   =
+            "https://slagalica-vrtlogalica-default-rtdb.europe-west1.firebasedatabase.app";
 
     private static NotificationRepository instance;
 
@@ -28,10 +38,19 @@ public class NotificationRepository {
     private final Context           appCtx;
     private final AtomicInteger     pushCounter = new AtomicInteger(2000);
 
+    private DatabaseReference    remoteRef;
+    private ChildEventListener   remoteListener;
+
     private NotificationRepository(Context ctx) {
         appCtx = ctx.getApplicationContext();
         prefs  = appCtx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
-        seedIfEmpty();
+        clearLegacyDataIfNeeded();
+    }
+
+    /** Briše stare mokovane podatke ako je verzija zastarela. */
+    private void clearLegacyDataIfNeeded() {
+        if (DATA_VER.equals(prefs.getString(KEY_VER, ""))) return;
+        prefs.edit().clear().putString(KEY_VER, DATA_VER).apply();
     }
 
     public static synchronized NotificationRepository getInstance(Context ctx) {
@@ -85,6 +104,49 @@ public class NotificationRepository {
         save(n);
     }
 
+    /** Vraća true ako notifikacija sa datim ID-om već postoji. */
+    public boolean containsId(String id) {
+        return getIds().contains(id);
+    }
+
+    /** Dodaje notifikaciju samo ako ne postoji (deduplication). */
+    public void addIfAbsent(AppNotification n) {
+        if (!containsId(n.id)) addSilent(n);
+    }
+
+    /**
+     * Počinje Firebase RTDB listener za putanju notifications/{uid}.
+     * Svaki novi child koji dođe sa servera (od drugog klijenta ili cloud funkcije)
+     * automatski se dodaje u lokalnu historiju.
+     * Bezbedno je pozvati više puta — registruje se samo jednom.
+     */
+    public void listenRemote(String uid) {
+        if (remoteListener != null) return;
+        remoteRef = FirebaseDatabase.getInstance(DB_URL)
+                .getReference("notifications")
+                .child(uid);
+        remoteListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot snapshot, String previousChildName) {
+                AppNotification n = parseRemote(snapshot);
+                if (n != null && !containsId(n.id)) add(n);
+            }
+            @Override public void onChildChanged(DataSnapshot s, String p) {}
+            @Override public void onChildRemoved(DataSnapshot s) {}
+            @Override public void onCancelled(DatabaseError e) {}
+            @Override public void onChildMoved(DataSnapshot s, String p) {}
+        };
+        remoteRef.addChildEventListener(remoteListener);
+    }
+
+    /** Uklanja Firebase listener. Poziva se iz onDestroy aktivnosti. */
+    public void stopRemoteListener() {
+        if (remoteRef != null && remoteListener != null) {
+            remoteRef.removeEventListener(remoteListener);
+            remoteListener = null;
+        }
+    }
+
     // ── Persistence ──────────────────────────────────────────────────────────
 
     private List<AppNotification> loadAll() {
@@ -116,57 +178,27 @@ public class NotificationRepository {
         return new LinkedHashSet<>(prefs.getStringSet(KEY_IDS, new HashSet<>()));
     }
 
-    // ── Seed data (demo) ─────────────────────────────────────────────────────
+    // ── Firebase remote parser ───────────────────────────────────────────────
 
-    private void seedIfEmpty() {
-        if (!getIds().isEmpty()) return;
-
-        long now = System.currentTimeMillis();
-
-        // ČET — nepročitana
-        AppNotification n1 = AppNotification.create(
-                AppNotification.Channel.CHAT,
-                "MARKO: Hoćeš revanš?",
-                "Nova poruka od Marko Petrović",
-                "chat");
-        n1.timestamp = now - 2 * 60_000L;
-
-        // RANG — nepročitana
-        AppNotification n2 = AppNotification.create(
-                AppNotification.Channel.RANKING,
-                "Ušao si u TOP 10!",
-                "Trenutno si na 8. mestu nedeljne rang liste",
-                "ranking");
-        n2.timestamp = now - 60 * 60_000L;
-
-        // NAGRADA — nepročitana
-        AppNotification n3 = AppNotification.create(
-                AppNotification.Channel.REWARD,
-                "Primio si +5 žetona!",
-                "Nedeljna nagrada za 1. mesto u regionu",
-                "reward");
-        n3.timestamp = now - 3 * 3600_000L;
-
-        // OSTALO — pročitana
-        AppNotification n4 = AppNotification.create(
-                AppNotification.Channel.OTHER,
-                "Dobrodošao u Ligu 3!",
-                "Napredovao si u narednu ligu. Zarađuješ +3 žetona dnevno");
-        n4.timestamp = now - 24 * 3600_000L;
-        n4.read = true;
-
-        // Poziv prijatelja — nepročitana
-        AppNotification n5 = AppNotification.create(
-                AppNotification.Channel.OTHER,
-                "ANA te poziva na partiju!",
-                "Ana Jovanović je poslala poziv za prijateljsku partiju",
-                "friend_invite");
-        n5.timestamp = now - 30 * 60_000L;
-
-        addSilent(n1);
-        addSilent(n2);
-        addSilent(n3);
-        addSilent(n4);
-        addSilent(n5);
+    private AppNotification parseRemote(DataSnapshot snap) {
+        try {
+            String key     = snap.getKey();
+            String channel = snap.child("channel").getValue(String.class);
+            String title   = snap.child("title").getValue(String.class);
+            String body    = snap.child("body").getValue(String.class);
+            String action  = snap.child("action").getValue(String.class);
+            Long   ts      = snap.child("timestamp").getValue(Long.class);
+            if (key == null || title == null || channel == null) return null;
+            AppNotification n = AppNotification.create(
+                    AppNotification.Channel.valueOf(channel),
+                    title, body != null ? body : "");
+            n.id        = key;
+            n.action    = action != null ? action : "";
+            n.timestamp = ts != null ? ts : System.currentTimeMillis();
+            return n;
+        } catch (Exception ignored) {
+            return null;
+        }
     }
+
 }

@@ -1,9 +1,9 @@
 package com.example.slagalicavpl.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -75,27 +75,26 @@ public class NotificationsActivity extends AppCompatActivity
 
     @Override
     public void onAction(AppNotification n) {
-        // Označi kao pročitano i reaguj na akciju
         repo.markRead(n.id);
         adapter.markRead(n.id);
         updateBadge();
 
-        switch (n.action) {
+        Intent intent = null;
+        switch (n.action != null ? n.action : "") {
             case "chat":
-                Toast.makeText(this, "Otvaranje četa...", Toast.LENGTH_SHORT).show();
-                break;
-            case "ranking":
-                Toast.makeText(this, "Otvaranje rang liste...", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, ChatActivity.class);
                 break;
             case "reward":
-                Toast.makeText(this, "Otvaranje nagrade...", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, ProfileActivity.class);
                 break;
             case "friend_invite":
-                Toast.makeText(this, "Otvaranje poziva...", Toast.LENGTH_SHORT).show();
+                intent = new Intent(this, FriendsActivity.class);
                 break;
-            default:
-                Toast.makeText(this, n.title, Toast.LENGTH_SHORT).show();
+            case "ranking":
+                // rang lista još nije implementirana — ostanemo na ovom ekranu
+                break;
         }
+        if (intent != null) startActivity(intent);
 
         if (showOnlyUnread) refresh();
     }

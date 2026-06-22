@@ -15,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
 import com.example.slagalicavpl.R;
+import com.example.slagalicavpl.model.AppNotification;
+import com.example.slagalicavpl.repository.NotificationRepository;
 import com.example.slagalicavpl.activities.fragments.KoZnaZnaFragment;
 import com.example.slagalicavpl.activities.fragments.SpojniceFragment;
 import com.example.slagalicavpl.activities.fragments.AsocijacijeFragment;
@@ -213,6 +215,12 @@ public class GameActivity extends AppCompatActivity {
                                         .getCurrentUser().getUid() : null;
                         if (uid != null) {
                             UserRepository.getInstance().incrementStats(uid, true, getMyScore());
+                            NotificationRepository.getInstance(GameActivity.this)
+                                    .add(AppNotification.create(
+                                            AppNotification.Channel.RANKING,
+                                            "Pobeda! Protivnik se odjavio.",
+                                            "Protivnik je napustio partiju. Pobeda je tvoja!",
+                                            "ranking"));
                         }
                     }
                 }
@@ -245,8 +253,21 @@ public class GameActivity extends AppCompatActivity {
             case NAV_SKOCKO:      doShow(new SkockoFragment());      break;
             case NAV_KORAK:       doShow(new KorakPoKorakFragment());break;
             case NAV_MOJBROJ:     doShow(new MojBrojFragment());     break;
-            case NAV_DONE:        finish();                           break;
+            case NAV_DONE:        maybeNotifyGameResult(); finish(); break;
         }
+    }
+
+    private void maybeNotifyGameResult() {
+        if (isFriendly || challengeId != null || roomRef == null) return;
+        boolean iAmP1 = "p1".equals(getMyRole());
+        boolean won   = iAmP1 ? (totalP1 > totalP2) : (totalP2 > totalP1);
+        String title  = won ? "Pobeda! Odlično odigravanje!" : "Partija završena";
+        String body   = "Tvoj rezultat: " + getMyScore() + " bodova.";
+        AppNotification.Channel ch = won
+                ? AppNotification.Channel.REWARD
+                : AppNotification.Channel.RANKING;
+        NotificationRepository.getInstance(this)
+                .add(AppNotification.create(ch, title, body, "ranking"));
     }
 
     private void doShow(Fragment fragment) {

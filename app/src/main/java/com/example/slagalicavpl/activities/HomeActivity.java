@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -11,14 +12,19 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalicavpl.R;
+import com.example.slagalicavpl.model.AppNotification;
+import com.example.slagalicavpl.model.ChatMessage;
 import com.example.slagalicavpl.model.GameInvite;
 import com.example.slagalicavpl.model.User;
+import com.example.slagalicavpl.repository.ChatRepository;
 import com.example.slagalicavpl.repository.InviteRepository;
+import com.example.slagalicavpl.repository.NotificationRepository;
 import com.example.slagalicavpl.repository.UserRepository;
 import com.example.slagalicavpl.service.AuthService;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -29,14 +35,26 @@ import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity {
 
-    private String              myUid;
-    private ValueEventListener  inviteListener;
-    private final Set<String>   shownInvites = new HashSet<>();
+    private String             myUid;
+    private ValueEventListener inviteListener;
+    private final Set<String>  shownInvites = new HashSet<>();
+
+    private NotificationRepository notifRepo;
+    private TextView               tvNotifBadge;
+
+    // Chat listener za notifikacije dok korisnik nije u ChatActivity
+    private ListenerRegistration   chatListener;
+    private long                   chatListenerStartTime;
+    private String                 lastNotifiedChatMsgId = "";
+    private String                 userRegion            = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        notifRepo    = NotificationRepository.getInstance(this);
+        tvNotifBadge = findViewById(R.id.tvNotifBadge);
 
         FirebaseUser fu = AuthService.getInstance().getCurrentUser();
         if (fu != null) myUid = fu.getUid();
@@ -45,12 +63,15 @@ public class HomeActivity extends AppCompatActivity {
         loadUserProfile();
         setupNavigation();
         listenForInvites();
+
+        if (myUid != null) notifRepo.listenRemote(myUid);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         loadUserProfile();
+        updateNotifBadge();
     }
 
     @Override
@@ -58,7 +79,11 @@ public class HomeActivity extends AppCompatActivity {
         super.onDestroy();
         if (myUid != null && inviteListener != null)
             InviteRepository.getInstance().removeListener(myUid, inviteListener);
+        stopChatNotifListener();
+        notifRepo.stopRemoteListener();
     }
+
+    // ── Invite ────────────────────────────────────────────────────────────────
 
     private void listenForInvites() {
         if (myUid == null) return;
@@ -72,6 +97,17 @@ public class HomeActivity extends AppCompatActivity {
         if (isFinishing() || isDestroyed()) return;
         if (shownInvites.contains(inv.inviteId)) return;
         shownInvites.add(inv.inviteId);
+
+        // Sačuvaj poziv kao notifikaciju (bez push-a jer je dialog već vidljiv)
+        AppNotification inviteNotif = AppNotification.create(
+                AppNotification.Channel.OTHER,
+                inv.senderName + " te poziva na partiju!",
+                "Primio si poziv za prijateljsku partiju.",
+                "friend_invite");
+        inviteNotif.id = "invite_" + inv.inviteId;
+        notifRepo.addIfAbsent(inviteNotif);
+        updateNotifBadge();
+
         new AlertDialog.Builder(this)
                 .setTitle("Poziv za igru")
                 .setMessage(inv.senderName + " te poziva na prijateljsku partiju!")
@@ -100,15 +136,61 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void declineInvite(GameInvite inv) {
-        // Delete immediately so the listener never re-delivers this invite
         InviteRepository.getInstance().deleteInvite(myUid, inv.inviteId);
     }
+
+    // ── Chat listener (notifikacije kada nije otvorena ChatActivity) ──────────
+
+    private void startChatNotifListener(String region) {
+        stopChatNotifListener();
+        chatListenerStartTime = System.currentTimeMillis();
+        chatListener = ChatRepository.getInstance().listenMessages(region, messages -> {
+            if (ChatActivity.isOpen || messages.isEmpty()) return;
+            ChatMessage last = messages.get(messages.size() - 1);
+            if (myUid != null && myUid.equals(last.senderId)) return;
+            if (last.timestamp <= chatListenerStartTime) return;
+            String notifId = last.id != null ? "chat_" + last.id : null;
+            if (notifId == null || notifId.equals(lastNotifiedChatMsgId)) return;
+            if (notifRepo.containsId(notifId)) return;
+            lastNotifiedChatMsgId = notifId;
+
+            AppNotification n = AppNotification.create(
+                    AppNotification.Channel.CHAT,
+                    last.senderName + ": " + last.text,
+                    "Nova poruka u četu regiona",
+                    "chat");
+            n.id = notifId;
+            notifRepo.add(n);
+            updateNotifBadge();
+        });
+    }
+
+    private void stopChatNotifListener() {
+        if (chatListener != null) {
+            chatListener.remove();
+            chatListener = null;
+        }
+    }
+
+    // ── Profil i dnevni bonus ─────────────────────────────────────────────────
 
     private void claimDailyTokens() {
         FirebaseUser firebaseUser = AuthService.getInstance().getCurrentUser();
         if (firebaseUser == null) return;
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        UserRepository.getInstance().claimDailyTokensIfNeeded(firebaseUser.getUid(), today);
+        UserRepository.getInstance().claimDailyTokensIfNeeded(
+                firebaseUser.getUid(), today,
+                new UserRepository.DailyTokenCallback() {
+                    @Override public void onClaimed() {
+                        notifRepo.add(AppNotification.create(
+                                AppNotification.Channel.REWARD,
+                                "+5 žetona — dnevni bonus!",
+                                "Prijavom danas zaradio si 5 žetona. Vrati se sutra za novi bonus!",
+                                "reward"));
+                        updateNotifBadge();
+                    }
+                    @Override public void onAlreadyClaimed() {}
+                });
     }
 
     private void loadUserProfile() {
@@ -130,10 +212,18 @@ public class HomeActivity extends AppCompatActivity {
 
                 if (u.username != null && !u.username.isEmpty())
                     tvAvatar.setText(String.valueOf(u.username.charAt(0)).toUpperCase());
+
+                // Pokreni chat listener jednom kada znamo region
+                if (chatListener == null && u.region != null && !u.region.isEmpty()) {
+                    userRegion = u.region;
+                    startChatNotifListener(userRegion);
+                }
             }
             @Override public void onError(String msg) {}
         });
     }
+
+    // ── Navigacija ────────────────────────────────────────────────────────────
 
     private void tryStartOnlineGame() {
         FirebaseUser firebaseUser = AuthService.getInstance().getCurrentUser();
@@ -160,13 +250,17 @@ public class HomeActivity extends AppCompatActivity {
         findViewById(R.id.btnProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        // Glavni CTA -> ranked matchmaking (nasumični protivnik).
+        // Zvonce → NotificationsActivity
+        findViewById(R.id.btnNotifications).setOnClickListener(v ->
+                startActivity(new Intent(this, NotificationsActivity.class)));
+
+        // Glavni CTA -> ranked matchmaking
         findViewById(R.id.btnPlayOnline).setOnClickListener(v -> tryStartOnlineGame());
 
-        // IGRAJ -> bottom sheet sa tri režima (prijateljska / izazov / turnir).
+        // IGRAJ -> bottom sheet
         findViewById(R.id.btnPlay).setOnClickListener(v -> showPlaySheet());
 
-        // Donje prečice.
+        // Donje prečice
         findViewById(R.id.navPrijatelji).setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));
         findViewById(R.id.navRang).setOnClickListener(v ->
@@ -196,5 +290,16 @@ public class HomeActivity extends AppCompatActivity {
 
         dialog.setContentView(sheet);
         dialog.show();
+    }
+
+    private void updateNotifBadge() {
+        if (tvNotifBadge == null || notifRepo == null) return;
+        int count = notifRepo.getUnreadCount();
+        if (count > 0) {
+            tvNotifBadge.setVisibility(View.VISIBLE);
+            tvNotifBadge.setText(count > 9 ? "9+" : String.valueOf(count));
+        } else {
+            tvNotifBadge.setVisibility(View.GONE);
+        }
     }
 }
