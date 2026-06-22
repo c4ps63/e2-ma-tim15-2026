@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_sky_gradient">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_hud"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="48dp"
+        android:paddingBottom="14dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            style="@style/CartoonButton"
+            android:text="←"
+            android:textSize="18sp"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="IZAZOVI"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/btnCreateChallenge"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            style="@style/CartoonButton"
+            android:background="@drawable/btn_cartoon_green"
+            android:text="+ POSTAVI"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvNoChallenges"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nema otvorenih izazova u tvom regionu.\nBudi prvi — postavi izazov!"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvChallenges"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="12dp"
+        android:clipToPadding="false" />
+
+</LinearLayout>

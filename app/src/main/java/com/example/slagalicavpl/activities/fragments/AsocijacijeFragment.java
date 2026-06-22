@@ -175,7 +175,11 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
                     roomRef, myRole);
             sync = firebaseAsocSync;
         } else {
-            sync = new LocalAsocijacijeSync();
+            boolean challenge = getActivity() instanceof GameActivity
+                    && ((GameActivity) getActivity()).isChallengeMode();
+            sync = challenge
+                    ? new com.example.slagalicavpl.multiplayer.SoloAsocijacijeSync()
+                    : new LocalAsocijacijeSync();
         }
 
         engine = new AsocijacijeEngine(
@@ -196,7 +200,6 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
     public void onPause() {
         super.onPause();
         cancelTimer();
-        handler.removeCallbacksAndMessages(null);
     }
 
     // ── AsocijacijeEngine.Listener ────────────────────────────────────────────
@@ -315,7 +318,9 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         if (tvTimerHud != null) tvTimerHud.setText("✓");
 
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser != null)
+        boolean friendly = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isFriendlyGame();
+        if (fbUser != null && !friendly)
             UserRepository.getInstance().incrementAsocijacije(fbUser.getUid(), localFinalsSolved, 2);
 
         if (getActivity() instanceof GameActivity)

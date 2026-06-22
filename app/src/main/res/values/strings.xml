@@ -96,4 +96,22 @@
     <string name="lbl_email">E-mail adresa</string>
     <string name="lbl_uname">Korisničko ime</string>
     <string name="lbl_password_confirm">Potvrdi lozinku</string>
+
+    <!-- Home screen -->
+    <string name="cta_start">ZAPOČNI\nPARTIJU</string>
+    <string name="cta_start_sub">6 igara · nasumični protivnik</string>
+    <string name="cta_play">IGRAJ</string>
+
+    <string name="nav_friends">Prijatelji</string>
+    <string name="nav_ranks">Rang liste</string>
+    <string name="nav_regions">Regioni</string>
+    <string name="nav_chat">Čet</string>
+
+    <string name="play_title">Izaberi režim</string>
+    <string name="play_friendly">Prijateljska partija</string>
+    <string name="play_friendly_sub">Pozovi prijatelja · bez uloga</string>
+    <string name="play_challenge">Izazov</string>
+    <string name="play_challenge_sub">Do 4 igrača · uloži zvezde i tokene</string>
+    <string name="play_tournament">Turnir</string>
+    <string name="play_tournament_sub">4 igrača · finale · najveći ulog</string>
 </resources>

@@ -39,9 +39,6 @@ public class FirebaseSkockoSync implements SkockoSync {
     private ValueEventListener activeListener;
     private DatabaseReference  activeRef;
 
-    // Koji opp-phase smo u (R1_BONUS = 0, R2_OPP = 1)
-    private int oppCallCount = 0;
-
     public FirebaseSkockoSync(DatabaseReference roomRef, String myRole) {
         this.ref     = roomRef.child("skocko");
         this.myRole  = myRole;
@@ -112,12 +109,14 @@ public class FirebaseSkockoSync implements SkockoSync {
     @Override
     public void startOpponentTurn(int[] secret, int maxAttempts, AttemptCallback cb) {
         cancel();
-        oppCallCount++;
+        // Use maxAttempts to identify phase: 1 = bonus steal, MAX = main round.
+        // This is safe because each player has exactly one main (6-attempt) and
+        // one bonus (1-attempt) opponent phase, regardless of whether round 1 was solved.
         String phaseKey;
         if ("p1".equals(myRole)) {
-            phaseKey = (oppCallCount == 1) ? "r1bonus_p2" : "r2main_p2";
+            phaseKey = (maxAttempts == 1) ? "r1bonus_p2" : "r2main_p2";
         } else {
-            phaseKey = (oppCallCount == 1) ? "r1main_p1" : "r2bonus_p1";
+            phaseKey = (maxAttempts == SkockoEngine.MAX_ATTEMPTS) ? "r1main_p1" : "r2bonus_p1";
         }
 
         activeRef = ref.child("attempts").child(phaseKey);

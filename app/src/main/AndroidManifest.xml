@@ -68,6 +68,26 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"/>
 
+        <activity
+            android:name=".activities.FriendsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activities.ChallengeListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activities.ChallengeWaitActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activities.ChallengeResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>

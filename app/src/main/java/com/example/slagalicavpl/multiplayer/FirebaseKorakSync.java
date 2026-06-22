@@ -42,10 +42,15 @@ public class FirebaseKorakSync {
     // ── Active player writes ──────────────────────────────────────────────────
 
     public void writePuzzleIdx(int round, int puzzleIdx) {
-        ref.child("puzzle" + round).setValue(puzzleIdx);
-        ref.child("round").setValue(round);
-        ref.child("step").setValue(0);
-        ref.child("phase").setValue("PLAYING");
+        Map<String, Object> update = new HashMap<>();
+        update.put("puzzle" + round, puzzleIdx);
+        update.put("round", round);
+        update.put("step", 0);
+        update.put("phase", "PLAYING");
+        update.put("p1pts", 0);
+        update.put("p2pts", 0);
+        update.put("guess", null);
+        ref.updateChildren(update);
     }
 
     public void writeStep(int stepIndex) {
@@ -135,9 +140,9 @@ public class FirebaseKorakSync {
                     int p2pts = getInt(snap, "p2pts");
                     if ("STEAL".equals(phase) && "PLAYING".equals(prev)) {
                         cb.onStealPhase();
-                    } else if ("END".equals(phase)) {
+                    } else if ("END".equals(phase) && "PLAYING".equals(prev)) {
                         cb.onRoundEnd(p1pts, p2pts);
-                    } else if ("GAMEOVER".equals(phase)) {
+                    } else if ("GAMEOVER".equals(phase) && "PLAYING".equals(prev)) {
                         cb.onGameOver(p1pts, p2pts);
                     }
                 }

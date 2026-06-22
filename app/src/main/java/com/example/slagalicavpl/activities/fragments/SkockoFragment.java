@@ -178,7 +178,12 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
                 });
             }
         } else {
-            engine = new SkockoEngine(new LocalSkockoSync(), this);
+            boolean challenge = getActivity() instanceof GameActivity
+                    && ((GameActivity) getActivity()).isChallengeMode();
+            com.example.slagalicavpl.multiplayer.SkockoSync offlineSync = challenge
+                    ? new com.example.slagalicavpl.multiplayer.SoloSkockoSync()
+                    : new LocalSkockoSync();
+            engine = new SkockoEngine(offlineSync, this);
             engine.startGame();
         }
     }
@@ -187,7 +192,6 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
     public void onPause() {
         super.onPause();
         cancelTimer();
-        handler.removeCallbacksAndMessages(null);
     }
 
     // ── SkockoEngine.Listener ─────────────────────────────────────────────────
@@ -351,7 +355,9 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
         if (tvTimerHud != null) tvTimerHud.setText("✓");
 
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser != null)
+        boolean friendly = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isFriendlyGame();
+        if (fbUser != null && !friendly)
             UserRepository.getInstance().incrementSkocko(fbUser.getUid(), localMainRoundSolved);
 
         if (getActivity() instanceof GameActivity)

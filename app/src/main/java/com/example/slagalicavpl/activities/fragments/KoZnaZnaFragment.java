@@ -138,7 +138,6 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
     public void onPause() {
         super.onPause();
         cancelTimer();
-        handler.removeCallbacksAndMessages(null);
     }
 
     private void onAnswerTapped(char option) {
@@ -172,7 +171,9 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
 
         if (localAnswer != 0) {
             FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-            if (fbUser != null)
+            boolean friendly = getActivity() instanceof GameActivity
+                    && ((GameActivity) getActivity()).isFriendlyGame();
+            if (fbUser != null && !friendly)
                 UserRepository.getInstance().incrementKzz(fbUser.getUid(), localAnswer == correctOption);
         }
 

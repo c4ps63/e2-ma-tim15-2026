@@ -20,8 +20,9 @@ public class User {
     public int skockoTotal;
     public int korakCorrect;
     public int korakTotal;
-    public int mojBrojCorrect;
-    public int mojBrojTotal;
+    public int    mojBrojCorrect;
+    public int    mojBrojTotal;
+    public String lastTokenDate;  // "yyyy-MM-dd" datum poslednjeg dnevnog bonusa
 
     public User() {}
 

@@ -530,7 +530,9 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     }
 
     private void finishRound() {
-        if (currentRound == 1) {
+        boolean challengeMode = !multiplayer && getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isChallengeMode();
+        if (currentRound == 1 && !challengeMode) {
             handler.postDelayed(this::startRound2, 2500);
         } else {
             if (getActivity() instanceof GameActivity) {
@@ -540,10 +542,12 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
                 FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (fbUser != null) {
                     String uid = fbUser.getUid();
-                    UserRepository.getInstance().incrementMojBroj(uid, mojBrojExact, mojBrojRounds);
-                    if (multiplayer) {
-                        boolean won = ga.getP1Total() > ga.getP2Total();
-                        UserRepository.getInstance().incrementStats(uid, won, ga.getP1Total());
+                    if (!ga.isFriendlyGame()) {
+                        UserRepository.getInstance().incrementMojBroj(uid, mojBrojExact, mojBrojRounds);
+                    }
+                    if (multiplayer && !ga.isFriendlyGame()) {
+                        boolean won     = ga.getMyScore() > (ga.getP1Total() + ga.getP2Total() - ga.getMyScore());
+                        UserRepository.getInstance().incrementStats(uid, won, ga.getMyScore());
                     }
                 }
 

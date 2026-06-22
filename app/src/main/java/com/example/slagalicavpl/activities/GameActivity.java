@@ -1,5 +1,6 @@
 package com.example.slagalicavpl.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.fragment.app.Fragment;
 
+import android.widget.Toast;
+
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.activities.fragments.KoZnaZnaFragment;
 import com.example.slagalicavpl.activities.fragments.SpojniceFragment;
@@ -19,7 +22,9 @@ import com.example.slagalicavpl.activities.fragments.SkockoFragment;
 import com.example.slagalicavpl.activities.fragments.KorakPoKorakFragment;
 import com.example.slagalicavpl.activities.fragments.MojBrojFragment;
 import com.example.slagalicavpl.model.User;
+import com.example.slagalicavpl.model.Challenge;
 import com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync;
+import com.example.slagalicavpl.repository.ChallengeRepository;
 import com.example.slagalicavpl.multiplayer.KoZnaZnaSync;
 import com.example.slagalicavpl.multiplayer.LocalKoZnaZnaSync;
 import com.example.slagalicavpl.repository.UserRepository;
@@ -49,10 +54,16 @@ public class GameActivity extends AppCompatActivity {
 
     private String            roomId;
     private String            myRole;
+    private boolean           isFriendly   = false;
+    private String            challengeId  = null;  // non-null = challenge mode
     private DatabaseReference roomRef;
 
-    private String            lastNav = "";   // sprečava duplu navigaciju
+    private String            lastNav = "";
     private ValueEventListener navListener;
+
+    // disconnect
+    private ValueEventListener disconnectListener;
+    private boolean            opponentDisconnected = false;
 
     // Avatar podaci
     private char myInitial    = '?';
@@ -69,14 +80,24 @@ public class GameActivity extends AppCompatActivity {
     public int getP1Total() { return totalP1; }
     public int getP2Total() { return totalP2; }
 
+    public boolean isChallengeMode() { return challengeId != null; }
+
     public KoZnaZnaSync getKoZnaZnaSync() {
         if (roomRef != null) return new FirebaseKoZnaZnaSync(roomRef, myRole);
+        if (challengeId != null) return new com.example.slagalicavpl.multiplayer.SoloKoZnaZnaSync();
         return new LocalKoZnaZnaSync();
     }
 
-    public DatabaseReference getRoomRef() { return roomRef; }
-    public String  getMyRole()     { return myRole != null ? myRole : "p1"; }
-    public boolean isMultiplayer() { return roomRef != null; }
+    public DatabaseReference getRoomRef()          { return roomRef; }
+    public String  getMyRole()                     { return myRole != null ? myRole : "p1"; }
+    public boolean isMultiplayer()                 { return roomRef != null; }
+    public boolean isFriendlyGame()                { return isFriendly; }
+    public boolean isOpponentDisconnected()        { return opponentDisconnected; }
+
+    /** Skor trenutnog igrača (bez obzira na rolu). */
+    public int getMyScore() {
+        return "p1".equals(getMyRole()) ? totalP1 : totalP2;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,13 +105,16 @@ public class GameActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_game);
 
-        roomId = getIntent().getStringExtra(LobbyActivity.EXTRA_ROOM_ID);
-        myRole = getIntent().getStringExtra(LobbyActivity.EXTRA_MY_ROLE);
+        roomId      = getIntent().getStringExtra(LobbyActivity.EXTRA_ROOM_ID);
+        myRole      = getIntent().getStringExtra(LobbyActivity.EXTRA_MY_ROLE);
+        isFriendly  = getIntent().getBooleanExtra(LobbyActivity.EXTRA_IS_FRIENDLY, false);
+        challengeId = getIntent().getStringExtra(LobbyActivity.EXTRA_CHALLENGE_ID);
         if (roomId != null) {
             roomRef = FirebaseDatabase.getInstance(
                     "https://slagalica-vrtlogalica-default-rtdb.europe-west1.firebasedatabase.app")
                     .getReference("rooms").child(roomId);
             startNavListener();
+            startDisconnectListener();
         }
 
         loadMyAvatar();
@@ -169,6 +193,33 @@ public class GameActivity extends AppCompatActivity {
             DrawableCompat.setTint(d, av2Color);
             av2.setBackground(d);
         }
+    }
+
+    // ── Disconnect handling ───────────────────────────────────────────────────
+
+    private void startDisconnectListener() {
+        String oppRole = "p1".equals(myRole) ? "p2" : "p1";
+        disconnectListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Boolean disconnected = snapshot.getValue(Boolean.class);
+                if (Boolean.TRUE.equals(disconnected) && !opponentDisconnected) {
+                    opponentDisconnected = true;
+                    // protivnik je napustio — automatska pobeda
+                    if (!isFriendly) {
+                        String uid = com.google.firebase.auth.FirebaseAuth.getInstance()
+                                .getCurrentUser() != null
+                                ? com.google.firebase.auth.FirebaseAuth.getInstance()
+                                        .getCurrentUser().getUid() : null;
+                        if (uid != null) {
+                            UserRepository.getInstance().incrementStats(uid, true, getMyScore());
+                        }
+                    }
+                }
+            }
+            @Override public void onCancelled(DatabaseError e) {}
+        };
+        roomRef.child("disconnected").child(oppRole).addValueEventListener(disconnectListener);
     }
 
     // ── Firebase navigation listener ──────────────────────────────────────────
@@ -251,7 +302,41 @@ public class GameActivity extends AppCompatActivity {
     public void showSkocko()      { signalReady(NAV_SKOCKO); }
     public void showKorakPoKorak(){ signalReady(NAV_KORAK); }
     public void showMojBroj()     { signalReady(NAV_MOJBROJ); }
-    public void finishGame()      { signalReady(NAV_DONE); }
+
+    public void finishGame() {
+        if (challengeId != null) {
+            // Challenge mode: preda rezultat pa čeka ostale
+            submitChallengeScore();
+        } else {
+            signalReady(NAV_DONE);
+        }
+    }
+
+    private void submitChallengeScore() {
+        String uid = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser() != null
+                ? com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+        if (uid == null) { finish(); return; }
+
+        int myScore = getMyScore();
+        ChallengeRepository.getInstance().submitScore(challengeId, uid, myScore,
+                new ChallengeRepository.Callback() {
+            @Override public void onSuccess() {
+                openChallengeResult();
+            }
+            @Override public void onError(String msg) {
+                Toast.makeText(GameActivity.this,
+                        "Greška pri predaji rezultata", Toast.LENGTH_SHORT).show();
+                openChallengeResult();
+            }
+        });
+    }
+
+    private void openChallengeResult() {
+        Intent intent = new Intent(this, ChallengeResultActivity.class);
+        intent.putExtra(LobbyActivity.EXTRA_CHALLENGE_ID, challengeId);
+        startActivity(intent);
+        finish();
+    }
 
     // ── Cleanup ───────────────────────────────────────────────────────────────
 
@@ -264,6 +349,12 @@ public class GameActivity extends AppCompatActivity {
                 String oppRole = "p1".equals(myRole) ? "p2" : "p1";
                 roomRef.child("avatars").child(oppRole).removeEventListener(avatarListener);
             }
+            if (disconnectListener != null) {
+                String oppRole = "p1".equals(myRole) ? "p2" : "p1";
+                roomRef.child("disconnected").child(oppRole).removeEventListener(disconnectListener);
+            }
+            // objavi protivniku da smo mi napustili igru
+            roomRef.child("disconnected").child(getMyRole()).setValue(true);
             roomRef.child("status").setValue("finished");
         }
     }

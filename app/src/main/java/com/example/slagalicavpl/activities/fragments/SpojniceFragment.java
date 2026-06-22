@@ -154,10 +154,15 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
                 });
             }
         } else {
+            boolean challenge = getActivity() instanceof GameActivity
+                    && ((GameActivity) getActivity()).isChallengeMode();
+            com.example.slagalicavpl.multiplayer.SpojniceSync offlineSync = challenge
+                    ? new com.example.slagalicavpl.multiplayer.SoloSpojniceSync()
+                    : new LocalSpojniceSync();
             engine = new SpojniceEngine(
                     repo.getRound1Pairs(),
                     repo.getRound2Pairs(),
-                    new LocalSpojniceSync(),
+                    offlineSync,
                     this);
             engine.startGame();
         }
@@ -167,7 +172,6 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
     public void onPause() {
         super.onPause();
         cancelTimer();
-        handler.removeCallbacksAndMessages(null);
     }
 
     // ── Graničnik: jedina tačka koja dozvoljava ili zabranjuje unos ──────────
@@ -361,7 +365,9 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         if (tvTimerHud != null) tvTimerHud.setText("✓");
 
         FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (fbUser != null)
+        boolean friendly = getActivity() instanceof GameActivity
+                && ((GameActivity) getActivity()).isFriendlyGame();
+        if (fbUser != null && !friendly)
             UserRepository.getInstance().incrementSpojnice(fbUser.getUid(), localPairsConnected, 10);
 
         if (getActivity() instanceof GameActivity)
@@ -377,19 +383,30 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
 
     private void startPhaseTimer() {
         cancelTimer();
-        updateTimer(ROUND_SECS);
 
+        // Ako protivnik nije prisutan a on je na redu — odmah preskočiti
+        boolean oppTurn = !localInputEnabled;
+        if (oppTurn && isOpponentDisconnected()) {
+            handler.post(() -> engine.onTimerExpired());
+            return;
+        }
+
+        updateTimer(ROUND_SECS);
         roundTimer = new CountDownTimer(ROUND_SECS * 1000L, 1000) {
             @Override public void onTick(long msLeft) {
                 updateTimer((int) (msLeft / 1000));
             }
             @Override public void onFinish() {
                 updateTimer(0);
-                // Graničnik: tajmer sme da promeni fazu SAMO kada je lokalni igrač aktivan.
-                // Tokom pasivnih faza (protivnik igra), Firebase/LocalSync signal menja fazu.
                 if (localInputEnabled) engine.onTimerExpired();
+                else if (isOpponentDisconnected()) engine.onTimerExpired();
             }
         }.start();
+    }
+
+    private boolean isOpponentDisconnected() {
+        if (!(getActivity() instanceof GameActivity)) return false;
+        return ((GameActivity) getActivity()).isOpponentDisconnected();
     }
 
     private void cancelTimer() {

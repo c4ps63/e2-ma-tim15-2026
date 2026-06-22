@@ -129,9 +129,8 @@ public class UserRepository {
 
     public void incrementStats(String uid, boolean won, int myScore) {
         DocumentReference ref = db.collection("users").document(uid);
-        int starsEarned = won
-                ? 10 + (myScore / 40)
-                : Math.max(0, -10 + (myScore / 40));  // gubitnik: -10 + bonus zvezde
+        // pobednik: +10 + floor(score/40); gubitnik: -10 + floor(score/40), ne ispod 0 ukupno
+        int starsDelta = won ? 10 + (myScore / 40) : -10 + (myScore / 40);
 
         db.runTransaction(tx -> {
             long played = safe(tx.get(ref).getLong("gamesPlayed"));
@@ -142,11 +141,12 @@ public class UserRepository {
             tx.update(ref, "gamesPlayed", played + 1);
             if (won) tx.update(ref, "gamesWon", wins + 1);
 
-            long newStars = Math.max(0, stars + starsEarned);
+            long newStars = Math.max(0, stars + starsDelta);
             tx.update(ref, "stars", newStars);
 
+            // svaki puni višekratnik od 50 zvezdi donosi 1 token
             long newTokens = tokens + (newStars / 50 - stars / 50);
-            if (newTokens != tokens) tx.update(ref, "tokens", newTokens);
+            if (newTokens != tokens) tx.update(ref, "tokens", Math.max(0, newTokens));
             return null;
         });
     }
@@ -158,6 +158,38 @@ public class UserRepository {
             long corr  = safe(tx.get(ref).getLong("kzzCorrect"));
             tx.update(ref, "kzzTotal", total + 1);
             if (correct) tx.update(ref, "kzzCorrect", corr + 1);
+            return null;
+        });
+    }
+
+    /** Oduzima 1 token. Poziva onError ako nema tokena. */
+    public void deductToken(String uid, Callback cb) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            long tokens = safe(tx.get(ref).getLong("tokens"));
+            if (tokens <= 0) throw new RuntimeException("no_tokens");
+            tx.update(ref, "tokens", tokens - 1);
+            return null;
+        }).addOnSuccessListener(v -> cb.onSuccess())
+          .addOnFailureListener(e -> cb.onError(e.getMessage()));
+    }
+
+    /** Vraća 1 token (poziva se kada korisnik napusti lobby pre nalaženja protivnika). */
+    public void refundToken(String uid) {
+        db.collection("users").document(uid)
+                .update("tokens", com.google.firebase.firestore.FieldValue.increment(1));
+    }
+
+    /** Proverava datum poslednjeg bonusa i dodaje 5 tokena ako je novi dan. */
+    public void claimDailyTokensIfNeeded(String uid, String today) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            String last   = tx.get(ref).getString("lastTokenDate");
+            long tokens   = safe(tx.get(ref).getLong("tokens"));
+            if (!today.equals(last)) {
+                tx.update(ref, "tokens", tokens + 5);
+                tx.update(ref, "lastTokenDate", today);
+            }
             return null;
         });
     }

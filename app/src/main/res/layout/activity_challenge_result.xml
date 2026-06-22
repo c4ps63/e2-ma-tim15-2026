@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_sky_gradient">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_hud"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="48dp"
+        android:paddingBottom="14dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="REZULTATI IZAZOVA"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <!-- Moj ishod -->
+    <TextView
+        android:id="@+id/tvMyResult"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#FFD23F"
+        android:gravity="center"
+        android:padding="20dp"
+        android:background="@drawable/bg_hud"
+        android:text="Učitavam..." />
+
+    <!-- Status čekanja -->
+    <TextView
+        android:id="@+id/tvWaiting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="13sp"
+        android:textColor="#DDDDDD"
+        android:gravity="center"
+        android:padding="8dp"
+        android:visibility="gone" />
+
+    <!-- Tabela rezultata -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvResults"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="12dp"
+        android:clipToPadding="false" />
+
+    <Button
+        android:id="@+id/btnDone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/CartoonButton"
+        android:background="@drawable/btn_cartoon_green"
+        android:text="GOTOVO"
+        android:textSize="16sp"
+        android:layout_margin="16dp" />
+
+</LinearLayout>
