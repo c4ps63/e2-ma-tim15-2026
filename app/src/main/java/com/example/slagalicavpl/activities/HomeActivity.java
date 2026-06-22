@@ -2,7 +2,8 @@ package com.example.slagalicavpl.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.example.slagalicavpl.model.User;
 import com.example.slagalicavpl.repository.InviteRepository;
 import com.example.slagalicavpl.repository.UserRepository;
 import com.example.slagalicavpl.service.AuthService;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ValueEventListener;
 
@@ -158,23 +160,41 @@ public class HomeActivity extends AppCompatActivity {
         findViewById(R.id.btnProfile).setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
 
-        Button btnOnline  = findViewById(R.id.btnPlayOnline);
-        Button btnChat    = findViewById(R.id.btnChat);
-        Button btnIzazov  = findViewById(R.id.btnIzazov);
-        btnOnline.setOnClickListener(v  -> tryStartOnlineGame());
-        btnChat.setOnClickListener(v    -> startActivity(new Intent(this, ChatActivity.class)));
-        btnIzazov.setOnClickListener(v  -> startActivity(new Intent(this, ChallengeListActivity.class)));
+        // Glavni CTA -> ranked matchmaking (nasumični protivnik).
+        findViewById(R.id.btnPlayOnline).setOnClickListener(v -> tryStartOnlineGame());
 
-        findViewById(R.id.navSvet).setOnClickListener(v -> tryStartOnlineGame());
+        // IGRAJ -> bottom sheet sa tri režima (prijateljska / izazov / turnir).
+        findViewById(R.id.btnPlay).setOnClickListener(v -> showPlaySheet());
+
+        // Donje prečice.
         findViewById(R.id.navPrijatelji).setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));
-        findViewById(R.id.btnPlayOffline).setOnClickListener(v ->
-                startActivity(new Intent(this, GameActivity.class)));
         findViewById(R.id.navRang).setOnClickListener(v ->
-                startActivity(new Intent(this, NotificationsActivity.class)));
+                Toast.makeText(this, "Rang liste — uskoro", Toast.LENGTH_SHORT).show());
+        findViewById(R.id.navRegioni).setOnClickListener(v ->
+                Toast.makeText(this, "Regioni — uskoro", Toast.LENGTH_SHORT).show());
         findViewById(R.id.navCet).setOnClickListener(v ->
                 startActivity(new Intent(this, ChatActivity.class)));
-        findViewById(R.id.navProfil).setOnClickListener(v ->
-                startActivity(new Intent(this, ProfileActivity.class)));
+    }
+
+    private void showPlaySheet() {
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        View sheet = LayoutInflater.from(this).inflate(R.layout.sheet_play, null);
+
+        sheet.findViewById(R.id.optFriendly).setOnClickListener(v -> {
+            dialog.dismiss();
+            startActivity(new Intent(this, FriendsActivity.class));
+        });
+        sheet.findViewById(R.id.optChallenge).setOnClickListener(v -> {
+            dialog.dismiss();
+            startActivity(new Intent(this, ChallengeListActivity.class));
+        });
+        sheet.findViewById(R.id.optTournament).setOnClickListener(v -> {
+            dialog.dismiss();
+            Toast.makeText(this, "Turnir — uskoro", Toast.LENGTH_SHORT).show();
+        });
+
+        dialog.setContentView(sheet);
+        dialog.show();
     }
 }

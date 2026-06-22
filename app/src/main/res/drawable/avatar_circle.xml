@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Avatar krug: gradient + ink okvir + senka. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="3dp">
+        <shape android:shape="oval"><solid android:color="@color/ink"/></shape>
+    </item>
+    <item android:bottom="3dp">
+        <shape android:shape="oval">
+            <gradient android:angle="300" android:startColor="#1F6FD6" android:endColor="#7CC6FF"/>
+            <stroke android:width="3dp" android:color="@color/ink"/>
+        </shape>
+    </item>
+</layer-list>
