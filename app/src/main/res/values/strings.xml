@@ -123,4 +123,9 @@
     <string name="ranking_refresh_hint">Automatsko ažuriranje svakih 2 min</string>
     <string name="reward_congrats">ČESTITAMO!</string>
     <string name="btn_claim_reward">PREUZMI NAGRADU</string>
+
+    <!-- Dnevne misije -->
+    <string name="label_missions">DNEVNE MISIJE</string>
+    <string name="missions_bonus_title">Bonus za sve misije</string>
+    <string name="missions_bonus_desc">+2 žetona i +3 zvezde</string>
 </resources>

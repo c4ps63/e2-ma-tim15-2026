@@ -249,6 +249,65 @@
             <ImageView android:layout_width="20dp" android:layout_height="20dp"
                 android:src="@drawable/ic_chevron_down" app:tint="@color/ink"/>
         </LinearLayout>
+
+        <!-- Dnevne misije prečica -->
+        <LinearLayout
+            android:id="@+id/btnMissions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/card_paper"
+            android:alpha="0.92"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="12dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_glyph_star"
+                app:tint="#FFD23F"
+                android:layout_marginEnd="10dp"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/ink"
+                    android:textSize="13sp"
+                    android:text="@string/label_missions"/>
+
+                <TextView
+                    android:id="@+id/tvMissionsProgress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif"
+                    android:textColor="@color/ink"
+                    android:alpha="0.55"
+                    android:textSize="11sp"
+                    android:text="0/4 misija"/>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_chevron_down"
+                android:rotation="-90"
+                app:tint="@color/ink"
+                android:alpha="0.4"/>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- ===== BOTTOM ROW: 4 prečice ===== -->

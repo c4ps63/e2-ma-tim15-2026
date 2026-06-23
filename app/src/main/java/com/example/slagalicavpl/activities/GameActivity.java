@@ -27,6 +27,7 @@ import com.example.slagalicavpl.model.User;
 import com.example.slagalicavpl.model.Challenge;
 import com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync;
 import com.example.slagalicavpl.repository.ChallengeRepository;
+import com.example.slagalicavpl.repository.MissionRepository;
 import com.example.slagalicavpl.repository.RankingRepository;
 import com.example.slagalicavpl.multiplayer.KoZnaZnaSync;
 import com.example.slagalicavpl.multiplayer.LocalKoZnaZnaSync;
@@ -224,6 +225,8 @@ public class GameActivity extends AppCompatActivity {
                             UserRepository.getInstance().incrementStats(uid, true, getMyScore());
                             RankingRepository.getInstance()
                                     .updateEntry(uid, myUsername, myRegion, myLeague, 10);
+                            MissionRepository.tryComplete(GameActivity.this, uid,
+                                    MissionRepository.MISSION_WIN_GAME);
                             NotificationRepository.getInstance(GameActivity.this)
                                     .add(AppNotification.create(
                                             AppNotification.Channel.RANKING,
@@ -262,7 +265,7 @@ public class GameActivity extends AppCompatActivity {
             case NAV_SKOCKO:      doShow(new SkockoFragment());      break;
             case NAV_KORAK:       doShow(new KorakPoKorakFragment());break;
             case NAV_MOJBROJ:     doShow(new MojBrojFragment());     break;
-            case NAV_DONE:        maybeNotifyGameResult(); finish(); break;
+            case NAV_DONE:        maybeNotifyGameResult(); checkGameMissions(); finish(); break;
         }
     }
 
@@ -284,6 +287,19 @@ public class GameActivity extends AppCompatActivity {
             int starGain = won ? 10 + getMyScore() / 40 : 0;
             RankingRepository.getInstance()
                     .updateEntry(fbUser.getUid(), myUsername, myRegion, myLeague, starGain);
+        }
+    }
+
+    private void checkGameMissions() {
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser == null) return;
+        String uid = fbUser.getUid();
+        if (isFriendly) {
+            MissionRepository.tryComplete(this, uid, MissionRepository.MISSION_PLAY_FRIENDLY);
+        } else if (challengeId == null && roomRef != null) {
+            boolean iAmP1 = "p1".equals(getMyRole());
+            boolean won   = iAmP1 ? (totalP1 > totalP2) : (totalP2 > totalP1);
+            if (won) MissionRepository.tryComplete(this, uid, MissionRepository.MISSION_WIN_GAME);
         }
     }
 

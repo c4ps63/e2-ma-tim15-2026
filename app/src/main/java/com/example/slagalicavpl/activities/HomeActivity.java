@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.model.AppNotification;
+import com.example.slagalicavpl.repository.MissionRepository;
 import com.example.slagalicavpl.model.ChatMessage;
 import com.example.slagalicavpl.model.GameInvite;
 import com.example.slagalicavpl.model.User;
@@ -72,6 +73,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         loadUserProfile();
         updateNotifBadge();
+        updateMissionsProgress();
     }
 
     @Override
@@ -260,6 +262,10 @@ public class HomeActivity extends AppCompatActivity {
         // IGRAJ -> bottom sheet
         findViewById(R.id.btnPlay).setOnClickListener(v -> showPlaySheet());
 
+        // Misije
+        findViewById(R.id.btnMissions).setOnClickListener(v ->
+                startActivity(new Intent(this, MissionsActivity.class)));
+
         // Donje prečice
         findViewById(R.id.navPrijatelji).setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));
@@ -301,5 +307,12 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             tvNotifBadge.setVisibility(View.GONE);
         }
+    }
+
+    private void updateMissionsProgress() {
+        TextView tv = findViewById(R.id.tvMissionsProgress);
+        if (tv == null) return;
+        int completed = MissionRepository.getInstance(this).getCompletedCount();
+        tv.setText(completed + "/4 misija");
     }
 }

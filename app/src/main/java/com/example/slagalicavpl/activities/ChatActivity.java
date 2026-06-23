@@ -17,6 +17,7 @@ import com.example.slagalicavpl.model.AppNotification;
 import com.example.slagalicavpl.model.ChatMessage;
 import com.example.slagalicavpl.model.User;
 import com.example.slagalicavpl.repository.ChatRepository;
+import com.example.slagalicavpl.repository.MissionRepository;
 import com.example.slagalicavpl.repository.NotificationRepository;
 import com.example.slagalicavpl.repository.UserRepository;
 import com.example.slagalicavpl.service.AuthService;
@@ -85,7 +86,10 @@ public class ChatActivity extends AppCompatActivity {
                     et.setText("");
                     ChatMessage msg = new ChatMessage(myUid, myUsername, text);
                     chatRepo.sendMessage(region, msg, new UserRepository.Callback() {
-                        @Override public void onSuccess() {}
+                        @Override public void onSuccess() {
+                            MissionRepository.tryComplete(ChatActivity.this, myUid,
+                                    MissionRepository.MISSION_SEND_CHAT);
+                        }
                         @Override public void onError(String message) {
                             Toast.makeText(ChatActivity.this,
                                     "Greška pri slanju: " + message, Toast.LENGTH_SHORT).show();

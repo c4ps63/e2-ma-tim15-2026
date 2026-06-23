@@ -296,5 +296,17 @@ public class UserRepository {
         });
     }
 
+    public void addStars(String uid, int amount) {
+        if (amount <= 0) return;
+        db.collection("users").document(uid)
+                .update("stars", com.google.firebase.firestore.FieldValue.increment(amount));
+    }
+
+    public void addTokens(String uid, int amount) {
+        if (amount <= 0) return;
+        db.collection("users").document(uid)
+                .update("tokens", com.google.firebase.firestore.FieldValue.increment(amount));
+    }
+
     private long safe(Long v) { return v != null ? v : 0L; }
 }
