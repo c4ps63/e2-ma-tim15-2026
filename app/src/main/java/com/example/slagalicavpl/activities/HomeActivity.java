@@ -264,7 +264,7 @@ public class HomeActivity extends AppCompatActivity {
         findViewById(R.id.navPrijatelji).setOnClickListener(v ->
                 startActivity(new Intent(this, FriendsActivity.class)));
         findViewById(R.id.navRang).setOnClickListener(v ->
-                Toast.makeText(this, "Rang liste — uskoro", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(this, RankingActivity.class)));
         findViewById(R.id.navRegioni).setOnClickListener(v ->
                 Toast.makeText(this, "Regioni — uskoro", Toast.LENGTH_SHORT).show());
         findViewById(R.id.navCet).setOnClickListener(v ->

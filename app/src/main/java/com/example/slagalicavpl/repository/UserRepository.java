@@ -214,6 +214,26 @@ public class UserRepository {
         }).addOnFailureListener(e -> { /* tiho ignoriši */ });
     }
 
+    /**
+     * Isplaćuje nagradu za plasman na rang listi i štiti od dvostruke isplate
+     * transakcijom koja čuva ključ ciklusa u korisničkom dokumentu.
+     */
+    public void claimRankingReward(String uid, boolean weekly, String cycleKey, int tokens, Callback cb) {
+        String field = weekly ? "lastWeeklyRewardCycle" : "lastMonthlyRewardCycle";
+        DocumentReference ref = db.collection("users").document(uid);
+        db.<Boolean>runTransaction(tx -> {
+            String lastCycle     = tx.get(ref).getString(field);
+            if (cycleKey.equals(lastCycle)) return false;
+            long currentTokens   = safe(tx.get(ref).getLong("tokens"));
+            tx.update(ref, "tokens", currentTokens + tokens);
+            tx.update(ref, field,    cycleKey);
+            return true;
+        }).addOnSuccessListener(claimed -> {
+            if (Boolean.TRUE.equals(claimed)) cb.onSuccess();
+            else cb.onError("already_claimed");
+        }).addOnFailureListener(e -> cb.onError(e.getMessage()));
+    }
+
     public void saveAvatarColor(String uid, String hexColor, Callback cb) {
         db.collection("users").document(uid)
           .update("avatarColor", hexColor)

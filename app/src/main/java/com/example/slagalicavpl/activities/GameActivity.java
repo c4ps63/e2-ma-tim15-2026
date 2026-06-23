@@ -27,6 +27,7 @@ import com.example.slagalicavpl.model.User;
 import com.example.slagalicavpl.model.Challenge;
 import com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync;
 import com.example.slagalicavpl.repository.ChallengeRepository;
+import com.example.slagalicavpl.repository.RankingRepository;
 import com.example.slagalicavpl.multiplayer.KoZnaZnaSync;
 import com.example.slagalicavpl.multiplayer.LocalKoZnaZnaSync;
 import com.example.slagalicavpl.repository.UserRepository;
@@ -68,8 +69,11 @@ public class GameActivity extends AppCompatActivity {
     private boolean            opponentDisconnected = false;
 
     // Avatar podaci
-    private char myInitial    = '?';
-    private int  myColor      = 0xFF5C85FF;
+    private char   myInitial    = '?';
+    private int    myColor      = 0xFF5C85FF;
+    private String myUsername   = "";
+    private String myRegion     = "";
+    private int    myLeague     = 1;
     private char oppInitial   = '?';
     private int  oppColor     = 0xFFFF6B6B;
     private ValueEventListener avatarListener;
@@ -143,6 +147,9 @@ public class GameActivity extends AppCompatActivity {
                     try { myColor = Color.parseColor(u.avatarColor); }
                     catch (Exception ignored) {}
                 }
+                myUsername = u.username != null ? u.username : "";
+                myRegion   = u.region   != null ? u.region   : "";
+                myLeague   = (u.stars / 100) + 1;
                 if (roomRef != null) {
                     Map<String, Object> data = new HashMap<>();
                     data.put("initial", String.valueOf(myInitial));
@@ -215,6 +222,8 @@ public class GameActivity extends AppCompatActivity {
                                         .getCurrentUser().getUid() : null;
                         if (uid != null) {
                             UserRepository.getInstance().incrementStats(uid, true, getMyScore());
+                            RankingRepository.getInstance()
+                                    .updateEntry(uid, myUsername, myRegion, myLeague, 10);
                             NotificationRepository.getInstance(GameActivity.this)
                                     .add(AppNotification.create(
                                             AppNotification.Channel.RANKING,
@@ -268,6 +277,14 @@ public class GameActivity extends AppCompatActivity {
                 : AppNotification.Channel.RANKING;
         NotificationRepository.getInstance(this)
                 .add(AppNotification.create(ch, title, body, "ranking"));
+
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null) {
+            // Pobeda → dodaj zvezde; poraz → registruj prisustvo sa 0 (da igrač bude vidljiv)
+            int starGain = won ? 10 + getMyScore() / 40 : 0;
+            RankingRepository.getInstance()
+                    .updateEntry(fbUser.getUid(), myUsername, myRegion, myLeague, starGain);
+        }
     }
 
     private void doShow(Fragment fragment) {

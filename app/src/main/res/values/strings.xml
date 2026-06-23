@@ -114,4 +114,13 @@
     <string name="play_challenge_sub">Do 4 igrača · uloži zvezde i tokene</string>
     <string name="play_tournament">Turnir</string>
     <string name="play_tournament_sub">4 igrača · finale · najveći ulog</string>
+
+    <!-- Rang lista -->
+    <string name="label_ranking">RANG LISTA</string>
+    <string name="tab_weekly">NEDELJNO</string>
+    <string name="tab_monthly">MESEČNO</string>
+    <string name="ranking_empty">Nema igrača u ovom ciklusu.\nOdigraj partiju da se pojaveš!</string>
+    <string name="ranking_refresh_hint">Automatsko ažuriranje svakih 2 min</string>
+    <string name="reward_congrats">ČESTITAMO!</string>
+    <string name="btn_claim_reward">PREUZMI NAGRADU</string>
 </resources>

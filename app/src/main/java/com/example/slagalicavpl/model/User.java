@@ -22,7 +22,9 @@ public class User {
     public int korakTotal;
     public int    mojBrojCorrect;
     public int    mojBrojTotal;
-    public String lastTokenDate;  // "yyyy-MM-dd" datum poslednjeg dnevnog bonusa
+    public String lastTokenDate;           // "yyyy-MM-dd" datum poslednjeg dnevnog bonusa
+    public String lastWeeklyRewardCycle;  // npr. "2026-W25" — poslednji nedeljni ciklus za koji je nagrada isplaćena
+    public String lastMonthlyRewardCycle; // npr. "2026-06"  — poslednji mesečni ciklus za koji je nagrada isplaćena
 
     public User() {}
 
