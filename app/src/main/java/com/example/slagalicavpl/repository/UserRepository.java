@@ -296,6 +296,17 @@ public class UserRepository {
         });
     }
 
+    public void incrementGameCount(String uid, boolean won) {
+        DocumentReference ref = db.collection("users").document(uid);
+        db.runTransaction(tx -> {
+            long played = safe(tx.get(ref).getLong("gamesPlayed"));
+            long wins   = safe(tx.get(ref).getLong("gamesWon"));
+            tx.update(ref, "gamesPlayed", played + 1);
+            if (won) tx.update(ref, "gamesWon", wins + 1);
+            return null;
+        });
+    }
+
     public void addStars(String uid, int amount) {
         if (amount <= 0) return;
         db.collection("users").document(uid)

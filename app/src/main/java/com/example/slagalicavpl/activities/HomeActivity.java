@@ -291,7 +291,7 @@ public class HomeActivity extends AppCompatActivity {
         });
         sheet.findViewById(R.id.optTournament).setOnClickListener(v -> {
             dialog.dismiss();
-            Toast.makeText(this, "Turnir — uskoro", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, TournamentLobbyActivity.class));
         });
 
         dialog.setContentView(sheet);

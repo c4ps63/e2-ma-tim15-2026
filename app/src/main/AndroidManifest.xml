@@ -103,6 +103,16 @@
             android:exported="false"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".activities.TournamentLobbyActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activities.TournamentResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+
     </application>
 
 </manifest>
