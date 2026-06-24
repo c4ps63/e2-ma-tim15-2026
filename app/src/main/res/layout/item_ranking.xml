@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@drawable/card_paper"
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginBottom="8dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp">
+
+    <!-- Rang broj / medalja -->
+    <TextView
+        android:id="@+id/tvRank"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:fontFamily="sans-serif-black"
+        android:textSize="14sp"
+        android:textColor="@color/ink"
+        android:layout_marginEnd="12dp"
+        android:text="1"/>
+
+    <!-- Korisničko ime + liga -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:textSize="14sp"
+            android:textColor="@color/ink"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="Igrac"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="3dp">
+
+            <ImageView
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:src="@drawable/ic_shield"
+                app:tint="@color/sky_dark"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/tvLeague"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:textSize="11sp"
+                android:textColor="@color/ink"
+                android:alpha="0.6"
+                android:text="Liga 1"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Zvezde ciklusa -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_glyph_star"
+            app:tint="#FFD23F"/>
+
+        <TextView
+            android:id="@+id/tvStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:textSize="18sp"
+            android:textColor="@color/ink"
+            android:gravity="center"
+            android:text="0"/>
+    </LinearLayout>
+
+</LinearLayout>

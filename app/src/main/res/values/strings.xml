@@ -114,4 +114,37 @@
     <string name="play_challenge_sub">Do 4 igrača · uloži zvezde i tokene</string>
     <string name="play_tournament">Turnir</string>
     <string name="play_tournament_sub">4 igrača · finale · najveći ulog</string>
+
+    <!-- Rang lista -->
+    <string name="label_ranking">RANG LISTA</string>
+    <string name="tab_weekly">NEDELJNO</string>
+    <string name="tab_monthly">MESEČNO</string>
+    <string name="ranking_empty">Nema igrača u ovom ciklusu.\nOdigraj partiju da se pojaveš!</string>
+    <string name="ranking_refresh_hint">Automatsko ažuriranje svakih 2 min</string>
+    <string name="reward_congrats">ČESTITAMO!</string>
+    <string name="btn_claim_reward">PREUZMI NAGRADU</string>
+
+    <!-- Dnevne misije -->
+    <string name="label_missions">DNEVNE MISIJE</string>
+    <string name="missions_bonus_title">Bonus za sve misije</string>
+    <string name="missions_bonus_desc">+2 žetona i +3 zvezde</string>
+
+    <!-- Turnir -->
+    <string name="label_tournament">TURNIR</string>
+    <string name="tournament_searching">Tražimo igrače…</string>
+    <string name="tournament_starting">Svi igrači pronađeni! Krenite!</string>
+    <string name="tournament_semifinal1">POLUFINALE 1</string>
+    <string name="tournament_semifinal2">POLUFINALE 2</string>
+    <string name="tournament_final">FINALE</string>
+    <string name="tournament_slot_waiting">Čeka se…</string>
+    <string name="tournament_advanced">Avansovao si u finale!</string>
+    <string name="tournament_waiting_final">Čekamo pobednika drugog polufinalnog meča…</string>
+    <string name="tournament_waiting_hint">Finale počinje automatski</string>
+    <string name="tournament_champion">PRVAK TURNIRA!</string>
+    <string name="tournament_final_win_desc">Odlična igra! Zaslužena pobeda u turniru.</string>
+    <string name="tournament_eliminated">Eliminisan si</string>
+    <string name="tournament_semi_loss_desc">Nisi prošao u finale. Nema nagrade za ovu rundu.</string>
+    <string name="tournament_final_loss">Poraz u finalu</string>
+    <string name="tournament_final_loss_desc">Stigao si do finala — sjajno odigravanje!\nTvoj rezultat: %d bodova.</string>
+    <string name="tournament_go_home">NAZAD NA POČETAK</string>
 </resources>

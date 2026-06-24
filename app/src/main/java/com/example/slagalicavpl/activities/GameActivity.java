@@ -27,6 +27,9 @@ import com.example.slagalicavpl.model.User;
 import com.example.slagalicavpl.model.Challenge;
 import com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync;
 import com.example.slagalicavpl.repository.ChallengeRepository;
+import com.example.slagalicavpl.repository.MissionRepository;
+import com.example.slagalicavpl.repository.RankingRepository;
+import com.example.slagalicavpl.repository.TournamentRepository;
 import com.example.slagalicavpl.multiplayer.KoZnaZnaSync;
 import com.example.slagalicavpl.multiplayer.LocalKoZnaZnaSync;
 import com.example.slagalicavpl.repository.UserRepository;
@@ -44,6 +47,9 @@ import java.util.Map;
 public class GameActivity extends AppCompatActivity {
 
     // Redosled igara — mora biti isti na oba uređaja
+    public static final String EXTRA_TOURNAMENT_ID    = "tournamentId";
+    public static final String EXTRA_TOURNAMENT_PHASE = "tournamentPhase";
+
     private static final String NAV_SPOJNICE    = "spojnice";
     private static final String NAV_ASOCIJACIJE = "asocijacije";
     private static final String NAV_SKOCKO      = "skocko";
@@ -56,8 +62,10 @@ public class GameActivity extends AppCompatActivity {
 
     private String            roomId;
     private String            myRole;
-    private boolean           isFriendly   = false;
-    private String            challengeId  = null;  // non-null = challenge mode
+    private boolean           isFriendly     = false;
+    private String            challengeId    = null;  // non-null = challenge mode
+    private String            tournamentId   = null;  // non-null = tournament mode
+    private String            tournamentPhase = null; // "semi1", "semi2", "final"
     private DatabaseReference roomRef;
 
     private String            lastNav = "";
@@ -68,10 +76,14 @@ public class GameActivity extends AppCompatActivity {
     private boolean            opponentDisconnected = false;
 
     // Avatar podaci
-    private char myInitial    = '?';
-    private int  myColor      = 0xFF5C85FF;
-    private char oppInitial   = '?';
-    private int  oppColor     = 0xFFFF6B6B;
+    private char   myInitial    = '?';
+    private int    myColor      = 0xFF5C85FF;
+    private String myUsername   = "";
+    private String myRegion     = "";
+    private int    myLeague     = 1;
+    private char   oppInitial  = '?';
+    private int    oppColor    = 0xFFFF6B6B;
+    private String oppUsername = "";
     private ValueEventListener avatarListener;
 
     public void addScores(int p1, int p2) {
@@ -107,10 +119,12 @@ public class GameActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_game);
 
-        roomId      = getIntent().getStringExtra(LobbyActivity.EXTRA_ROOM_ID);
-        myRole      = getIntent().getStringExtra(LobbyActivity.EXTRA_MY_ROLE);
-        isFriendly  = getIntent().getBooleanExtra(LobbyActivity.EXTRA_IS_FRIENDLY, false);
-        challengeId = getIntent().getStringExtra(LobbyActivity.EXTRA_CHALLENGE_ID);
+        roomId          = getIntent().getStringExtra(LobbyActivity.EXTRA_ROOM_ID);
+        myRole          = getIntent().getStringExtra(LobbyActivity.EXTRA_MY_ROLE);
+        isFriendly      = getIntent().getBooleanExtra(LobbyActivity.EXTRA_IS_FRIENDLY, false);
+        challengeId     = getIntent().getStringExtra(LobbyActivity.EXTRA_CHALLENGE_ID);
+        tournamentId    = getIntent().getStringExtra(EXTRA_TOURNAMENT_ID);
+        tournamentPhase = getIntent().getStringExtra(EXTRA_TOURNAMENT_PHASE);
         if (roomId != null) {
             roomRef = FirebaseDatabase.getInstance(
                     "https://slagalica-vrtlogalica-default-rtdb.europe-west1.firebasedatabase.app")
@@ -143,10 +157,14 @@ public class GameActivity extends AppCompatActivity {
                     try { myColor = Color.parseColor(u.avatarColor); }
                     catch (Exception ignored) {}
                 }
+                myUsername = u.username != null ? u.username : "";
+                myRegion   = u.region   != null ? u.region   : "";
+                myLeague   = (u.stars / 100) + 1;
                 if (roomRef != null) {
                     Map<String, Object> data = new HashMap<>();
-                    data.put("initial", String.valueOf(myInitial));
-                    data.put("color",   String.format("#%06X", 0xFFFFFF & myColor));
+                    data.put("initial",   String.valueOf(myInitial));
+                    data.put("color",     String.format("#%06X", 0xFFFFFF & myColor));
+                    data.put("username",  myUsername);
                     roomRef.child("avatars").child(getMyRole()).setValue(data);
                     listenForOpponentAvatar();
                 }
@@ -167,6 +185,8 @@ public class GameActivity extends AppCompatActivity {
                     try { oppColor = Color.parseColor(color); }
                     catch (Exception ignored) {}
                 }
+                String uname = snap.child("username").getValue(String.class);
+                if (uname != null) oppUsername = uname;
             }
             @Override public void onCancelled(DatabaseError e) {}
         };
@@ -179,6 +199,8 @@ public class GameActivity extends AppCompatActivity {
         int  av1Color = iAmP1 ? myColor    : oppColor;
         char av2Char  = iAmP1 ? oppInitial : myInitial;
         int  av2Color = iAmP1 ? oppColor   : myColor;
+        String p1Name = iAmP1 ? myUsername  : oppUsername;
+        String p2Name = iAmP1 ? oppUsername : myUsername;
 
         TextView av1 = rootView.findViewById(R.id.p1_avatar);
         TextView av2 = rootView.findViewById(R.id.p2_avatar);
@@ -195,6 +217,11 @@ public class GameActivity extends AppCompatActivity {
             DrawableCompat.setTint(d, av2Color);
             av2.setBackground(d);
         }
+
+        TextView name1 = rootView.findViewById(R.id.p1_name);
+        TextView name2 = rootView.findViewById(R.id.p2_name);
+        if (name1 != null) name1.setText(p1Name.isEmpty() ? "TI" : p1Name);
+        if (name2 != null) name2.setText(p2Name.isEmpty() ? "PROTIVNIK" : p2Name);
     }
 
     // ── Disconnect handling ───────────────────────────────────────────────────
@@ -215,6 +242,10 @@ public class GameActivity extends AppCompatActivity {
                                         .getCurrentUser().getUid() : null;
                         if (uid != null) {
                             UserRepository.getInstance().incrementStats(uid, true, getMyScore());
+                            RankingRepository.getInstance()
+                                    .updateEntry(uid, myUsername, myRegion, myLeague, 10);
+                            MissionRepository.tryComplete(GameActivity.this, uid,
+                                    MissionRepository.MISSION_WIN_GAME);
                             NotificationRepository.getInstance(GameActivity.this)
                                     .add(AppNotification.create(
                                             AppNotification.Channel.RANKING,
@@ -253,7 +284,15 @@ public class GameActivity extends AppCompatActivity {
             case NAV_SKOCKO:      doShow(new SkockoFragment());      break;
             case NAV_KORAK:       doShow(new KorakPoKorakFragment());break;
             case NAV_MOJBROJ:     doShow(new MojBrojFragment());     break;
-            case NAV_DONE:        maybeNotifyGameResult(); finish(); break;
+            case NAV_DONE:
+                if (tournamentId != null) {
+                    handleTournamentEnd();
+                } else {
+                    maybeNotifyGameResult();
+                    checkGameMissions();
+                    finish();
+                }
+                break;
         }
     }
 
@@ -268,6 +307,65 @@ public class GameActivity extends AppCompatActivity {
                 : AppNotification.Channel.RANKING;
         NotificationRepository.getInstance(this)
                 .add(AppNotification.create(ch, title, body, "ranking"));
+
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser != null) {
+            // Pobeda → dodaj zvezde; poraz → registruj prisustvo sa 0 (da igrač bude vidljiv)
+            int starGain = won ? 10 + getMyScore() / 40 : 0;
+            RankingRepository.getInstance()
+                    .updateEntry(fbUser.getUid(), myUsername, myRegion, myLeague, starGain);
+        }
+    }
+
+    private void handleTournamentEnd() {
+        boolean iAmP1    = "p1".equals(getMyRole());
+        boolean won      = iAmP1 ? (totalP1 > totalP2) : (totalP2 > totalP1);
+        boolean isFinal  = "final".equals(tournamentPhase);
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        String uid = fbUser != null ? fbUser.getUid() : null;
+
+        if (uid != null) {
+            if (won) {
+                // Regular win rewards (stars + milestone tokens) + tournament bonus
+                UserRepository.getInstance().incrementStats(uid, true, getMyScore());
+                UserRepository.getInstance().addTokens(uid, isFinal ? 3 : 2);
+                if (isFinal) UserRepository.getInstance().addStars(uid, 10); // final bonus stars
+                RankingRepository.getInstance()
+                        .updateEntry(uid, myUsername, myRegion, myLeague, 10);
+                MissionRepository.tryComplete(this, uid,
+                        MissionRepository.MISSION_WIN_TOURNAMENT);
+                TournamentRepository.getInstance()
+                        .reportWin(tournamentId, tournamentPhase, uid);
+            } else if (isFinal) {
+                // Final loss: regular rules (negative stars, counts as played)
+                UserRepository.getInstance().incrementStats(uid, false, getMyScore());
+            } else {
+                // Semi loss: only count the game, no star penalty per spec
+                UserRepository.getInstance().incrementGameCount(uid, false);
+            }
+        }
+
+        Intent i = new Intent(this, TournamentResultActivity.class);
+        i.putExtra(TournamentResultActivity.EXTRA_TOURNAMENT_ID, tournamentId);
+        i.putExtra(TournamentResultActivity.EXTRA_PHASE, tournamentPhase);
+        i.putExtra(TournamentResultActivity.EXTRA_WON, won);
+        i.putExtra(TournamentResultActivity.EXTRA_MY_UID, uid != null ? uid : "");
+        i.putExtra(TournamentResultActivity.EXTRA_MY_SCORE, getMyScore());
+        startActivity(i);
+        finish();
+    }
+
+    private void checkGameMissions() {
+        FirebaseUser fbUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (fbUser == null) return;
+        String uid = fbUser.getUid();
+        if (isFriendly) {
+            MissionRepository.tryComplete(this, uid, MissionRepository.MISSION_PLAY_FRIENDLY);
+        } else if (challengeId == null && roomRef != null) {
+            boolean iAmP1 = "p1".equals(getMyRole());
+            boolean won   = iAmP1 ? (totalP1 > totalP2) : (totalP2 > totalP1);
+            if (won) MissionRepository.tryComplete(this, uid, MissionRepository.MISSION_WIN_GAME);
+        }
     }
 
     private void doShow(Fragment fragment) {

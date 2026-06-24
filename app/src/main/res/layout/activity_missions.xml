@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_sky_gradient">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_hud"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="48dp"
+        android:paddingBottom="14dp"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            style="@style/CartoonButton"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:gravity="center"
+            android:minHeight="0dp"
+            android:text="←"
+            android:fontFamily="monospace"
+            android:textSize="20sp"
+            android:textColor="@color/ink"
+            android:background="@drawable/card_paper"
+            android:layout_marginEnd="12dp"/>
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_glyph_star"
+            app:tint="#FFD23F"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-black"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:letterSpacing="0.04"
+            android:text="@string/label_missions"/>
+
+        <TextView
+            android:id="@+id/tvMissionsDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:textColor="#CCFFFFFF"
+            android:textSize="11sp"
+            android:text=""/>
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#60FFFFFF"/>
+
+    <!-- Bonus kartica -->
+    <LinearLayout
+        android:id="@+id/bonusCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/card_paper"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="14dp">
+
+        <ImageView
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_trophy"
+            app:tint="#FFD23F"
+            android:layout_marginEnd="10dp"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-black"
+                android:textColor="@color/ink"
+                android:textSize="13sp"
+                android:text="@string/missions_bonus_title"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:textColor="@color/ink"
+                android:alpha="0.55"
+                android:textSize="11sp"
+                android:text="@string/missions_bonus_desc"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvBonusStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:textColor="#21C87A"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:text="✓ PREUZETO"/>
+    </LinearLayout>
+
+    <!-- Progres -->
+    <TextView
+        android:id="@+id/tvProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:fontFamily="sans-serif"
+        android:textColor="#CCFFFFFF"
+        android:textSize="12sp"
+        android:text="0/4 misija"/>
+
+    <!-- Lista misija -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvMissions"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="4dp"
+        android:paddingBottom="16dp"/>
+
+</LinearLayout>

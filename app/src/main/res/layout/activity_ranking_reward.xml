@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingStart="24dp"
+    android:paddingEnd="24dp"
+    android:background="@drawable/bg_sky_gradient">
+
+    <!-- Medalja -->
+    <TextView
+        android:id="@+id/tvMedal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:textSize="80sp"
+        android:text="🥇"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/tvCongrats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:letterSpacing="0.05"
+        android:text="@string/reward_congrats"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvPlacement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif"
+        android:textColor="#CCFFFFFF"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:layout_marginBottom="36dp"
+        android:text=""/>
+
+    <!-- Token nagrada -->
+    <LinearLayout
+        android:id="@+id/tokenCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_paper"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="18dp"
+        android:layout_marginBottom="40dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_glyph_diamond"
+            app:tint="#39B6FF"
+            android:layout_marginEnd="12dp"/>
+
+        <TextView
+            android:id="@+id/tvTokenReward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/ink"
+            android:textSize="30sp"
+            android:text="+5 žetona"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btnClaim"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        style="@style/CartoonButton"
+        android:paddingTop="8dp"
+        android:paddingBottom="14dp"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:text="@string/btn_claim_reward"
+        android:background="@drawable/btn_cartoon_green"/>
+
+</LinearLayout>

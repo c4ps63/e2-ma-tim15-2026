@@ -91,7 +91,7 @@ public class NotificationsActivity extends AppCompatActivity
                 intent = new Intent(this, FriendsActivity.class);
                 break;
             case "ranking":
-                // rang lista još nije implementirana — ostanemo na ovom ekranu
+                intent = new Intent(this, RankingActivity.class);
                 break;
         }
         if (intent != null) startActivity(intent);
