@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.model.AppNotification;
+import com.example.slagalicavpl.model.LeagueUtil;
 import com.example.slagalicavpl.repository.NotificationRepository;
 import com.example.slagalicavpl.activities.fragments.KoZnaZnaFragment;
 import com.example.slagalicavpl.activities.fragments.SpojniceFragment;
@@ -159,7 +160,7 @@ public class GameActivity extends AppCompatActivity {
                 }
                 myUsername = u.username != null ? u.username : "";
                 myRegion   = u.region   != null ? u.region   : "";
-                myLeague   = (u.stars / 100) + 1;
+                myLeague   = LeagueUtil.getLeague(u.stars);
                 if (roomRef != null) {
                     Map<String, Object> data = new HashMap<>();
                     data.put("initial",   String.valueOf(myInitial));
@@ -241,7 +242,8 @@ public class GameActivity extends AppCompatActivity {
                                 ? com.google.firebase.auth.FirebaseAuth.getInstance()
                                         .getCurrentUser().getUid() : null;
                         if (uid != null) {
-                            UserRepository.getInstance().incrementStats(uid, true, getMyScore());
+                            UserRepository.getInstance().incrementStats(uid, true, getMyScore(),
+                                    (oldL, newL) -> showLeagueChangeToast(oldL, newL));
                             RankingRepository.getInstance()
                                     .updateEntry(uid, myUsername, myRegion, myLeague, 10);
                             MissionRepository.tryComplete(GameActivity.this, uid,
@@ -327,7 +329,8 @@ public class GameActivity extends AppCompatActivity {
         if (uid != null) {
             if (won) {
                 // Regular win rewards (stars + milestone tokens) + tournament bonus
-                UserRepository.getInstance().incrementStats(uid, true, getMyScore());
+                UserRepository.getInstance().incrementStats(uid, true, getMyScore(),
+                        (oldL, newL) -> showLeagueChangeToast(oldL, newL));
                 UserRepository.getInstance().addTokens(uid, isFinal ? 3 : 2);
                 if (isFinal) UserRepository.getInstance().addStars(uid, 10); // final bonus stars
                 RankingRepository.getInstance()
@@ -338,7 +341,8 @@ public class GameActivity extends AppCompatActivity {
                         .reportWin(tournamentId, tournamentPhase, uid);
             } else if (isFinal) {
                 // Final loss: regular rules (negative stars, counts as played)
-                UserRepository.getInstance().incrementStats(uid, false, getMyScore());
+                UserRepository.getInstance().incrementStats(uid, false, getMyScore(),
+                        (oldL, newL) -> showLeagueChangeToast(oldL, newL));
             } else {
                 // Semi loss: only count the game, no star penalty per spec
                 UserRepository.getInstance().incrementGameCount(uid, false);
@@ -455,6 +459,18 @@ public class GameActivity extends AppCompatActivity {
         intent.putExtra(LobbyActivity.EXTRA_CHALLENGE_ID, challengeId);
         startActivity(intent);
         finish();
+    }
+
+    public void showLeagueChangeToast(int oldLeague, int newLeague) {
+        String msg = newLeague > oldLeague
+                ? "Napredovao si u ligu: " + LeagueUtil.getLabel(newLeague) + "!"
+                : "Pao si u ligu: " + LeagueUtil.getLabel(newLeague);
+        runOnUiThread(() -> Toast.makeText(this, msg, Toast.LENGTH_LONG).show());
+        NotificationRepository.getInstance(this).add(AppNotification.create(
+                AppNotification.Channel.REWARD,
+                newLeague > oldLeague ? "Liga napredak!" : "Pad u ligi",
+                LeagueUtil.getLabel(oldLeague) + " → " + LeagueUtil.getLabel(newLeague),
+                "ranking"));
     }
 
     // ── Cleanup ───────────────────────────────────────────────────────────────

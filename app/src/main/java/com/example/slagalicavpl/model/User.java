@@ -31,6 +31,8 @@ public class User {
     public int    cycleStars;
     // Unix timestamp ms — za praćenje aktivnih igrača
     public long   lastSeen;
+    // "yyyy-MM" ciklus u kome je već primijenjena kazna od 30% (spec 6e)
+    public String lastPenaltyCycle;
 
     public User() {}
 

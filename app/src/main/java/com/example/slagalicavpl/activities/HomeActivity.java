@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.model.AppNotification;
+import com.example.slagalicavpl.model.LeagueUtil;
 import com.example.slagalicavpl.repository.MissionRepository;
 import com.example.slagalicavpl.model.ChatMessage;
 import com.example.slagalicavpl.model.GameInvite;
@@ -61,6 +62,7 @@ public class HomeActivity extends AppCompatActivity {
         if (fu != null) myUid = fu.getUid();
 
         claimDailyTokens();
+        checkMonthlyPenalty();
         loadUserProfile();
         setupNavigation();
         listenForInvites();
@@ -186,16 +188,29 @@ public class HomeActivity extends AppCompatActivity {
         UserRepository.getInstance().claimDailyTokensIfNeeded(
                 firebaseUser.getUid(), today,
                 new UserRepository.DailyTokenCallback() {
-                    @Override public void onClaimed() {
+                    @Override public void onClaimed(int tokensGiven) {
                         notifRepo.add(AppNotification.create(
                                 AppNotification.Channel.REWARD,
-                                "+5 žetona — dnevni bonus!",
-                                "Prijavom danas zaradio si 5 žetona. Vrati se sutra za novi bonus!",
+                                "+" + tokensGiven + " žetona — dnevni bonus!",
+                                "Prijavom danas zaradio si " + tokensGiven + " žetona. Vrati se sutra!",
                                 "reward"));
                         updateNotifBadge();
                     }
                     @Override public void onAlreadyClaimed() {}
                 });
+    }
+
+    private void checkMonthlyPenalty() {
+        if (myUid == null) return;
+        UserRepository.getInstance().applyMonthlyPenaltyIfNeeded(myUid, (oldLeague, newLeague) -> {
+            if (isFinishing() || isDestroyed()) return;
+            new AlertDialog.Builder(HomeActivity.this)
+                    .setTitle("Pad u ligi!")
+                    .setMessage("Nisi se plasirao prošlog mjeseca — izgubio si 30% zvezda.\n"
+                            + LeagueUtil.getLabel(oldLeague) + " → " + LeagueUtil.getLabel(newLeague))
+                    .setPositiveButton("OK", null)
+                    .show();
+        });
     }
 
     private void loadUserProfile() {
@@ -213,7 +228,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 tvTokens.setText(String.valueOf(u.tokens));
                 tvStars.setText(String.valueOf(u.stars));
-                tvLeague.setText(((u.stars / 100) + 1) + ". LIGA");
+                tvLeague.setText(LeagueUtil.getLabel(LeagueUtil.getLeague(u.stars)));
 
                 if (u.username != null && !u.username.isEmpty())
                     tvAvatar.setText(String.valueOf(u.username.charAt(0)).toUpperCase());
