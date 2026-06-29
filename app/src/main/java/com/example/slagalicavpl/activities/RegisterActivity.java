@@ -2,6 +2,7 @@ package com.example.slagalicavpl.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.RetroButtonAnimation;
+import com.example.slagalicavpl.model.SerbiaRegions;
 import com.example.slagalicavpl.service.AuthService;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -38,6 +40,13 @@ public class RegisterActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
 
+        // Popuni spinner regionima iz SerbiaRegions (sinhronizovano sa strings.xml)
+        String[] regionNames = getResources().getStringArray(R.array.regions);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this, android.R.layout.simple_spinner_item, regionNames);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerRegion.setAdapter(adapter);
+
         btnRegister.setOnClickListener(v ->
                 RetroButtonAnimation.flash(btnRegister, this::attemptRegister));
     }
@@ -47,8 +56,10 @@ public class RegisterActivity extends AppCompatActivity {
         String username = etUsername.getText().toString().trim();
         String password = etPassword.getText().toString();
         String confirm  = etPasswordConfirm.getText().toString();
-        String region   = spinnerRegion.getSelectedItem() != null
-                          ? spinnerRegion.getSelectedItem().toString() : "";
+        // Čuvamo regionId (npr. "vojvodina"), ne display name
+        String regionDisplay = spinnerRegion.getSelectedItem() != null
+                               ? spinnerRegion.getSelectedItem().toString() : "";
+        String region = SerbiaRegions.idFromDisplayName(regionDisplay);
 
         btnRegister.setEnabled(false);
 
