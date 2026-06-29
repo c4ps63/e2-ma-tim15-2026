@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.slagalicavpl.R;
+import com.example.slagalicavpl.model.LeagueUtil;
 import com.example.slagalicavpl.model.User;
 import com.example.slagalicavpl.repository.UserRepository;
 import com.example.slagalicavpl.service.AuthService;
@@ -117,8 +118,7 @@ public class ProfileActivity extends AppCompatActivity {
                 tvTokens.setText(String.valueOf(u.tokens));
                 tvStars.setText(String.valueOf(u.stars));
 
-                // liga po broju zvezda: 0=nulta, 1=1.liga@100, 2=2.liga@200...
-                tvLeague.setText(leagueNumber(u.stars) + ".");
+                tvLeague.setText(LeagueUtil.getLabel(LeagueUtil.getLeague(u.stars)));
 
                 tvTotalGames.setText(u.gamesPlayed + " partija");
 
@@ -265,12 +265,4 @@ public class ProfileActivity extends AppCompatActivity {
         return total > 0 ? (int) (part * 100.0 / total) : 0;
     }
 
-    private int leagueNumber(int stars) {
-        // liga 1=100*, liga 2=200*, liga 3=400*, liga 4=800*, liga 5=1600*
-        int[] thresholds = {100, 200, 400, 800, 1600};
-        for (int i = thresholds.length - 1; i >= 0; i--) {
-            if (stars >= thresholds[i]) return i + 1;
-        }
-        return 0;
-    }
 }

@@ -1,5 +1,6 @@
 package com.example.slagalicavpl.repository;
 
+import com.example.slagalicavpl.model.LeagueUtil;
 import com.example.slagalicavpl.model.User;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -36,8 +37,13 @@ public class UserRepository {
     }
 
     public interface DailyTokenCallback {
-        void onClaimed();
+        void onClaimed(int tokensGiven);
         void onAlreadyClaimed();
+    }
+
+    /** Callback koji se poziva kada se liga promijeni (spec 6d/6e/6f). */
+    public interface LeagueChangeCallback {
+        void onChanged(int oldLeague, int newLeague);
     }
 
     public interface RegionRankingCallback {
@@ -165,12 +171,17 @@ public class UserRepository {
 
     // ── Statistika ────────────────────────────────────────────────────────────
 
+    // Postojeći pozivi (bez callback-a) nastavljaju raditi
     public void incrementStats(String uid, boolean won, int myScore) {
+        incrementStats(uid, won, myScore, null);
+    }
+
+    public void incrementStats(String uid, boolean won, int myScore, LeagueChangeCallback cb) {
         DocumentReference ref = db.collection("users").document(uid);
         int starsDelta = won ? 10 + (myScore / 40) : -10 + (myScore / 40);
         String currentCycle = currentCycleId();
 
-        db.runTransaction(tx -> {
+        db.<long[]>runTransaction(tx -> {
             com.google.firebase.firestore.DocumentSnapshot snap = tx.get(ref);
             long played = safe(snap.getLong("gamesPlayed"));
             long wins   = safe(snap.getLong("gamesWon"));
@@ -183,11 +194,9 @@ public class UserRepository {
             long newStars = Math.max(0, stars + starsDelta);
             tx.update(ref, "stars", newStars);
 
-            // svaki puni višekratnik od 50 zvezdi donosi 1 token
             long newTokens = tokens + (newStars / 50 - stars / 50);
             if (newTokens != tokens) tx.update(ref, "tokens", Math.max(0, newTokens));
 
-            // Mesečni ciklus — reset ako je novi mjesec
             String storedCycle = snap.getString("cycleId");
             int starsEarned = Math.max(0, starsDelta);
             if (currentCycle.equals(storedCycle)) {
@@ -197,7 +206,12 @@ public class UserRepository {
                 tx.update(ref, "cycleId",    currentCycle);
                 tx.update(ref, "cycleStars", (long) starsEarned);
             }
-            return null;
+            return new long[]{ stars, newStars };
+        }).addOnSuccessListener(result -> {
+            if (cb == null || result == null) return;
+            int oldL = LeagueUtil.getLeague((int) result[0]);
+            int newL = LeagueUtil.getLeague((int) result[1]);
+            if (oldL != newL) cb.onChanged(oldL, newL);
         });
     }
 
@@ -313,6 +327,12 @@ public class UserRepository {
         return new SimpleDateFormat("yyyy-MM", Locale.US).format(new Date());
     }
 
+    private static String previousCycleId() {
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.add(java.util.Calendar.MONTH, -1);
+        return new SimpleDateFormat("yyyy-MM", Locale.US).format(cal.getTime());
+    }
+
     public void incrementKzz(String uid, boolean correct) {
         DocumentReference ref = db.collection("users").document(uid);
         db.runTransaction(tx -> {
@@ -348,25 +368,57 @@ public class UserRepository {
     }
 
     /**
-     * Proverava datum poslednjeg bonusa i dodaje 5 tokena ako je novi dan.
-     * Poziva callback sa informacijom da li su tokeni zaista dodati.
+     * Proverava datum poslednjeg bonusa i dodaje tokene ovisno o ligi (spec 6b):
+     *   5 baznih + 1 po ligi (liga 0 → 5, liga 5 → 10).
      */
     public void claimDailyTokensIfNeeded(String uid, String today, DailyTokenCallback cb) {
         DocumentReference ref = db.collection("users").document(uid);
-        db.<Boolean>runTransaction(tx -> {
-            String last   = tx.get(ref).getString("lastTokenDate");
-            long tokens   = safe(tx.get(ref).getLong("tokens"));
+        db.<Integer>runTransaction(tx -> {
+            com.google.firebase.firestore.DocumentSnapshot snap = tx.get(ref);
+            String last  = snap.getString("lastTokenDate");
+            long tokens  = safe(snap.getLong("tokens"));
+            long stars   = safe(snap.getLong("stars"));
             if (!today.equals(last)) {
-                tx.update(ref, "tokens", tokens + 5);
+                int bonus = LeagueUtil.getDailyTokens(LeagueUtil.getLeague((int) stars));
+                tx.update(ref, "tokens", tokens + bonus);
                 tx.update(ref, "lastTokenDate", today);
-                return true;
+                return bonus;
             }
-            return false;
-        }).addOnSuccessListener(claimed -> {
+            return -1;
+        }).addOnSuccessListener(result -> {
             if (cb == null) return;
-            if (Boolean.TRUE.equals(claimed)) cb.onClaimed();
+            if (result != null && result >= 0) cb.onClaimed(result);
             else cb.onAlreadyClaimed();
         }).addOnFailureListener(e -> { /* tiho ignoriši */ });
+    }
+
+    /**
+     * Primjenjuje kaznu od 30% zvezda ako korisnik nije plasiran u prethodnom
+     * ciklusu (spec 6e). Poziva cb ako se liga promijeni.
+     */
+    public void applyMonthlyPenaltyIfNeeded(String uid, LeagueChangeCallback cb) {
+        String prevCycle = previousCycleId();
+        DocumentReference ref = db.collection("users").document(uid);
+        db.<long[]>runTransaction(tx -> {
+            com.google.firebase.firestore.DocumentSnapshot snap = tx.get(ref);
+            String lastPenalty = snap.getString("lastPenaltyCycle");
+            if (prevCycle.equals(lastPenalty)) return null;
+
+            String lastMonthlyReward = snap.getString("lastMonthlyRewardCycle");
+            long stars = safe(snap.getLong("stars"));
+
+            tx.update(ref, "lastPenaltyCycle", prevCycle);
+            if (prevCycle.equals(lastMonthlyReward)) return null; // bio plasiran, nema kazne
+
+            long newStars = (long) (stars * 0.70);
+            tx.update(ref, "stars", newStars);
+            return new long[]{ stars, newStars };
+        }).addOnSuccessListener(result -> {
+            if (result == null || cb == null) return;
+            int oldL = LeagueUtil.getLeague((int) result[0]);
+            int newL = LeagueUtil.getLeague((int) result[1]);
+            if (oldL != newL) cb.onChanged(oldL, newL);
+        });
     }
 
     /**
