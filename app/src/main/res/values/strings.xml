@@ -15,13 +15,13 @@
     <string name="label_region">REGION</string>
     <string name="info_email_confirm">Nakon registracije bićete obavešteni emailom.</string>
 
-    <!-- Regions -->
+    <!-- Regions — mora da odgovara SerbiaRegions.displayName -->
     <string-array name="regions">
         <item>Vojvodina</item>
         <item>Beograd</item>
         <item>Šumadija i Zapadna Srbija</item>
+        <item>Raška i Zlatibor</item>
         <item>Južna i Istočna Srbija</item>
-        <item>Kosovo i Metohija</item>
     </string-array>
 
     <!-- Game common -->

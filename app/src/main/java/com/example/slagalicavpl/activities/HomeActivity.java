@@ -65,7 +65,10 @@ public class HomeActivity extends AppCompatActivity {
         setupNavigation();
         listenForInvites();
 
-        if (myUid != null) notifRepo.listenRemote(myUid);
+        if (myUid != null) {
+            notifRepo.listenRemote(myUid);
+            UserRepository.getInstance().updateLastSeen(myUid);
+        }
     }
 
     @Override
@@ -272,7 +275,7 @@ public class HomeActivity extends AppCompatActivity {
         findViewById(R.id.navRang).setOnClickListener(v ->
                 startActivity(new Intent(this, RankingActivity.class)));
         findViewById(R.id.navRegioni).setOnClickListener(v ->
-                Toast.makeText(this, "Regioni — uskoro", Toast.LENGTH_SHORT).show());
+                startActivity(new Intent(this, RegionActivity.class)));
         findViewById(R.id.navCet).setOnClickListener(v ->
                 startActivity(new Intent(this, ChatActivity.class)));
     }

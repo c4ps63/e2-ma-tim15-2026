@@ -7,7 +7,16 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class UserRepository {
 
@@ -27,10 +36,32 @@ public class UserRepository {
     }
 
     public interface DailyTokenCallback {
-        /** Pozvana kada su tokeni zaista dodati (bio je novi dan). */
         void onClaimed();
-        /** Pozvana kada su tokeni već traženi danas. */
         void onAlreadyClaimed();
+    }
+
+    public interface RegionRankingCallback {
+        void onLoaded(List<RegionEntry> ranking);
+        void onError(String message);
+    }
+
+    public interface RegionDotsCallback {
+        void onLoaded(List<String> uids);
+        void onError(String message);
+    }
+
+    public interface RegionStatsCallback {
+        void onLoaded(int registered, int active, int firstPlaces, int secondPlaces, int thirdPlaces);
+        void onError(String message);
+    }
+
+    public static class RegionEntry {
+        public final String regionId;
+        public final int    cycleStars;
+        public RegionEntry(String regionId, int cycleStars) {
+            this.regionId   = regionId;
+            this.cycleStars = cycleStars;
+        }
     }
 
     private static UserRepository instance;
@@ -136,14 +167,15 @@ public class UserRepository {
 
     public void incrementStats(String uid, boolean won, int myScore) {
         DocumentReference ref = db.collection("users").document(uid);
-        // pobednik: +10 + floor(score/40); gubitnik: -10 + floor(score/40), ne ispod 0 ukupno
         int starsDelta = won ? 10 + (myScore / 40) : -10 + (myScore / 40);
+        String currentCycle = currentCycleId();
 
         db.runTransaction(tx -> {
-            long played = safe(tx.get(ref).getLong("gamesPlayed"));
-            long wins   = safe(tx.get(ref).getLong("gamesWon"));
-            long stars  = safe(tx.get(ref).getLong("stars"));
-            long tokens = safe(tx.get(ref).getLong("tokens"));
+            com.google.firebase.firestore.DocumentSnapshot snap = tx.get(ref);
+            long played = safe(snap.getLong("gamesPlayed"));
+            long wins   = safe(snap.getLong("gamesWon"));
+            long stars  = safe(snap.getLong("stars"));
+            long tokens = safe(snap.getLong("tokens"));
 
             tx.update(ref, "gamesPlayed", played + 1);
             if (won) tx.update(ref, "gamesWon", wins + 1);
@@ -154,8 +186,131 @@ public class UserRepository {
             // svaki puni višekratnik od 50 zvezdi donosi 1 token
             long newTokens = tokens + (newStars / 50 - stars / 50);
             if (newTokens != tokens) tx.update(ref, "tokens", Math.max(0, newTokens));
+
+            // Mesečni ciklus — reset ako je novi mjesec
+            String storedCycle = snap.getString("cycleId");
+            int starsEarned = Math.max(0, starsDelta);
+            if (currentCycle.equals(storedCycle)) {
+                long cs = safe(snap.getLong("cycleStars"));
+                tx.update(ref, "cycleStars", Math.max(0, cs + starsEarned));
+            } else {
+                tx.update(ref, "cycleId",    currentCycle);
+                tx.update(ref, "cycleStars", (long) starsEarned);
+            }
             return null;
         });
+    }
+
+    public void updateLastSeen(String uid) {
+        db.collection("users").document(uid)
+          .update("lastSeen", System.currentTimeMillis());
+    }
+
+    // ── Region ranking ────────────────────────────────────────────────────────
+
+    public void loadRegionRanking(RegionRankingCallback cb) {
+        String cycle = currentCycleId();
+        db.collection("users").get()
+          .addOnSuccessListener(qs -> {
+              Map<String, Integer> sums = new HashMap<>();
+              for (QueryDocumentSnapshot doc : qs) {
+                  String region = doc.getString("region");
+                  if (region == null || region.isEmpty()) continue;
+                  // If user's cycleId matches current, take cycleStars; else 0
+                  String userCycle = doc.getString("cycleId");
+                  int cs = cycle.equals(userCycle)
+                          ? (int) safe(doc.getLong("cycleStars")) : 0;
+                  sums.put(region, sums.getOrDefault(region, 0) + cs);
+              }
+              List<RegionEntry> list = new ArrayList<>();
+              for (Map.Entry<String, Integer> e : sums.entrySet())
+                  list.add(new RegionEntry(e.getKey(), e.getValue()));
+              list.sort((a, b) -> b.cycleStars - a.cycleStars);
+              cb.onLoaded(list);
+          })
+          .addOnFailureListener(e -> cb.onError(e.getMessage()));
+    }
+
+    public void loadUserDotsForRegion(String regionId, RegionDotsCallback cb) {
+        db.collection("users")
+          .whereEqualTo("region", regionId)
+          .get()
+          .addOnSuccessListener(qs -> {
+              List<String> uids = new ArrayList<>();
+              for (QueryDocumentSnapshot doc : qs) uids.add(doc.getId());
+              cb.onLoaded(uids);
+          })
+          .addOnFailureListener(e -> cb.onError(e.getMessage()));
+    }
+
+    public void loadRegionStats(String regionId, RegionStatsCallback cb) {
+        long activeThreshold = System.currentTimeMillis() - 24L * 60 * 60 * 1000;
+        db.collection("users")
+          .whereEqualTo("region", regionId)
+          .get()
+          .addOnSuccessListener(qs -> {
+              final int registered = qs.size();
+              int activeCount = 0;
+              for (QueryDocumentSnapshot doc : qs) {
+                  Long ls = doc.getLong("lastSeen");
+                  if (ls != null && ls >= activeThreshold) activeCount++;
+              }
+              final int active = activeCount;
+              db.collection("region_meta").document(regionId).get()
+                .addOnSuccessListener(meta -> {
+                    int first  = meta.exists() ? (int) safe(meta.getLong("firstPlaces"))  : 0;
+                    int second = meta.exists() ? (int) safe(meta.getLong("secondPlaces")) : 0;
+                    int third  = meta.exists() ? (int) safe(meta.getLong("thirdPlaces"))  : 0;
+                    cb.onLoaded(registered, active, first, second, third);
+                })
+                .addOnFailureListener(e -> cb.onLoaded(registered, active, 0, 0, 0));
+          })
+          .addOnFailureListener(e -> cb.onError(e.getMessage()));
+    }
+
+    public void saveLastCycleResults(String gold, String silver, String bronze, String cycleId) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("cycleId",      cycleId);
+        data.put("goldRegion",   gold);
+        data.put("silverRegion", silver);
+        data.put("bronzeRegion", bronze);
+        db.collection("app_state").document("last_cycle").set(data);
+
+        // Increment place counters for each region
+        if (gold   != null) incrementPlaces(gold,   "firstPlaces");
+        if (silver != null) incrementPlaces(silver, "secondPlaces");
+        if (bronze != null) incrementPlaces(bronze, "thirdPlaces");
+    }
+
+    private void incrementPlaces(String regionId, String field) {
+        DocumentReference ref = db.collection("region_meta").document(regionId);
+        db.runTransaction(tx -> {
+            long v = safe(tx.get(ref).getLong(field));
+            Map<String, Object> update = new HashMap<>();
+            update.put(field, v + 1);
+            tx.set(ref, update, com.google.firebase.firestore.SetOptions.merge());
+            return null;
+        });
+    }
+
+    public void loadLastCycleResults(RegionBorderCallback cb) {
+        db.collection("app_state").document("last_cycle").get()
+          .addOnSuccessListener(doc -> {
+              if (!doc.exists()) { cb.onLoaded(null, null, null, null); return; }
+              cb.onLoaded(doc.getString("cycleId"),
+                          doc.getString("goldRegion"),
+                          doc.getString("silverRegion"),
+                          doc.getString("bronzeRegion"));
+          })
+          .addOnFailureListener(e -> cb.onLoaded(null, null, null, null));
+    }
+
+    public interface RegionBorderCallback {
+        void onLoaded(String cycleId, String gold, String silver, String bronze);
+    }
+
+    public static String currentCycleId() {
+        return new SimpleDateFormat("yyyy-MM", Locale.US).format(new Date());
     }
 
     public void incrementKzz(String uid, boolean correct) {

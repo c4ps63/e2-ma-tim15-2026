@@ -83,8 +83,9 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="14dp">
 
-                <!-- Žuti prsten -->
+                <!-- Žuti prsten — boja se mijenja za gold/silver/bronze region rang -->
                 <View
+                    android:id="@+id/viewAvatarOuter"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/bg_avatar_outer"/>

@@ -26,6 +26,12 @@ public class User {
     public String lastWeeklyRewardCycle;  // npr. "2026-W25" — poslednji nedeljni ciklus za koji je nagrada isplaćena
     public String lastMonthlyRewardCycle; // npr. "2026-06"  — poslednji mesečni ciklus za koji je nagrada isplaćena
 
+    // Mesečni ciklus — format "yyyy-MM", npr. "2026-06"
+    public String cycleId;
+    public int    cycleStars;
+    // Unix timestamp ms — za praćenje aktivnih igrača
+    public long   lastSeen;
+
     public User() {}
 
     public User(String uid, String username, String email, String region) {
@@ -33,6 +39,6 @@ public class User {
         this.username = username;
         this.email    = email;
         this.region   = region;
-        this.tokens   = 5; // svaki igrač dobija 5 tokena pri registraciji
+        this.tokens   = 5;
     }
 }

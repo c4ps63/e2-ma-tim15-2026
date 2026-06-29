@@ -107,8 +107,13 @@ public class ProfileActivity extends AppCompatActivity {
                     } catch (Exception ignored) {}
                 }
 
+                // Avatar border po plasmanu regiona u prethodnom ciklusu
+                applyRegionBorder(u.region);
+
                 tvEmail.setText(u.email != null ? u.email : "—");
-                tvRegion.setText(u.region != null ? u.region.toUpperCase() : "—");
+                tvRegion.setText(u.region != null
+                        ? com.example.slagalicavpl.model.SerbiaRegions.displayNameFromId(u.region)
+                        : "—");
                 tvTokens.setText(String.valueOf(u.tokens));
                 tvStars.setText(String.valueOf(u.stars));
 
@@ -226,6 +231,32 @@ public class ProfileActivity extends AppCompatActivity {
                     });
             })
             .show();
+    }
+
+    // ── Avatar border po rangu regiona ────────────────────────────────────────
+
+    private void applyRegionBorder(String userRegion) {
+        if (userRegion == null || userRegion.isEmpty()) return;
+        UserRepository.getInstance().loadLastCycleResults((cycleId, gold, silver, bronze) -> {
+            String borderHex = null;
+            if (userRegion.equals(gold))   borderHex = "#FFD700"; // zlatna
+            else if (userRegion.equals(silver)) borderHex = "#C0C0C0"; // srebrna
+            else if (userRegion.equals(bronze)) borderHex = "#CD7F32"; // bronzana
+
+            View outerRing = findViewById(R.id.viewAvatarOuter);
+            if (outerRing == null) return;
+            if (borderHex == null) {
+                outerRing.setVisibility(View.INVISIBLE);
+                return;
+            }
+            outerRing.setVisibility(View.VISIBLE);
+            try {
+                int color = Color.parseColor(borderHex);
+                Drawable d = DrawableCompat.wrap(outerRing.getBackground()).mutate();
+                DrawableCompat.setTint(d, color);
+                outerRing.setBackground(d);
+            } catch (Exception ignored) {}
+        });
     }
 
     // ── Pomoćne metode ────────────────────────────────────────────────────────
