@@ -546,8 +546,9 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
                         UserRepository.getInstance().incrementMojBroj(uid, mojBrojExact, mojBrojRounds);
                     }
                     if (multiplayer && !ga.isFriendlyGame()) {
-                        boolean won     = ga.getMyScore() > (ga.getP1Total() + ga.getP2Total() - ga.getMyScore());
-                        UserRepository.getInstance().incrementStats(uid, won, ga.getMyScore());
+                        boolean won = ga.getMyScore() > (ga.getP1Total() + ga.getP2Total() - ga.getMyScore());
+                        UserRepository.getInstance().incrementStats(uid, won, ga.getMyScore(),
+                                (oldL, newL) -> ga.showLeagueChangeToast(oldL, newL));
                     }
                 }
 

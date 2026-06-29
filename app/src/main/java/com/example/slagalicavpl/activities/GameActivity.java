@@ -461,7 +461,7 @@ public class GameActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showLeagueChangeToast(int oldLeague, int newLeague) {
+    public void showLeagueChangeToast(int oldLeague, int newLeague) {
         String msg = newLeague > oldLeague
                 ? "Napredovao si u ligu: " + LeagueUtil.getLabel(newLeague) + "!"
                 : "Pao si u ligu: " + LeagueUtil.getLabel(newLeague);
