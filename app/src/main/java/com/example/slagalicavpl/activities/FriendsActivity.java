@@ -1,10 +1,6 @@
 package com.example.slagalicavpl.activities;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +13,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -53,7 +48,6 @@ public class FriendsActivity extends AppCompatActivity {
 
     private static final String DB_URL =
             "https://slagalica-vrtlogalica-default-rtdb.europe-west1.firebasedatabase.app";
-    private static final String NOTIF_CHANNEL = "friend_invite";
 
     private String myUid;
     private String myUsername;
@@ -91,7 +85,6 @@ public class FriendsActivity extends AppCompatActivity {
         friendsRef = FirebaseDatabase.getInstance(DB_URL).getReference("friends").child(myUid);
         loadFriends();
         listenForIncomingInvites();
-        createNotifChannel();
     }
 
     @Override
@@ -180,7 +173,7 @@ public class FriendsActivity extends AppCompatActivity {
                 Toast.makeText(FriendsActivity.this,
                         "Poziv poslat " + friend.username, Toast.LENGTH_SHORT).show();
                 // push notifikacija ako prijatelj nije u aplikaciji
-                sendPushStyleNotif(friend.username, inviteId);
+                sendPushStyleNotif(friend.uid, inviteId);
                 waitForInviteResponse(inviteId, friend);
             }
             @Override public void onError(String msg) {
@@ -281,28 +274,27 @@ public class FriendsActivity extends AppCompatActivity {
 
     // ── Sistemska notifikacija (kad prijatelj nije u igri) ────────────────────
 
-    private void sendPushStyleNotif(String friendUsername, String inviteId) {
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        Intent intent = new Intent(this, FriendsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        NotificationCompat.Builder nb = new NotificationCompat.Builder(this, NOTIF_CHANNEL)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Poziv za igru")
-                .setContentText(myUsername + " te poziva na prijateljsku partiju!")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pi)
-                .setAutoCancel(true);
-        nm.notify(inviteId.hashCode(), nb.build());
-    }
+    /**
+     * Upisuje notifikaciju u notifications/{friendUid} — isti mehanizam koji
+     * koriste sve ostale sistemske notifikacije u aplikaciji (vidi
+     * NotificationRepository.listenRemote, registrovano globalno u HomeActivity).
+     * Time se obaveštenje stvarno isporučuje na uređaj PRIJATELJA, ne pošiljaoca.
+     */
+    private void sendPushStyleNotif(String friendUid, String inviteId) {
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("id",        inviteId);
+        notif.put("channel",   "OTHER");
+        notif.put("title",     "Poziv za igru");
+        notif.put("body",      (myUsername != null ? myUsername : "Prijatelj")
+                + " te poziva na prijateljsku partiju!");
+        notif.put("action",    "friendly_invite");
+        notif.put("timestamp", System.currentTimeMillis());
 
-    private void createNotifChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel ch = new NotificationChannel(
-                    NOTIF_CHANNEL, "Pozivi za igru", NotificationManager.IMPORTANCE_HIGH);
-            ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).createNotificationChannel(ch);
-        }
+        FirebaseDatabase.getInstance(DB_URL)
+                .getReference("notifications")
+                .child(friendUid)
+                .child(inviteId)
+                .setValue(notif);
     }
 
     // ── Adapter ───────────────────────────────────────────────────────────────

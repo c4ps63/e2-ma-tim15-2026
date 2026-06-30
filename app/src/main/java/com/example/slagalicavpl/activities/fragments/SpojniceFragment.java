@@ -92,11 +92,6 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
         tvP2Score  = view.findViewById(R.id.p2_score);
         btnConfirm = view.findViewById(R.id.btnConfirm);
 
-        TextView tvP1Name = view.findViewById(R.id.p1_name);
-        TextView tvP2Name = view.findViewById(R.id.p2_name);
-        if (tvP1Name != null) tvP1Name.setText("TI");
-        if (tvP2Name != null) tvP2Name.setText("PROTIVNIK");
-
         for (int i = 0; i < 5; i++) {
             final int row = i;
             leftBtns[i].setOnClickListener(v  -> onLeftTapped(row));

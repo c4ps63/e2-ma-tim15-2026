@@ -112,11 +112,6 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         btnSubmit  = root.findViewById(R.id.btnSubmit);
         btnPass    = root.findViewById(R.id.btnPass);
 
-        if (root.findViewById(R.id.p1_name) != null)
-            ((TextView) root.findViewById(R.id.p1_name)).setText("TI");
-        if (root.findViewById(R.id.p2_name) != null)
-            ((TextView) root.findViewById(R.id.p2_name)).setText("PROTIVNIK");
-
         // Wire cell buttons
         for (int c = 0; c < 4; c++) {
             for (int r = 0; r < 4; r++) {

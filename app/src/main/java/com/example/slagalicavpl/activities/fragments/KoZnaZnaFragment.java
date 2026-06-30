@@ -72,11 +72,6 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
         btnD            = view.findViewById(R.id.btnAnswerD);
         btnSurrender    = view.findViewById(R.id.btnSurrender);
 
-        TextView tvP1Name = view.findViewById(R.id.p1_name);
-        TextView tvP2Name = view.findViewById(R.id.p2_name);
-        if (tvP1Name != null) tvP1Name.setText("TI");
-        if (tvP2Name != null) tvP2Name.setText("PROTIVNIK");
-
         btnA.setOnClickListener(v -> onAnswerTapped('A'));
         btnB.setOnClickListener(v -> onAnswerTapped('B'));
         btnC.setOnClickListener(v -> onAnswerTapped('C'));

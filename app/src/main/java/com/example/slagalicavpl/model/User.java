@@ -33,6 +33,8 @@ public class User {
     public long   lastSeen;
     // "yyyy-MM" ciklus u kome je već primijenjena kazna od 30% (spec 6e)
     public String lastPenaltyCycle;
+    // FCM registration token za push notifikacije na ovom uređaju
+    public String fcmToken;
 
     public User() {}
 

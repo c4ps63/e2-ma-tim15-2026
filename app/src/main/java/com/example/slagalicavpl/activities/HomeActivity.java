@@ -1,6 +1,9 @@
 package com.example.slagalicavpl.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.slagalicavpl.R;
 import com.example.slagalicavpl.model.AppNotification;
@@ -66,10 +71,30 @@ public class HomeActivity extends AppCompatActivity {
         loadUserProfile();
         setupNavigation();
         listenForInvites();
+        requestNotificationPermission();
 
         if (myUid != null) {
             notifRepo.listenRemote(myUid);
             UserRepository.getInstance().updateLastSeen(myUid);
+            registerFcmToken();
+        }
+    }
+
+    /** Upisuje trenutni FCM token u korisnikov profil da bi Cloud Function mogla da mu šalje push. */
+    private void registerFcmToken() {
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token -> {
+                    if (myUid != null) UserRepository.getInstance().saveFcmToken(myUid, token);
+                });
+    }
+
+    /** Android 13+ zahteva runtime dozvolu za prikaz sistemskih notifikacija. */
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
         }
     }
 
