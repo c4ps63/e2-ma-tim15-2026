@@ -146,7 +146,11 @@ public class KorakPoKorakFragment extends Fragment
                 korakSync.writePuzzleIdx(round, puzzleIdx);
             }
 
-            createEngine();
+            if (engine == null) {
+                createEngine();
+            } else {
+                engine.setPuzzle(puzzle);
+            }
             engine.startRound(round, roleToPlayer(myRole, round));
         } else {
             // I am the passive player for this round — wait for puzzle from Firebase

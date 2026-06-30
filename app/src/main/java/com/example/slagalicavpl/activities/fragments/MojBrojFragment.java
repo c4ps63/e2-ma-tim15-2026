@@ -359,6 +359,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     }
 
     private void startSpinCountdown(Runnable onFinish) {
+        View timerWrap = getView() != null ? getView().findViewById(R.id.timer_wrap) : null;
+        if (timerWrap != null) timerWrap.setVisibility(View.VISIBLE);
         setHudNumber(SPIN_SECS, false);
         spinTimer = new CountDownTimer(SPIN_SECS * 1000L, 1000) {
             @Override public void onTick(long msLeft) { setHudNumber((int)(msLeft/1000), false); }

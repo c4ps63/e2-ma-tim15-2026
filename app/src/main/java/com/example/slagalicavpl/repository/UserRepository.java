@@ -448,6 +448,12 @@ public class UserRepository {
           .addOnFailureListener(e -> cb.onError(e.getMessage()));
     }
 
+    /** Čuva FCM registracioni token za push notifikacije na ovom uređaju. */
+    public void saveFcmToken(String uid, String token) {
+        db.collection("users").document(uid)
+          .update("fcmToken", token);
+    }
+
     public void incrementSpojnice(String uid, int connected, int total) {
         DocumentReference ref = db.collection("users").document(uid);
         db.runTransaction(tx -> {

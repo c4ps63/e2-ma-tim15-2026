@@ -29,7 +29,7 @@ public class KorakPoKorakEngine {
         void onScoreChanged(int p1Score, int p2Score);
     }
 
-    private final KorakPuzzle puzzle;
+    private KorakPuzzle       puzzle;
     private final Listener    listener;
 
     private Phase phase        = Phase.DONE;
@@ -42,6 +42,10 @@ public class KorakPoKorakEngine {
     public KorakPoKorakEngine(KorakPuzzle puzzle, Listener listener) {
         this.puzzle   = puzzle;
         this.listener = listener;
+    }
+
+    public void setPuzzle(KorakPuzzle puzzle) {
+        this.puzzle = puzzle;
     }
 
     public void startRound(int round, int player) {
