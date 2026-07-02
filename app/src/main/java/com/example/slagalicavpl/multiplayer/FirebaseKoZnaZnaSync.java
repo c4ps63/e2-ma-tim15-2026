@@ -29,6 +29,27 @@ public class FirebaseKoZnaZnaSync implements KoZnaZnaSync {
     }
 
     public interface QuestionOrderCallback { void onOrder(int[] indices); }
+    public interface SetIdCallback { void onReady(String setId); }
+
+    /** P1 upisuje ID seta pitanja da P2 zna koji set da učita. */
+    public void writeSetId(String setId) {
+        roomRef.child("koznaZna").child("setId").setValue(setId);
+    }
+
+    /** P2 čita setId koji je upisao P1. Ponavlja svake 300ms dok nije dostupan. */
+    public void readSetId(SetIdCallback cb) {
+        roomRef.child("koznaZna").child("setId")
+               .addListenerForSingleValueEvent(new ValueEventListener() {
+                   @Override public void onDataChange(DataSnapshot snap) {
+                       if (!snap.exists()) {
+                           handler.postDelayed(() -> readSetId(cb), 300);
+                           return;
+                       }
+                       handler.post(() -> cb.onReady(snap.getValue(String.class)));
+                   }
+                   @Override public void onCancelled(DatabaseError e) {}
+               });
+    }
 
     /** P1 writes the shared question indices so both players see the same questions. */
     public void writeQuestionOrder(int[] indices) {

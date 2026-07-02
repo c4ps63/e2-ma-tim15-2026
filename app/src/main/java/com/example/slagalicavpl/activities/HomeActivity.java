@@ -246,14 +246,17 @@ public class HomeActivity extends AppCompatActivity {
                 new UserRepository.ProfileCallback() {
             @Override
             public void onLoaded(User u) {
-                TextView tvTokens = findViewById(R.id.tvTokens);
-                TextView tvStars  = findViewById(R.id.tvStars);
-                TextView tvLeague = findViewById(R.id.tvLeague);
-                TextView tvAvatar = findViewById(R.id.tvAvatarLetter);
+                TextView tvTokens     = findViewById(R.id.tvTokens);
+                TextView tvStars      = findViewById(R.id.tvStars);
+                TextView tvLeague     = findViewById(R.id.tvLeague);
+                TextView tvLeagueIcon = findViewById(R.id.tvLeagueIcon);
+                TextView tvAvatar     = findViewById(R.id.tvAvatarLetter);
 
+                int league = LeagueUtil.getLeague(u.stars);
                 tvTokens.setText(String.valueOf(u.tokens));
                 tvStars.setText(String.valueOf(u.stars));
-                tvLeague.setText(LeagueUtil.getLabel(LeagueUtil.getLeague(u.stars)));
+                tvLeague.setText(LeagueUtil.getName(league));
+                if (tvLeagueIcon != null) tvLeagueIcon.setText(LeagueUtil.getIcon(league));
 
                 if (u.username != null && !u.username.isEmpty())
                     tvAvatar.setText(String.valueOf(u.username.charAt(0)).toUpperCase());

@@ -116,20 +116,20 @@
             android:background="@drawable/chip_cartoon"
             android:paddingStart="6dp" android:paddingEnd="11dp"
             android:paddingTop="5dp" android:paddingBottom="8dp">
-            <FrameLayout
-                android:layout_width="26dp" android:layout_height="26dp">
-                <ImageView android:layout_width="26dp" android:layout_height="26dp"
-                    android:src="@drawable/ic_shield"/>
-            </FrameLayout>
+            <TextView
+                android:id="@+id/tvLeagueIcon"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="🔰"
+                android:textSize="18sp"/>
             <TextView
                 android:id="@+id/tvLeague"
                 android:layout_width="0dp" android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="7dp"
+                android:layout_marginStart="5dp"
                 android:maxLines="1" android:ellipsize="end"
                 android:fontFamily="sans-serif-black"
                 android:textColor="@color/ink" android:textSize="15sp"
-                android:text="1. LIGA"/>
+                android:text="Početnik"/>
         </LinearLayout>
 
         <Space android:layout_width="10dp" android:layout_height="1dp"/>

@@ -8,34 +8,97 @@
     android:background="@drawable/card_paper"
     android:layout_marginBottom="8dp">
 
+    <!-- Avatar krug + inicijal -->
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="12dp">
+
+        <View
+            android:id="@+id/viewFriendAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_avatar_inner" />
+
+        <TextView
+            android:id="@+id/tvFriendAvatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:text="?" />
+    </FrameLayout>
+
+    <!-- Info kolona -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvFriendName"
-            android:layout_width="wrap_content"
+        <!-- Ime + online indikator -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#102341" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
+            <TextView
+                android:id="@+id/tvFriendName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="#102341"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <!-- Zelena = online (lastSeen < 5 min), siva = offline -->
+            <View
+                android:id="@+id/viewOnlineDot"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="6dp" />
+        </LinearLayout>
+
+        <!-- Liga -->
         <TextView
-            android:id="@+id/tvFriendStars"
+            android:id="@+id/tvFriendLeague"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:textColor="#555555" />
+            android:textSize="12sp"
+            android:textColor="#555555"
+            android:layout_marginTop="2dp" />
+
+        <!-- Ukupne + mesečne zvijezde -->
+        <TextView
+            android:id="@+id/tvFriendInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="#888888"
+            android:layout_marginTop="1dp" />
+
     </LinearLayout>
 
+    <!-- Dugme za poziv — onemogućeno kad je igrač offline -->
     <Button
         android:id="@+id/btnInviteFriend"
         android:layout_width="wrap_content"
         android:layout_height="36dp"
         style="@style/CartoonButton"
+        android:background="@drawable/btn_cartoon_green"
         android:text="POZOVI"
-        android:textSize="12sp" />
+        android:textSize="11sp"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:layout_marginStart="8dp" />
 
 </LinearLayout>
