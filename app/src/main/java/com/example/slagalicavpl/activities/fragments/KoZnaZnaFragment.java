@@ -87,7 +87,7 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
-            ga.applyAvatarsToHud(view);
+            ga.registerHudView(view);
         }
 
         boolean multiplayer = getActivity() instanceof GameActivity

@@ -105,7 +105,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
-            ga.applyAvatarsToHud(root);
+            ga.registerHudView(root);
         }
 
         etGuess    = root.findViewById(R.id.etGuess);

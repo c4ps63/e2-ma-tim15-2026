@@ -160,7 +160,7 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
             TextView hudP2 = view.findViewById(R.id.p2_score);
             if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
             if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
-            ga.applyAvatarsToHud(view);
+            ga.registerHudView(view);
         }
 
         setHudClock();

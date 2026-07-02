@@ -144,7 +144,7 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
-            ga.applyAvatarsToHud(root);
+            ga.registerHudView(root);
         }
 
         btnConfirm.setOnClickListener(v -> onConfirmAttempt());

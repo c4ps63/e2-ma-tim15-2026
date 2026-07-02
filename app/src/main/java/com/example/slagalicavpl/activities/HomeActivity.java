@@ -33,6 +33,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.ListenerRegistration;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -45,6 +48,9 @@ public class HomeActivity extends AppCompatActivity {
     private String             myUid;
     private ValueEventListener inviteListener;
     private final Set<String>  shownInvites = new HashSet<>();
+
+    private final Handler  lastSeenHandler  = new Handler(Looper.getMainLooper());
+    private Runnable       lastSeenRunnable;
 
     private NotificationRepository notifRepo;
     private TextView               tvNotifBadge;
@@ -104,6 +110,21 @@ public class HomeActivity extends AppCompatActivity {
         loadUserProfile();
         updateNotifBadge();
         updateMissionsProgress();
+        if (myUid != null) {
+            lastSeenRunnable = new Runnable() {
+                @Override public void run() {
+                    UserRepository.getInstance().updateLastSeen(myUid);
+                    lastSeenHandler.postDelayed(this, 120_000);
+                }
+            };
+            lastSeenHandler.post(lastSeenRunnable);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        lastSeenHandler.removeCallbacks(lastSeenRunnable);
     }
 
     @Override

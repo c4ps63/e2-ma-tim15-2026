@@ -141,6 +141,7 @@ public class FriendsActivity extends AppCompatActivity {
                     UserRepository.getInstance().loadProfile(friendUid,
                             new UserRepository.ProfileCallback() {
                         @Override public void onLoaded(User u) {
+                            if (u.uid == null || u.uid.isEmpty()) u.uid = friendUid;
                             friends.add(u);
                             adapter.notifyDataSetChanged();
                         }
@@ -211,12 +212,13 @@ public class FriendsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Korisnik nije pronađen", Toast.LENGTH_SHORT).show();
                         return;
                     }
+                    String friendUid = qs.getDocuments().get(0).getId();
                     User friend = qs.getDocuments().get(0).toObject(User.class);
-                    if (friend == null || myUid.equals(friend.uid)) {
+                    if (friend == null || myUid.equals(friendUid)) {
                         Toast.makeText(this, "Neispravan korisnik", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    persistFriendship(friend.uid, friend.username);
+                    persistFriendship(friendUid, friend.username);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Greška: " + e.getMessage(), Toast.LENGTH_SHORT).show());
