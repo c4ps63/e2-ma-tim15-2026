@@ -39,6 +39,10 @@ public class SpojniceEngine {
     // and R1_LOCAL / R2_LOCAL call startOpponentPhase instead.
     private boolean localStartsFirst = true;
 
+    // Challenge (solo) mode: no real opponent, no steal — the game ends
+    // right after the local player finishes their one and only round.
+    private boolean soloMode = false;
+
     // Injected shared slots (P1 generates, P2 receives via Firebase)
     private int[] externalSlots1 = null;
     private int[] externalSlots2 = null;
@@ -52,6 +56,8 @@ public class SpojniceEngine {
     }
 
     public void setLocalStartsFirst(boolean v) { localStartsFirst = v; }
+
+    public void setSoloMode(boolean v) { soloMode = v; }
 
     /** P1 calls this to expose what slots it generated. P2 injects the slots received from Firebase. */
     public void setExternalSlots(int[] slots1, int[] slots2) {
@@ -112,6 +118,11 @@ public class SpojniceEngine {
         sync.cancel();
         switch (phase) {
             case R1_LOCAL:
+                if (soloMode) {
+                    phase = Phase.DONE;
+                    listener.onGameOver(localScore, opponentScore);
+                    break;
+                }
                 phase = Phase.R1_OPP;
                 listener.onPhaseChanged(phase);
                 if (localStartsFirst) startOpponentPhase();

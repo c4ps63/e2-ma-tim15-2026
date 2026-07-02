@@ -163,6 +163,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
                 ? ((GameActivity) getActivity()).getMyRole() : "p1";
 
         com.example.slagalicavpl.multiplayer.AsocijacijeSync sync;
+        boolean challenge = false;
         if (multiplayer && getActivity() instanceof GameActivity) {
             com.google.firebase.database.DatabaseReference roomRef =
                     ((GameActivity) getActivity()).getRoomRef();
@@ -170,7 +171,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
                     roomRef, myRole);
             sync = firebaseAsocSync;
         } else {
-            boolean challenge = getActivity() instanceof GameActivity
+            challenge = getActivity() instanceof GameActivity
                     && ((GameActivity) getActivity()).isChallengeMode();
             sync = challenge
                     ? new com.example.slagalicavpl.multiplayer.SoloAsocijacijeSync()
@@ -187,6 +188,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         if (multiplayer) {
             engine.setLocalStartsRound1("p1".equals(myRole));
         }
+        engine.setSoloMode(challenge);
 
         engine.startGame();
     }

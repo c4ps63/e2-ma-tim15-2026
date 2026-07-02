@@ -163,6 +163,7 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             ConnectRepository.getInstance().loadRandomSet((setId, r1, r2) -> {
                 if (getView() == null) return;
                 engine = new SpojniceEngine(r1, r2, offlineSync, this);
+                engine.setSoloMode(challenge);
                 engine.startGame();
             });
         }

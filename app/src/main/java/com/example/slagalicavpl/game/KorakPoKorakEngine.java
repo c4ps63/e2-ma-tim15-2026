@@ -39,6 +39,10 @@ public class KorakPoKorakEngine {
     private int   p1Points     = 0;
     private int   p2Points     = 0;
 
+    // Challenge (solo) mode: no real opponent to steal from — end the round
+    // as soon as the steps run out instead of offering a self-directed steal.
+    private boolean noSteal = false;
+
     public KorakPoKorakEngine(KorakPuzzle puzzle, Listener listener) {
         this.puzzle   = puzzle;
         this.listener = listener;
@@ -46,6 +50,10 @@ public class KorakPoKorakEngine {
 
     public void setPuzzle(KorakPuzzle puzzle) {
         this.puzzle = puzzle;
+    }
+
+    public void setNoSteal(boolean v) {
+        noSteal = v;
     }
 
     public void startRound(int round, int player) {
@@ -69,6 +77,8 @@ public class KorakPoKorakEngine {
             revealCurrentStep();
             listener.onHeaderChanged(buildHeader());
             listener.onStartStepTimer();
+        } else if (noSteal) {
+            endRound();
         } else {
             enterSteal();
         }

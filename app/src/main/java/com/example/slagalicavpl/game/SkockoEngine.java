@@ -58,12 +58,18 @@ public class SkockoEngine {
     // P1 sets true, P2 sets false
     private boolean localStartsFirst = true;
 
+    // Challenge (solo) mode: no real opponent, no steal — the game ends
+    // right after the local player finishes their one and only round.
+    private boolean soloMode = false;
+
     public SkockoEngine(SkockoSync sync, Listener listener) {
         this.sync     = sync;
         this.listener = listener;
     }
 
     public void setLocalStartsFirst(boolean v) { localStartsFirst = v; }
+
+    public void setSoloMode(boolean v) { soloMode = v; }
 
     public void startGame() {
         round1Secret = randomCode();
@@ -174,6 +180,8 @@ public class SkockoEngine {
     private void advanceAfterSolve() {
         switch (phase) {
             case R1_LOCAL:
+                if (soloMode) { finish(); } else { beginPhase(Phase.R1_BONUS_OPP, 0, round1Secret); }
+                break;
             case R1_BONUS_OPP: beginPhase(Phase.R2_OPP, 2, round2Secret); break;
             case R2_OPP:
             case R2_BONUS_LOCAL: finish(); break;
@@ -183,7 +191,7 @@ public class SkockoEngine {
     private void advancePhase() {
         switch (phase) {
             case R1_LOCAL:
-                beginPhase(Phase.R1_BONUS_OPP, 0, round1Secret);
+                if (soloMode) { finish(); } else { beginPhase(Phase.R1_BONUS_OPP, 0, round1Secret); }
                 break;
             case R1_BONUS_OPP:
                 pausedForSolve      = true;

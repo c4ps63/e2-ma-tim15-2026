@@ -184,6 +184,7 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
                     ? new com.example.slagalicavpl.multiplayer.SoloSkockoSync()
                     : new LocalSkockoSync();
             engine = new SkockoEngine(offlineSync, this);
+            engine.setSoloMode(challenge);
             engine.startGame();
         }
     }

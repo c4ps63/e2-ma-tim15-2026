@@ -49,6 +49,7 @@ public class KorakPoKorakFragment extends Fragment
     private FirebaseKorakSync  korakSync;
     private int                currentRound = 1;
     private boolean            puzzleInitialized = false;
+    private boolean            challengeMode = false;
 
     private static final int WARN_SECS     = 3;
     private static final String CLOCK_ICON  = "⏱";
@@ -100,8 +101,9 @@ public class KorakPoKorakFragment extends Fragment
         TextView hudP2 = view.findViewById(R.id.p2_score);
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
-            multiplayer = ga.isMultiplayer();
-            myRole      = ga.getMyRole();
+            multiplayer   = ga.isMultiplayer();
+            myRole        = ga.getMyRole();
+            challengeMode = !multiplayer && ga.isChallengeMode();
             if (multiplayer && ga.getRoomRef() != null) {
                 korakSync = new FirebaseKorakSync(ga.getRoomRef());
             }
@@ -160,6 +162,7 @@ public class KorakPoKorakFragment extends Fragment
 
     private void createEngine() {
         engine = new KorakPoKorakEngine(puzzle, this);
+        engine.setNoSteal(challengeMode);
     }
 
     private boolean isActivePlayer(int round) {
@@ -422,8 +425,6 @@ public class KorakPoKorakFragment extends Fragment
             korakSync.writeRoundEnd(engine.getP1Points(), engine.getP2Points());
         }
         // In challenge mode play only one round
-        boolean challengeMode = !multiplayer && getActivity() instanceof GameActivity
-                && ((GameActivity) getActivity()).isChallengeMode();
         if (challengeMode) {
             int p1 = passiveP1pts + engine.getP1Points();
             int p2 = passiveP2pts + engine.getP2Points();

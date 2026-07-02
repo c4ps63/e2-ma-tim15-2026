@@ -58,10 +58,16 @@ public class AsocijacijeEngine {
     // true = lokalni igrač igra prvi u rundi 1 (standardno); false = protivnik prvi
     private boolean localStartsRound1 = true;
 
+    // Challenge (solo) mode: no real opponent, no steal — the game ends
+    // right after the local player finishes their one and only round.
+    private boolean soloMode = false;
+
     /** Postavi ko počinje rundu 1 (za online: p1=true, p2=false). */
     public void setLocalStartsRound1(boolean localFirst) {
         this.localStartsRound1 = localFirst;
     }
+
+    public void setSoloMode(boolean v) { soloMode = v; }
 
     private boolean localFirstForRound(int round) {
         // Runda 1: localStartsRound1; Runda 2: suprotno
@@ -150,7 +156,7 @@ public class AsocijacijeEngine {
 
     /** Called by fragment after between-round pause. */
     public void continueAfterRound() {
-        if (currentRound == 1) beginRound(2, round2Puzzle);
+        if (currentRound == 1 && !soloMode) beginRound(2, round2Puzzle);
         else finishGame();
     }
 
