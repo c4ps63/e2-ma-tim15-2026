@@ -78,10 +78,14 @@
 
             <!-- Avatar + dugme za izmjenu -->
             <FrameLayout
+                android:id="@+id/flAvatar"
                 android:layout_width="128dp"
                 android:layout_height="128dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="14dp">
+                android:layout_marginBottom="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless">
 
                 <!-- Žuti prsten — boja se mijenja za gold/silver/bronze region rang -->
                 <View
@@ -187,7 +191,7 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="@drawable/bg_stat_tile_yellow"
+                    android:background="@drawable/bg_stat_tile_blue"
                     android:layout_marginEnd="8dp">
 
                     <TextView
@@ -203,7 +207,7 @@
                         android:layout_height="wrap_content"
                         android:text="12"
                         android:fontFamily="sans-serif-black"
-                        android:textColor="@color/ink"
+                        android:textColor="#FFFFFF"
                         android:textSize="24sp"/>
 
                     <TextView
@@ -211,7 +215,7 @@
                         android:layout_height="wrap_content"
                         android:text="TOKENI"
                         android:fontFamily="sans-serif-black"
-                        android:textColor="@color/ink"
+                        android:textColor="#FFFFFF"
                         android:textSize="10sp"
                         android:letterSpacing="0.08"/>
                 </LinearLayout>
@@ -262,23 +266,23 @@
                     android:background="@drawable/bg_stat_tile_green">
 
                     <TextView
+                        android:id="@+id/tvLeague"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🏆"
+                        android:text="🔰"
                         android:textSize="24sp"
                         android:layout_marginBottom="2dp"/>
 
                     <TextView
-                        android:id="@+id/tvLeague"
+                        android:id="@+id/tvLeagueDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2."
+                        android:text="Početnik"
                         android:fontFamily="sans-serif-black"
                         android:textColor="#FFFFFF"
                         android:textSize="24sp"/>
 
                     <TextView
-                        android:id="@+id/tvLeagueDetail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="LIGA"
@@ -614,57 +618,43 @@
 
             </LinearLayout>
 
-            <!-- QR kartica (spec 2.a.viii) -->
+            <!-- QR kartica (spec 2.a.viii / 7b) -->
             <LinearLayout
+                android:id="@+id/cardQr"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:background="@drawable/card_paper"
-                android:padding="16dp"
-                android:gravity="center_vertical">
+                android:padding="20dp"
+                android:gravity="center_horizontal">
 
-                <!-- QR placeholder -->
-                <LinearLayout
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_stat_pill"
-                    android:layout_marginEnd="14dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="▦"
-                        android:fontFamily="monospace"
-                        android:textSize="36sp"
-                        android:textColor="@color/ink"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="QR ZA PRIJATELJE"
+                    android:fontFamily="sans-serif-black"
+                    android:textColor="@color/ink"
+                    android:textSize="15sp"
+                    android:layout_marginBottom="4dp"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="QR ZA PRIJATELJE"
-                        android:fontFamily="sans-serif-black"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:layout_marginBottom="4dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pokaži kod prijatelju da te doda jednim potezom."
+                    android:fontFamily="sans-serif"
+                    android:textColor="#7A6A50"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.3"
+                    android:layout_marginBottom="16dp"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pokaži kod prijatelju da te doda jednim potezom."
-                        android:fontFamily="sans-serif"
-                        android:textColor="#7A6A50"
-                        android:textSize="12sp"
-                        android:lineSpacingMultiplier="1.3"/>
-                </LinearLayout>
+                <ImageView
+                    android:id="@+id/ivProfileQr"
+                    android:layout_width="220dp"
+                    android:layout_height="220dp"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="QR kod" />
+
             </LinearLayout>
 
         </LinearLayout>

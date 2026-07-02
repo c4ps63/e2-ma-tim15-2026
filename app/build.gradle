@@ -49,6 +49,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.firebase:firebase-messaging'
 
+    // QR kod — generisanje + skeniranje
+    implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
+
     testImplementation libs.junit
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.ext.junit

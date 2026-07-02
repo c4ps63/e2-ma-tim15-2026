@@ -108,13 +108,14 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
                 ((GameActivity) getActivity()).showAsocijacije();
         });
 
-        ConnectRepository repo = ConnectRepository.getInstance();
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
             ga.applyAvatarsToHud(view);
         }
+
+        tvStatus.setText("Učitavam parove...");
 
         boolean multiplayer = getActivity() instanceof GameActivity
                 && ((GameActivity) getActivity()).isMultiplayer();
@@ -128,25 +129,30 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             firebaseSpojSync = new com.example.slagalicavpl.multiplayer.FirebaseSpojniceSync(
                     roomRef, myRole);
 
-            engine = new SpojniceEngine(
-                    repo.getRound1Pairs(),
-                    repo.getRound2Pairs(),
-                    firebaseSpojSync,
-                    this);
-            engine.setLocalStartsFirst(localStartsFirst);
-
             if ("p1".equals(myRole)) {
-                int[] slots1 = generateShuffledSlots();
-                int[] slots2 = generateShuffledSlots();
-                engine.setExternalSlots(slots1, slots2);
-                firebaseSpojSync.writeAllSlots(slots1, slots2);
-                engine.startGame();
-            } else {
-                firebaseSpojSync.readAllSlots((s1, s2) -> {
+                ConnectRepository.getInstance().loadRandomSet((setId, r1, r2) -> {
                     if (getView() == null) return;
-                    engine.setExternalSlots(s1, s2);
+                    firebaseSpojSync.writeSetId(setId);
+                    engine = new SpojniceEngine(r1, r2, firebaseSpojSync, this);
+                    engine.setLocalStartsFirst(localStartsFirst);
+                    int[] slots1 = generateShuffledSlots();
+                    int[] slots2 = generateShuffledSlots();
+                    engine.setExternalSlots(slots1, slots2);
+                    firebaseSpojSync.writeAllSlots(slots1, slots2);
                     engine.startGame();
                 });
+            } else {
+                firebaseSpojSync.readSetId(setId ->
+                    ConnectRepository.getInstance().loadSetById(setId, (id, r1, r2) ->
+                        firebaseSpojSync.readAllSlots((s1, s2) -> {
+                            if (getView() == null) return;
+                            engine = new SpojniceEngine(r1, r2, firebaseSpojSync, this);
+                            engine.setLocalStartsFirst(localStartsFirst);
+                            engine.setExternalSlots(s1, s2);
+                            engine.startGame();
+                        })
+                    )
+                );
             }
         } else {
             boolean challenge = getActivity() instanceof GameActivity
@@ -154,12 +160,11 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             com.example.slagalicavpl.multiplayer.SpojniceSync offlineSync = challenge
                     ? new com.example.slagalicavpl.multiplayer.SoloSpojniceSync()
                     : new LocalSpojniceSync();
-            engine = new SpojniceEngine(
-                    repo.getRound1Pairs(),
-                    repo.getRound2Pairs(),
-                    offlineSync,
-                    this);
-            engine.startGame();
+            ConnectRepository.getInstance().loadRandomSet((setId, r1, r2) -> {
+                if (getView() == null) return;
+                engine = new SpojniceEngine(r1, r2, offlineSync, this);
+                engine.startGame();
+            });
         }
     }
 

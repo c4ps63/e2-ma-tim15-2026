@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Preview krug — mijenja se live -->
+    <FrameLayout
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp">
+
+        <View
+            android:id="@+id/viewColorPreview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_avatar_inner" />
+
+        <TextView
+            android:id="@+id/tvColorPreviewInitial"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:text="?" />
+    </FrameLayout>
+
+    <!-- Hex prikaz -->
+    <TextView
+        android:id="@+id/tvColorHex"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:fontFamily="monospace"
+        android:textColor="#333333"
+        android:layout_marginBottom="20dp"
+        android:text="#5C85FF" />
+
+    <!-- R slider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:text="R"
+            android:textStyle="bold"
+            android:textColor="#CC3333"
+            android:textSize="14sp" />
+
+        <SeekBar
+            android:id="@+id/sbRed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:progressTint="#CC3333"
+            android:thumbTint="#CC3333" />
+
+        <TextView
+            android:id="@+id/tvRed"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="12sp"
+            android:textColor="#333333"
+            android:text="92" />
+    </LinearLayout>
+
+    <!-- G slider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:text="G"
+            android:textStyle="bold"
+            android:textColor="#228B22"
+            android:textSize="14sp" />
+
+        <SeekBar
+            android:id="@+id/sbGreen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:progressTint="#228B22"
+            android:thumbTint="#228B22" />
+
+        <TextView
+            android:id="@+id/tvGreen"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="12sp"
+            android:textColor="#333333"
+            android:text="133" />
+    </LinearLayout>
+
+    <!-- B slider -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="24dp"
+            android:layout_height="wrap_content"
+            android:text="B"
+            android:textStyle="bold"
+            android:textColor="#3355CC"
+            android:textSize="14sp" />
+
+        <SeekBar
+            android:id="@+id/sbBlue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="255"
+            android:progressTint="#3355CC"
+            android:thumbTint="#3355CC" />
+
+        <TextView
+            android:id="@+id/tvBlue"
+            android:layout_width="36dp"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:textSize="12sp"
+            android:textColor="#333333"
+            android:text="255" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -52,6 +52,27 @@ public class FirebaseSpojniceSync implements SpojniceSync {
         this.myRole = myRole;
     }
 
+    // ── Set ID sharing ────────────────────────────────────────────────────────
+
+    public interface SetIdCallback { void onReady(String setId); }
+
+    public void writeSetId(String setId) {
+        ref.child("setId").setValue(setId);
+    }
+
+    public void readSetId(SetIdCallback cb) {
+        ref.child("setId").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(DataSnapshot snap) {
+                if (!snap.exists()) {
+                    handler.postDelayed(() -> readSetId(cb), 300);
+                    return;
+                }
+                handler.post(() -> cb.onReady(snap.getValue(String.class)));
+            }
+            @Override public void onCancelled(DatabaseError e) {}
+        });
+    }
+
     // ── Slot sharing (P1 generates + writes both, P2 reads) ──────────────────
 
     public void writeAllSlots(int[] slots1, int[] slots2) {

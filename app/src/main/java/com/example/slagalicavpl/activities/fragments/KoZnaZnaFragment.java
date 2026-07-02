@@ -93,39 +93,51 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
         boolean multiplayer = getActivity() instanceof GameActivity
                 && ((GameActivity) getActivity()).isMultiplayer();
 
+        tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");
+        showLoading(true);
+
         if (multiplayer && getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
             com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync fbSync =
                     new com.example.slagalicavpl.multiplayer.FirebaseKoZnaZnaSync(
                             ga.getRoomRef(), ga.getMyRole());
 
-            tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");
-
             if ("p1".equals(ga.getMyRole())) {
-                int[] indices = QuestionRepository.getInstance().generateShuffledIndices();
-                fbSync.writeQuestionOrder(indices);
-                engine = new KoZnaZnaEngine(
-                        QuestionRepository.getInstance().getQuestionsByIndices(indices),
-                        fbSync, this);
-                engine.startGame();
-            } else {
-                fbSync.readQuestionOrder(indices -> {
+                QuestionRepository.getInstance().loadRandomSet((setId, questions) -> {
                     if (getView() == null) return;
+                    int[] indices = QuestionRepository.shuffleIndices(questions.size());
+                    fbSync.writeSetId(setId);
+                    fbSync.writeQuestionOrder(indices);
                     engine = new KoZnaZnaEngine(
-                            QuestionRepository.getInstance().getQuestionsByIndices(indices),
+                            QuestionRepository.reorderByIndices(questions, indices),
                             fbSync, this);
+                    showLoading(false);
                     engine.startGame();
                 });
+            } else {
+                fbSync.readSetId(setId ->
+                    QuestionRepository.getInstance().loadSetById(setId, (id, questions) ->
+                        fbSync.readQuestionOrder(indices -> {
+                            if (getView() == null) return;
+                            engine = new KoZnaZnaEngine(
+                                    QuestionRepository.reorderByIndices(questions, indices),
+                                    fbSync, this);
+                            showLoading(false);
+                            engine.startGame();
+                        })
+                    )
+                );
             }
         } else {
             KoZnaZnaSync sync = (getActivity() instanceof GameActivity)
                     ? ((GameActivity) getActivity()).getKoZnaZnaSync()
                     : new LocalKoZnaZnaSync();
-            engine = new KoZnaZnaEngine(
-                    QuestionRepository.getInstance().getQuestionsForGame(),
-                    sync, this);
-            tvRound.setText("🏛️ EVROPA · KO ZNA ZNA");
-            engine.startGame();
+            QuestionRepository.getInstance().loadRandomSet((setId, questions) -> {
+                if (getView() == null) return;
+                engine = new KoZnaZnaEngine(questions, sync, this);
+                showLoading(false);
+                engine.startGame();
+            });
         }
     }
 
@@ -275,6 +287,14 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
             case 'B': return btnB;
             case 'C': return btnC;
             default:  return btnD;
+        }
+    }
+
+    private void showLoading(boolean loading) {
+        if (loading) {
+            tvQuestion.setText("Učitavam pitanja...");
+            tvQuestionLabel.setText("");
+            setAnswersEnabled(false);
         }
     }
 }
