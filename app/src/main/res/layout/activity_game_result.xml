@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_sky_gradient">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="56dp"
+            android:paddingBottom="32dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <TextView
+                android:id="@+id/tvResultEmoji"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="56sp"
+                android:text="🏁" />
+
+            <TextView
+                android:id="@+id/tvResultTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/ink"
+                android:text="KRAJ PARTIJE" />
+
+            <!-- Score panel -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="28dp">
+
+                <LinearLayout
+                    android:id="@+id/cardMe"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/card_paper"
+                    android:padding="16dp">
+                    <TextView
+                        android:id="@+id/tvMyScore"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textColor="@color/player_blue" android:textSize="44sp"
+                        android:text="0" />
+                    <TextView
+                        android:id="@+id/tvMyName"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/ink" android:text="TI" />
+                </LinearLayout>
+
+                <Space android:layout_width="10dp" android:layout_height="match_parent"/>
+
+                <LinearLayout
+                    android:id="@+id/cardOpp"
+                    android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/card_paper"
+                    android:padding="16dp">
+                    <TextView
+                        android:id="@+id/tvOppScore"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textColor="@color/player_red" android:textSize="44sp"
+                        android:text="0" />
+                    <TextView
+                        android:id="@+id/tvOppName"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/ink" android:text="PROTIVNIK" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnRematch"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                style="@style/CartoonButton"
+                android:text="REVANŠ"
+                android:background="@drawable/btn_cartoon_yellow"
+                android:textColor="@color/ink"/>
+
+            <Button
+                android:id="@+id/btnHome"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                style="@style/CartoonButton"
+                android:text="↩ POVRATAK NA POČETNU"
+                android:background="@drawable/btn_cartoon_blue"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

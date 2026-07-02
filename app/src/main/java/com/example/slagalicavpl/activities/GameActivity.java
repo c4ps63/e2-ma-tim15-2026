@@ -117,6 +117,8 @@ public class GameActivity extends AppCompatActivity {
     public boolean isMultiplayer()                 { return roomRef != null; }
     public boolean isFriendlyGame()                { return isFriendly; }
     public boolean isOpponentDisconnected()        { return opponentDisconnected; }
+    public String  getMyUsername()                 { return myUsername; }
+    public String  getOppUsername()                { return oppUsername; }
 
     /** Skor trenutnog igrača (bez obzira na rolu). */
     public int getMyScore() {
@@ -309,7 +311,7 @@ public class GameActivity extends AppCompatActivity {
                 } else {
                     maybeNotifyGameResult();
                     checkGameMissions();
-                    finish();
+                    showGameResult();
                 }
                 break;
         }
@@ -334,6 +336,16 @@ public class GameActivity extends AppCompatActivity {
             RankingRepository.getInstance()
                     .updateEntry(fbUser.getUid(), myUsername, myRegion, myLeague, starGain);
         }
+    }
+
+    private void showGameResult() {
+        Intent i = new Intent(this, GameResultActivity.class);
+        i.putExtra(GameResultActivity.EXTRA_MY_SCORE,  getMyTotal());
+        i.putExtra(GameResultActivity.EXTRA_OPP_SCORE, getOppTotal());
+        i.putExtra(GameResultActivity.EXTRA_MY_NAME,   myUsername);
+        i.putExtra(GameResultActivity.EXTRA_OPP_NAME,  oppUsername);
+        startActivity(i);
+        finish();
     }
 
     private void handleTournamentEnd() {

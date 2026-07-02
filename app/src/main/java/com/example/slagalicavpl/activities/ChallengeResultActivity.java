@@ -115,6 +115,7 @@ public class ChallengeResultActivity extends AppCompatActivity {
 
     private void buildLeaderboard(Challenge c) {
         if (c.players == null) return;
+        boolean allDone = allFinished(c);
         int n    = c.players.size();
         int pool = c.stakeStars * n;
 
@@ -126,28 +127,31 @@ public class ChallengeResultActivity extends AppCompatActivity {
         for (int i = 0; i < list.size(); i++) {
             String                    uid    = list.get(i).getKey();
             Challenge.ChallengePlayer player = list.get(i).getValue();
-            int prize;
-            String prizeLabel;
-            if (i == 0) {
-                prize      = (int)(pool * 0.75);
-                prizeLabel = "+" + prize + " ⭐  (75% poola)";
+            String statusLabel;
+            if (!allDone) {
+                // Rezultat i plasman se ne mogu objaviti dok svi igrači ne završe partiju
+                statusLabel = player.finished ? "ZAVRŠIO" : "IGRA…";
+            } else if (i == 0) {
+                statusLabel = "+" + (int) (pool * 0.75) + " ⭐  (75% poola)";
             } else if (i == 1) {
-                prize      = c.stakeStars;
-                prizeLabel = "±0 ⭐  (vraćen ulog)";
+                statusLabel = "±0 ⭐  (vraćen ulog)";
             } else {
-                prize      = -c.stakeStars;
-                prizeLabel = "-" + c.stakeStars + " ⭐";
+                statusLabel = "-" + c.stakeStars + " ⭐";
             }
-            entries.add(new RankEntry(i + 1, player.name, player.score, prizeLabel,
-                    uid.equals(myUid)));
+            entries.add(new RankEntry(i + 1, player.name, player.score, statusLabel,
+                    uid.equals(myUid), allDone));
         }
         adapter.notifyDataSetChanged();
 
-        // Prikaži moj rezultat
+        // Prikaži moj rezultat — konačan plasman tek kad SVI igrači završe
         for (RankEntry e : entries) {
             if (e.isMe) {
-                String status = e.rank == 1 ? "🥇 POBEDNIK!" : e.rank == 2 ? "🥈 2. MESTO" : "💸 Izgubio si";
-                tvMyResult.setText(status + " · " + e.scoreLabel);
+                if (allDone) {
+                    String status = e.rank == 1 ? "🥇 POBEDNIK!" : e.rank == 2 ? "🥈 2. MESTO" : "💸 Izgubio si";
+                    tvMyResult.setText(status + " · " + e.scoreLabel);
+                } else {
+                    tvMyResult.setText("Tvoj rezultat: " + e.score + " bodova · čekamo ostale igrače...");
+                }
                 break;
             }
         }
@@ -155,9 +159,8 @@ public class ChallengeResultActivity extends AppCompatActivity {
         // Ako još čekamo igrače, prikaži status
         TextView tvWaiting = findViewById(R.id.tvWaiting);
         if (tvWaiting != null) {
-            boolean waiting = !allFinished(c);
-            tvWaiting.setVisibility(waiting ? View.VISIBLE : View.GONE);
-            if (waiting) {
+            tvWaiting.setVisibility(allDone ? View.GONE : View.VISIBLE);
+            if (!allDone) {
                 long done = c.players.values().stream().filter(p -> p.finished).count();
                 tvWaiting.setText("Čekamo " + (n - done) + "/" + n + " igrača da završe...");
             }
@@ -172,9 +175,10 @@ public class ChallengeResultActivity extends AppCompatActivity {
         int     score;
         String  scoreLabel;
         boolean isMe;
-        RankEntry(int rank, String name, int score, String scoreLabel, boolean isMe) {
+        boolean finalResult; // true only once every participant has finished
+        RankEntry(int rank, String name, int score, String scoreLabel, boolean isMe, boolean finalResult) {
             this.rank = rank; this.name = name; this.score = score;
-            this.scoreLabel = scoreLabel; this.isMe = isMe;
+            this.scoreLabel = scoreLabel; this.isMe = isMe; this.finalResult = finalResult;
         }
     }
 
@@ -194,8 +198,13 @@ public class ChallengeResultActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull VH h, int pos) {
             RankEntry e = data.get(pos);
-            String medal = e.rank == 1 ? "🥇" : e.rank == 2 ? "🥈" : e.rank == 3 ? "🥉" : "  ";
-            h.tvRank.setText(medal + " " + e.rank + ".");
+            if (e.finalResult) {
+                String medal = e.rank == 1 ? "🥇" : e.rank == 2 ? "🥈" : e.rank == 3 ? "🥉" : "  ";
+                h.tvRank.setText(medal + " " + e.rank + ".");
+            } else {
+                // Plasman još nije konačan dok svi igrači ne završe — bez medalje
+                h.tvRank.setText(e.rank + ".");
+            }
             h.tvName.setText(e.name + (e.isMe ? " (ti)" : ""));
             h.tvScore.setText(e.score + " bodova");
             h.tvPrize.setText(e.scoreLabel);
