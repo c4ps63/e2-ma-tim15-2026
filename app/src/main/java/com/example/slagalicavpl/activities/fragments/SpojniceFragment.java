@@ -112,7 +112,7 @@ public class SpojniceFragment extends Fragment implements SpojniceEngine.Listene
             GameActivity ga = (GameActivity) getActivity();
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
-            ga.applyAvatarsToHud(view);
+            ga.registerHudView(view);
         }
 
         tvStatus.setText("Učitavam parove...");

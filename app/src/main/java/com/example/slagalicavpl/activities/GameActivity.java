@@ -87,6 +87,8 @@ public class GameActivity extends AppCompatActivity {
     private String oppUsername = "";
     private ValueEventListener avatarListener;
 
+    private final java.util.List<View> hudViews = new java.util.ArrayList<>();
+
     public void addScores(int p1, int p2) {
         totalP1 += p1;
         totalP2 += p2;
@@ -188,10 +190,18 @@ public class GameActivity extends AppCompatActivity {
                 }
                 String uname = snap.child("username").getValue(String.class);
                 if (uname != null) oppUsername = uname;
+                runOnUiThread(() -> {
+                    for (View v : hudViews) applyAvatarsToHud(v);
+                });
             }
             @Override public void onCancelled(DatabaseError e) {}
         };
         roomRef.child("avatars").child(oppRole).addValueEventListener(avatarListener);
+    }
+
+    public void registerHudView(View v) {
+        if (!hudViews.contains(v)) hudViews.add(v);
+        applyAvatarsToHud(v);
     }
 
     public void applyAvatarsToHud(View rootView) {
