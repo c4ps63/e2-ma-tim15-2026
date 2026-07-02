@@ -10,13 +10,13 @@
 
 Troslojna arhitektura:
 
-- `model/` — klase podataka (User, Question, ConnectPair, LeagueUtil...)
-- `repository/` — pristup Firebase bazi (UserRepository, QuestionRepository, ConnectRepository...)
-- `service/` — poslovna logika (AuthService)
-- `activities/` — UI aktivnosti (HomeActivity, GameActivity, ProfileActivity...)
-- `activities/fragments/` — fragmenti igara (KoZnaZnaFragment, SpojniceFragment, AsocijacijeFragment...)
-- `multiplayer/` — Firebase sinhronizacija za online igru
-- `views/` — custom pogledi (SerbiaMapView)
+- `model/`  klase podataka (User, Question, ConnectPair, LeagueUtil...)
+- `repository/`  pristup Firebase bazi (UserRepository, QuestionRepository, ConnectRepository...)
+- `service/`  poslovna logika (AuthService)
+- `activities/`  UI aktivnosti (HomeActivity, GameActivity, ProfileActivity...)
+- `activities/fragments/`  fragmenti igara (KoZnaZnaFragment, SpojniceFragment, AsocijacijeFragment...)
+- `multiplayer/`  Firebase sinhronizacija za online igru
+- `views/`  custom pogledi (SerbiaMapView)
 
 ## Pokretanje aplikacije
 
