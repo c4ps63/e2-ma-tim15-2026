@@ -92,6 +92,10 @@ public class KorakPoKorakFragment extends Fragment
             if (multiplayer && !isActivePlayer(currentRound)) {
                 // Passive player submitting (steal phase)
                 handlePassiveStealAnswer(input);
+            } else if (multiplayer && engine != null
+                    && engine.getPhase() == KorakPoKorakEngine.Phase.STEAL) {
+                // In multiplayer, the steal opportunity belongs to the remote opponent —
+                // this device's own input must not be able to award points meant for them.
             } else {
                 engine.submitAnswer(input);
             }
@@ -360,12 +364,15 @@ public class KorakPoKorakFragment extends Fragment
         startCountdown(KorakPoKorakEngine.STEAL_SECS, () -> engine.onStealTimerExpired());
         if (multiplayer && korakSync != null) {
             korakSync.writeStealPhase();
-            korakSync.listenForStealGuess(text ->
-                    handler.post(() -> {
-                        if (engine != null && engine.getPhase() == KorakPoKorakEngine.Phase.STEAL) {
-                            engine.submitAnswer(text);
-                        }
-                    }));
+            // Firebase listeners already run on the main thread — call submitAnswer()
+            // directly. Routing this through handler.post() risked the runnable being
+            // silently dropped by a concurrent handler.removeCallbacksAndMessages(null)
+            // (e.g. from onCancelTimers()), which left the round stuck waiting forever.
+            korakSync.listenForStealGuess(text -> {
+                if (engine != null && engine.getPhase() == KorakPoKorakEngine.Phase.STEAL) {
+                    engine.submitAnswer(text);
+                }
+            });
         }
     }
 
@@ -388,6 +395,15 @@ public class KorakPoKorakFragment extends Fragment
 
     @Override
     public void onInputEnabled(boolean enabled) {
+        // In multiplayer the steal phase is answered by the remote opponent, not this
+        // (active) device — don't visually open the input for a question the local
+        // player can no longer legally answer.
+        if (multiplayer && enabled && engine != null
+                && engine.getPhase() == KorakPoKorakEngine.Phase.STEAL) {
+            etAnswer.setEnabled(false);
+            btnConfirm.setEnabled(false);
+            return;
+        }
         etAnswer.setEnabled(enabled);
         btnConfirm.setEnabled(enabled);
     }
