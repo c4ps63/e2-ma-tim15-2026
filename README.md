@@ -43,11 +43,11 @@ Troslojna arhitektura:
 
 3. **Firebase konfiguracija**
    - Fajl `app/google-services.json` je već uključen u repozitorij
-   - Nije potrebna dodatna konfiguracija — aplikacija se spaja na postojeći Firebase projekat `slagalica-vrtlogalica`
+   - Nije potrebna dodatna konfiguracija - aplikacija se spaja na postojeći Firebase projekat `slagalica-vrtlogalica`
 
 4. **Pokreni aplikaciju**
    - Spoji Android uređaj putem USB-a (uključi USB debugging u Developer Options) **ili** pokreni emulator (API 30+)
-   - Klikni zeleno dugme **Run ▶** (Shift+F10) u Android Studiu
+   - Klikni zeleno dugme Run (Shift+F10) u Android Studiu
    - Odaberi ciljni uređaj i sačekaj instalaciju
 
 5. **Registracija i prijava**
