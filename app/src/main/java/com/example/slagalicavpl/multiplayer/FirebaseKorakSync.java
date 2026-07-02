@@ -32,8 +32,14 @@ public class FirebaseKorakSync {
         void onGameOver(int p1pts, int p2pts);
     }
 
+    public interface StealGuessListener {
+        /** Called when the passive (stealing) player has submitted their steal attempt. */
+        void onStealGuess(String text);
+    }
+
     private final DatabaseReference ref;
     private ValueEventListener listener;
+    private ValueEventListener stealGuessListener;
 
     public FirebaseKorakSync(DatabaseReference roomRef) {
         this.ref = roomRef.child("korak");
@@ -83,6 +89,42 @@ public class FirebaseKorakSync {
         update.put("p2pts", p2pts);
         update.put("phase", "GAMEOVER");
         ref.updateChildren(update);
+    }
+
+    // ── Passive player writes their steal attempt back to the active player ────
+
+    public void writeStealGuess(String text) {
+        Map<String, Object> m = new HashMap<>();
+        m.put("text", text);
+        m.put("ts",   System.currentTimeMillis());
+        ref.child("stealGuess").setValue(m);
+    }
+
+    // ── Active player listens for the steal attempt ─────────────────────────────
+
+    public void listenForStealGuess(StealGuessListener cb) {
+        cancelStealGuessListener();
+        stealGuessListener = new ValueEventListener() {
+            private final long startTs = System.currentTimeMillis();
+
+            @Override
+            public void onDataChange(DataSnapshot snap) {
+                Object tsRaw = snap.child("ts").getValue();
+                long ts = tsRaw instanceof Number ? ((Number) tsRaw).longValue() : 0;
+                if (ts <= startTs) return; // ignore guesses left over from a previous round
+                String text = snap.child("text").getValue(String.class);
+                if (text != null) cb.onStealGuess(text);
+            }
+            @Override public void onCancelled(DatabaseError e) {}
+        };
+        ref.child("stealGuess").addValueEventListener(stealGuessListener);
+    }
+
+    public void cancelStealGuessListener() {
+        if (stealGuessListener != null) {
+            ref.child("stealGuess").removeEventListener(stealGuessListener);
+            stealGuessListener = null;
+        }
     }
 
     // ── Passive player listens ────────────────────────────────────────────────
@@ -159,6 +201,7 @@ public class FirebaseKorakSync {
             ref.removeEventListener(listener);
             listener = null;
         }
+        cancelStealGuessListener();
     }
 
     private static int getInt(DataSnapshot snap, String key) {

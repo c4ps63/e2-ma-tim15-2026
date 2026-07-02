@@ -310,7 +310,9 @@ public class KorakPoKorakFragment extends Fragment
                 : R.drawable.bg_expression_wrong);
         etAnswer.setEnabled(false);
         btnConfirm.setEnabled(false);
-        // Scores are authoritative on active player's side; passive player just shows feedback
+        // Scores are authoritative on active player's side — send our attempt back so it
+        // can be scored there (otherwise successful steals were never actually counted).
+        if (multiplayer && korakSync != null) korakSync.writeStealGuess(input == null ? "" : input);
     }
 
     private void updatePassiveHud(int p1pts, int p2pts) {
@@ -352,13 +354,22 @@ public class KorakPoKorakFragment extends Fragment
     @Override
     public void onStartStealTimer(int stealPlayer) {
         startCountdown(KorakPoKorakEngine.STEAL_SECS, () -> engine.onStealTimerExpired());
-        if (multiplayer && korakSync != null) korakSync.writeStealPhase();
+        if (multiplayer && korakSync != null) {
+            korakSync.writeStealPhase();
+            korakSync.listenForStealGuess(text ->
+                    handler.post(() -> {
+                        if (engine != null && engine.getPhase() == KorakPoKorakEngine.Phase.STEAL) {
+                            engine.submitAnswer(text);
+                        }
+                    }));
+        }
     }
 
     @Override
     public void onCancelTimers() {
         if (activeTimer != null) { activeTimer.cancel(); activeTimer = null; }
         handler.removeCallbacksAndMessages(null);
+        if (multiplayer && korakSync != null) korakSync.cancelStealGuessListener();
     }
 
     @Override

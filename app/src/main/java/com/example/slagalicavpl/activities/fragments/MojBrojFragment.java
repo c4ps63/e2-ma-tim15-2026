@@ -402,16 +402,51 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
 
     private void onNumberClick(int idx) {
         if (phase != Phase.BUILDING || tileUsed[idx]) return;
+        String val = String.valueOf(puzzle.tiles[idx]);
+        if (!appendToken(val, val, idx)) return;
         tileUsed[idx] = true;
         btnNumbers[idx].setEnabled(false);
         btnNumbers[idx].setAlpha(0.35f);
-        appendToken(String.valueOf(puzzle.tiles[idx]), String.valueOf(puzzle.tiles[idx]), idx);
     }
 
-    private void appendToken(String disp, String eval, int tileIdx) {
-        if (phase != Phase.BUILDING) return;
+    /** True if appending a token of this kind is arithmetically valid right after the current last token. */
+    private boolean canAppend(String eval, int tileIdx) {
+        boolean isNumber = tileIdx >= 0;
+        boolean isOpen    = "(".equals(eval);
+        boolean isClose   = ")".equals(eval);
+        boolean isBinaryOp = !isNumber && !isOpen && !isClose;
+
+        if (tokens.isEmpty()) {
+            return isNumber || isOpen; // can't start with an operator or ')'
+        }
+
+        Token last = tokens.get(tokens.size() - 1);
+        boolean lastIsNumber = last.tileIdx >= 0;
+        boolean lastIsOpen   = "(".equals(last.eval);
+        boolean lastIsClose  = ")".equals(last.eval);
+
+        if (isBinaryOp) return lastIsNumber || lastIsClose;
+        if (isOpen)     return !lastIsNumber && !lastIsClose;
+        if (isNumber)   return !lastIsNumber && !lastIsClose;
+        if (isClose)    return (lastIsNumber || lastIsClose) && openParenCount() > 0;
+        return false;
+    }
+
+    private int openParenCount() {
+        int n = 0;
+        for (Token t : tokens) {
+            if ("(".equals(t.eval)) n++;
+            else if (")".equals(t.eval)) n--;
+        }
+        return n;
+    }
+
+    private boolean appendToken(String disp, String eval, int tileIdx) {
+        if (phase != Phase.BUILDING) return false;
+        if (!canAppend(eval, tileIdx)) return false;
         tokens.add(new Token(disp, eval, tileIdx));
         rebuildExpression();
+        return true;
     }
 
     private void backspace() {
