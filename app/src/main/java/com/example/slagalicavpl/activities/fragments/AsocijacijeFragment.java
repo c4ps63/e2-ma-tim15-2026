@@ -162,35 +162,47 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
         String myRole = (getActivity() instanceof GameActivity)
                 ? ((GameActivity) getActivity()).getMyRole() : "p1";
 
-        com.example.slagalicavpl.multiplayer.AsocijacijeSync sync;
-        boolean challenge = false;
+        setStatus("Učitavam asocijacije...");
+
         if (multiplayer && getActivity() instanceof GameActivity) {
             com.google.firebase.database.DatabaseReference roomRef =
                     ((GameActivity) getActivity()).getRoomRef();
             firebaseAsocSync = new com.example.slagalicavpl.multiplayer.FirebaseAsocijacijeSync(
                     roomRef, myRole);
-            sync = firebaseAsocSync;
+
+            boolean localStartsRound1 = "p1".equals(myRole);
+            if ("p1".equals(myRole)) {
+                AsocijacijeRepository.getInstance().loadRandomSet((setId, r1, r2) -> {
+                    if (getView() == null) return;
+                    firebaseAsocSync.writeSetId(setId);
+                    engine = new AsocijacijeEngine(r1, r2, firebaseAsocSync, this);
+                    engine.setLocalStartsRound1(localStartsRound1);
+                    engine.startGame();
+                });
+            } else {
+                firebaseAsocSync.readSetId(setId ->
+                    AsocijacijeRepository.getInstance().loadSetById(setId, (id, r1, r2) -> {
+                        if (getView() == null) return;
+                        engine = new AsocijacijeEngine(r1, r2, firebaseAsocSync, this);
+                        engine.setLocalStartsRound1(localStartsRound1);
+                        engine.startGame();
+                    })
+                );
+            }
         } else {
-            challenge = getActivity() instanceof GameActivity
+            boolean challenge = getActivity() instanceof GameActivity
                     && ((GameActivity) getActivity()).isChallengeMode();
-            sync = challenge
+            com.example.slagalicavpl.multiplayer.AsocijacijeSync sync = challenge
                     ? new com.example.slagalicavpl.multiplayer.SoloAsocijacijeSync()
                     : new LocalAsocijacijeSync();
+            boolean finalChallenge = challenge;
+            AsocijacijeRepository.getInstance().loadRandomSet((setId, r1, r2) -> {
+                if (getView() == null) return;
+                engine = new AsocijacijeEngine(r1, r2, sync, this);
+                engine.setSoloMode(finalChallenge);
+                engine.startGame();
+            });
         }
-
-        engine = new AsocijacijeEngine(
-                AsocijacijeRepository.getRound1(),
-                AsocijacijeRepository.getRound2(),
-                sync,
-                this);
-
-        // U online modu: P1 počinje rundu 1, P2 počinje rundu 2
-        if (multiplayer) {
-            engine.setLocalStartsRound1("p1".equals(myRole));
-        }
-        engine.setSoloMode(challenge);
-
-        engine.startGame();
     }
 
     @Override

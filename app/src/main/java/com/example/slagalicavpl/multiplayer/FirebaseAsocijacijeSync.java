@@ -46,6 +46,27 @@ public class FirebaseAsocijacijeSync implements AsocijacijeSync {
         this.oppRole = "p1".equals(myRole) ? "p2" : "p1";
     }
 
+    // ── Set ID sharing ────────────────────────────────────────────────────────
+
+    public interface SetIdCallback { void onReady(String setId); }
+
+    public void writeSetId(String setId) {
+        ref.child("setId").setValue(setId);
+    }
+
+    public void readSetId(SetIdCallback cb) {
+        ref.child("setId").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override public void onDataChange(DataSnapshot snap) {
+                if (!snap.exists()) {
+                    handler.postDelayed(() -> readSetId(cb), 300);
+                    return;
+                }
+                handler.post(() -> cb.onReady(snap.getValue(String.class)));
+            }
+            @Override public void onCancelled(DatabaseError e) {}
+        });
+    }
+
     // ── Pisanje akcija lokalnog igrača ────────────────────────────────────────
 
     public void writeOpenField(int round, int col, int row) {
