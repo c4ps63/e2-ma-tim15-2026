@@ -158,8 +158,8 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
 
             TextView hudP1 = view.findViewById(R.id.p1_score);
             TextView hudP2 = view.findViewById(R.id.p2_score);
-            if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
-            if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
+            if (hudP1 != null) hudP1.setText(String.valueOf(ga.getMyTotal()));
+            if (hudP2 != null) hudP2.setText(String.valueOf(ga.getOppTotal()));
             ga.registerHudView(view);
         }
 
@@ -616,10 +616,11 @@ public class MojBrojFragment extends Fragment implements SensorEventListener {
     private void updateHud() {
         if (getView() == null || !(getActivity() instanceof GameActivity)) return;
         GameActivity ga = (GameActivity) getActivity();
+        boolean iAmP1 = "p1".equals(ga.getMyRole());
         TextView s1 = getView().findViewById(R.id.p1_score);
         TextView s2 = getView().findViewById(R.id.p2_score);
-        if (s1 != null) s1.setText(String.valueOf(ga.getP1Total() + accP1));
-        if (s2 != null) s2.setText(String.valueOf(ga.getP2Total() + accP2));
+        if (s1 != null) s1.setText(String.valueOf(ga.getMyTotal()  + (iAmP1 ? accP1 : accP2)));
+        if (s2 != null) s2.setText(String.valueOf(ga.getOppTotal() + (iAmP1 ? accP2 : accP1)));
     }
 
     // ── Shake sensor ──────────────────────────────────────────────────────────

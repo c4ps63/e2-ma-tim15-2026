@@ -85,8 +85,8 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
 
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
-            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
-            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getMyTotal()));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getOppTotal()));
             ga.registerHudView(view);
         }
 
@@ -201,8 +201,8 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
     public void onScoreChanged(int localScore, int opponentScore) {
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
-            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total() + localScore));
-            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total() + opponentScore));
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getMyTotal() + localScore));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getOppTotal() + opponentScore));
         }
     }
 
@@ -215,7 +215,7 @@ public class KoZnaZnaFragment extends Fragment implements KoZnaZnaEngine.Listene
         tvTimer.setText("✓");
 
         if (getActivity() instanceof GameActivity)
-            ((GameActivity) getActivity()).addScores(localScore, opponentScore);
+            ((GameActivity) getActivity()).addMyOppScores(localScore, opponentScore);
 
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)

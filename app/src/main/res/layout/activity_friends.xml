@@ -19,42 +19,51 @@
 
         <Button
             android:id="@+id/btnBack"
+            style="@style/CartoonButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            style="@style/CartoonButton"
-            android:background="@drawable/btn_cartoon_red"
-            android:text="←"
-            android:textSize="18sp"
             android:paddingTop="4dp"
             android:paddingBottom="8dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:gravity="center" />
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:gravity="center"
+            android:minHeight="0dp"
+            android:text="←"
+            android:fontFamily="monospace"
+            android:textSize="20sp"
+            android:textColor="@color/ink"
+            android:background="@drawable/card_paper"
+            android:layout_marginEnd="12dp"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="PRIJATELJI"
-            android:textSize="20sp"
-            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
             android:textColor="#FFFFFF"
-            android:gravity="center" />
+            android:textSize="18sp"
+            android:letterSpacing="0.04"/>
 
         <Button
             android:id="@+id/btnAddFriend"
+            style="@style/CartoonButton"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            style="@style/CartoonButton"
-            android:background="@drawable/btn_cartoon_yellow"
-            android:textColor="@color/ink"
-            android:text="+ DODAJ"
             android:paddingTop="4dp"
             android:paddingBottom="8dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:textSize="12sp" />
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:minHeight="0dp"
+            android:text="+ DODAJ"
+            android:fontFamily="sans-serif-black"
+            android:textSize="12sp"
+            android:textColor="@color/ink"
+            android:background="@drawable/btn_cartoon_yellow"/>
     </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp"
+        android:background="#60FFFFFF"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFriends"

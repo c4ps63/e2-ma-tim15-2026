@@ -142,8 +142,8 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
 
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
-            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
-            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getMyTotal()));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getOppTotal()));
             ga.registerHudView(root);
         }
 
@@ -331,8 +331,8 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
     public void onScoreChanged(int localScore, int oppScore) {
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
-            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total() + localScore));
-            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total() + oppScore));
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getMyTotal() + localScore));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getOppTotal() + oppScore));
         } else {
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(localScore));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(oppScore));
@@ -362,7 +362,7 @@ public class SkockoFragment extends Fragment implements SkockoEngine.Listener {
             UserRepository.getInstance().incrementSkocko(fbUser.getUid(), localMainRoundSolved);
 
         if (getActivity() instanceof GameActivity)
-            ((GameActivity) getActivity()).addScores(localScore, oppScore);
+            ((GameActivity) getActivity()).addMyOppScores(localScore, oppScore);
 
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)

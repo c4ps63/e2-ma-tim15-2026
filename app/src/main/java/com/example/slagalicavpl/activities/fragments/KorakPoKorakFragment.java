@@ -107,8 +107,8 @@ public class KorakPoKorakFragment extends Fragment
             if (multiplayer && ga.getRoomRef() != null) {
                 korakSync = new FirebaseKorakSync(ga.getRoomRef());
             }
-            if (hudP1 != null) hudP1.setText(String.valueOf(ga.getP1Total()));
-            if (hudP2 != null) hudP2.setText(String.valueOf(ga.getP2Total()));
+            if (hudP1 != null) hudP1.setText(String.valueOf(ga.getMyTotal()));
+            if (hudP2 != null) hudP2.setText(String.valueOf(ga.getOppTotal()));
             ga.registerHudView(view);
         }
 
@@ -321,10 +321,11 @@ public class KorakPoKorakFragment extends Fragment
     private void updatePassiveHud(int p1pts, int p2pts) {
         if (getView() == null || !(getActivity() instanceof GameActivity)) return;
         GameActivity ga = (GameActivity) getActivity();
+        boolean iAmP1 = "p1".equals(ga.getMyRole());
         TextView s1 = getView().findViewById(R.id.p1_score);
         TextView s2 = getView().findViewById(R.id.p2_score);
-        if (s1 != null) s1.setText(String.valueOf(ga.getP1Total() + p1pts));
-        if (s2 != null) s2.setText(String.valueOf(ga.getP2Total() + p2pts));
+        if (s1 != null) s1.setText(String.valueOf(ga.getMyTotal()  + (iAmP1 ? p1pts : p2pts)));
+        if (s2 != null) s2.setText(String.valueOf(ga.getOppTotal() + (iAmP1 ? p2pts : p1pts)));
     }
 
     // ── KorakPoKorakEngine.Listener (active player) ───────────────────────────
@@ -462,14 +463,13 @@ public class KorakPoKorakFragment extends Fragment
 
     @Override
     public void onScoreChanged(int p1Score, int p2Score) {
-        if (getView() == null) return;
+        if (getView() == null || !(getActivity() instanceof GameActivity)) return;
+        GameActivity ga = (GameActivity) getActivity();
+        boolean iAmP1 = "p1".equals(ga.getMyRole());
         TextView s1 = getView().findViewById(R.id.p1_score);
         TextView s2 = getView().findViewById(R.id.p2_score);
-        if (getActivity() instanceof GameActivity) {
-            GameActivity ga = (GameActivity) getActivity();
-            if (s1 != null) s1.setText(String.valueOf(ga.getP1Total() + p1Score));
-            if (s2 != null) s2.setText(String.valueOf(ga.getP2Total() + p2Score));
-        }
+        if (s1 != null) s1.setText(String.valueOf(ga.getMyTotal()  + (iAmP1 ? p1Score : p2Score)));
+        if (s2 != null) s2.setText(String.valueOf(ga.getOppTotal() + (iAmP1 ? p2Score : p1Score)));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

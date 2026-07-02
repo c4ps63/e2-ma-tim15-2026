@@ -103,8 +103,8 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
 
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
-            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total()));
-            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total()));
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getMyTotal()));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getOppTotal()));
             ga.registerHudView(root);
         }
 
@@ -289,8 +289,8 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
     public void onScoreChanged(int localTotal, int oppTotal) {
         if (getActivity() instanceof GameActivity) {
             GameActivity ga = (GameActivity) getActivity();
-            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getP1Total() + localTotal));
-            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getP2Total() + oppTotal));
+            if (tvP1Score != null) tvP1Score.setText(String.valueOf(ga.getMyTotal() + localTotal));
+            if (tvP2Score != null) tvP2Score.setText(String.valueOf(ga.getOppTotal() + oppTotal));
         } else {
             if (tvP1Score != null) tvP1Score.setText(String.valueOf(localTotal));
             if (tvP2Score != null) tvP2Score.setText(String.valueOf(oppTotal));
@@ -321,7 +321,7 @@ public class AsocijacijeFragment extends Fragment implements AsocijacijeEngine.L
             UserRepository.getInstance().incrementAsocijacije(fbUser.getUid(), localFinalsSolved, 2);
 
         if (getActivity() instanceof GameActivity)
-            ((GameActivity) getActivity()).addScores(localTotal, oppTotal);
+            ((GameActivity) getActivity()).addMyOppScores(localTotal, oppTotal);
 
         handler.postDelayed(() -> {
             if (getActivity() instanceof GameActivity)

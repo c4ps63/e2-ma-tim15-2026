@@ -94,8 +94,15 @@ public class GameActivity extends AppCompatActivity {
         totalP2 += p2;
     }
 
+    public void addMyOppScores(int myScore, int oppScore) {
+        if ("p1".equals(getMyRole())) { totalP1 += myScore; totalP2 += oppScore; }
+        else                          { totalP1 += oppScore; totalP2 += myScore; }
+    }
+
     public int getP1Total() { return totalP1; }
     public int getP2Total() { return totalP2; }
+    public int getMyTotal()  { return "p1".equals(getMyRole()) ? totalP1 : totalP2; }
+    public int getOppTotal() { return "p1".equals(getMyRole()) ? totalP2 : totalP1; }
 
     public boolean isChallengeMode() { return challengeId != null; }
 
@@ -205,13 +212,13 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void applyAvatarsToHud(View rootView) {
-        boolean iAmP1 = "p1".equals(getMyRole());
-        char av1Char  = iAmP1 ? myInitial  : oppInitial;
-        int  av1Color = iAmP1 ? myColor    : oppColor;
-        char av2Char  = iAmP1 ? oppInitial : myInitial;
-        int  av2Color = iAmP1 ? oppColor   : myColor;
-        String p1Name = iAmP1 ? myUsername  : oppUsername;
-        String p2Name = iAmP1 ? oppUsername : myUsername;
+        // p1_slot = uvijek JA, p2_slot = uvijek PROTIVNIK
+        char av1Char  = myInitial;
+        int  av1Color = myColor;
+        char av2Char  = oppInitial;
+        int  av2Color = oppColor;
+        String p1Name = myUsername;
+        String p2Name = oppUsername;
 
         TextView av1 = rootView.findViewById(R.id.p1_avatar);
         TextView av2 = rootView.findViewById(R.id.p2_avatar);
